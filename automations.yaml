@@ -1,0 +1,519 @@
+### Eirikz added wakeup and sleeping of house ###
+
+- alias: Skru på dagtid
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.stue_veggbryter
+      click_type: single
+  action:
+    - service: scene.turn_on
+      entity_id: scene.dim_oppover_dagtid
+
+- alias: Skru av kveldstid
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.stue_veggbryter
+      click_type: double
+  action:
+    - service: scene.turn_on
+      entity_id: scene.dim_nedover_kveldstid
+
+### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
+
+- alias: Skru på kontorlys
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.sensor_kontor
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.kontor
+      data:
+        transition: 15
+        brightness_pct: 30
+    - service: automation.turn_on
+      data:
+        entity_id: automation.MOTION_OFF
+
+- alias: Skru av kontorlys etter fem minutter
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.sensor_kontor
+    from: 'on'
+    to: 'off'
+    for:
+      minutes: 3
+  action:
+    - service: light.turn_off
+      entity_id: light.kontor
+    - service: automation.turn_off
+      data:
+        entity_id: automation.Motion_off
+
+### Eirikz added dark theme will always be loaded ###
+
+- alias: 'Sett mørkt tema'
+  hide_entity: true
+  initial_state: 'on'
+  trigger:
+    - platform: homeassistant
+      event: start
+  action:
+    - service: frontend.set_theme
+      data:
+        name: slate
+
+### Eirikz added wakeup light (non functioning atm) ###
+
+- alias: 'Wakeup-light soverom'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.alarm_time
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: 'input_boolean.wakeup'
+      state: 'on'
+  action:
+    - service: python_script.fade_in_light
+      data:
+        entity_id: light.soveromled
+        delay_in_sec: 18
+        start_level_pct: 5
+        end_level_pct: 100
+        step_in_level_pct: 1
+
+### Eirikz added automatic turn on and off lights in the W.C and only turn on small light at night ###
+
+- alias: 'Skru på dolys'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.dodor
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.do_hylle
+
+- alias: 'Skru på vegglys do dagtid'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.dodor
+    from: 'off'
+    to: 'on'
+  condition:
+    condition: time
+    after: '08:00:00'
+    before: '23:00:00'
+  action:
+    - service: light.turn_on
+      entity_id: light.do_vegglampe
+
+
+- alias: 'Skru av dolys'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.dodor
+    from: 'on'
+    to: 'off'
+    for:
+      minutes: 10
+  action:
+    - service: light.turn_off
+      entity_id: light.do
+
+### Eirikz added automatic lighting in basement ###
+
+- alias: 'Skru på kjellerlys'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.kjeller_apen
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.kjeller
+
+- alias: 'Skru av kjellerlys'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.kjeller_apen
+    from: 'on'
+    to: 'off'
+    for:
+      minutes: 2
+  action:
+    - service: light.turn_off
+      entity_id: light.kjeller
+
+### Eirikz added different scenes for attic living room ###
+
+- alias: 'Skru på gulvlampe loft'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.loft_veggbryter
+      click_type: single
+  action:
+    service: scene.turn_on
+    entity_id: scene.loft_kun_gulvlampe
+
+- alias: 'Skru på taklamper loft'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.loft_veggbryter
+      click_type: double
+  action:
+    service: scene.turn_on
+    entity_id: scene.loft_kun_taklamper
+
+- alias: Skru av alle på loft
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.loft_veggbryter
+      click_type: hold
+  action:
+    service: scene.turn_on
+    entity_id: scene.loft_alle_av
+
+### Eirikz added wireless button to bedside lamps ###
+
+- alias: 'Skru av og på soverom Weronica'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.soverom_bryter_weronica
+      click_type: single
+  action:
+    service: light.toggle
+    entity_id: light.soverom_weronica_seng
+
+- alias: 'Skru av og på soverom Eirik'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.soverom_bryter_eirik
+      click_type: single
+  action:
+    service: light.toggle
+    entity_id: light.soverom_eirik_seng
+
+### Eirikz added Google Home Mini annonuncement ###
+
+- alias: 'Morgenhilsen på kontoret'
+  trigger:
+    platform: state
+    entity_id: light.kontor
+    to: 'on'
+  condition:
+    condition: time
+    after: '07:00:00'
+    before: '10:00:00'
+  action:
+    service: tts.google_say
+    entity_id: media_player.den_speaker
+    data_template:
+      message: >-
+        God morgen Eirik, temperaturen ute er {{states('sensor.ute_dobbelsensor_temperature')|string|replace('.','komma')}} grader og været er {{states('weather.dark_sky')}}, temperaturen i drivhuset er {{states('sensor.drivhus_temp')|string|replace('.', 'komma')}} grader, det tar {{states('sensor.hjemmefra_til_jobb')}} minutter å kjøre til kontoret, akkurat nå strømmer {{states('sensor.tautulli')}} brukere fra plex serveren din, solen er {{states('sun.sun')|replace('_', ' ')}}  
+      language: 'no'
+      cache: false
+
+### Eirikz added automatic lighting in downstairs pantry ###
+
+- alias: 'Skru på kjellerbod'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.kjellerbod
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.kjellerbod
+      data:
+        transition: 15
+        brightness_pct: 30
+
+- alias: 'Skru av kjellerbod etter fem minutter'
+  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.kjellerbod
+    from: 'on'
+    to: 'off'
+  action:
+    - service: light.turn_off
+      entity_id: light.kjellerbod
+
+### Eirikz experimenting with keyboard commands telegram bot ###
+
+- alias: 'Keyboard Travel'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data:
+      command: '/travel'
+  action:
+    - service: telegram_bot.send_message
+      data_template:
+        target: '{{trigger.event.data.user_id}}'
+        message: 'commands'
+        keyboard:
+          - "/drive, /train"
+          - "/menu"
+
+
+- alias: 'Keyboard Train'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: telegram_command
+    event_data:
+      command: '/train'
+  action:
+    - service: telegram_bot.send_message
+      data_template:
+        target: '{{trigger.event.data.user_id}}'
+        message: 'commands'
+        keyboard:
+          - "/trainhome, /trainbushome"
+          - "/trainhaupthome, /trainhf, /trainfh"
+          - "/menu"
+
+### Eirikz added telegram notifications ### 
+
+- alias: 'Eirik drar hjemmefra'
+  trigger:
+    platform: zone
+    event: leave
+    zone: zone.Hjemme
+    entity_id: device_tracker.eirik_mobil
+  action:
+    service: notify.we_telegram
+    data:
+      message: "Eirik drar hjemmefra"
+
+- alias: 'Drivhus er over 30 grader'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.temperature_drivhus
+    above: '30'
+  action:
+    service: notify.we_telegram       
+    data:
+      message: "Drivhus er over 30 grader"
+
+- alias: 'Drivhus er under 18 grader'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.temperature_drivhus
+    below: '18'
+  action:
+    service: notify.we_telegram       
+    data:
+      message: "Drivhus er under 18 grader"
+
+- alias: 'Eirik ankommer FBU'
+  trigger:
+    platform: zone
+    event: enter
+    zone: zone.fbu
+    entity_id: device_tracker.eirik_mobil
+  action:
+    service: notify.we_telegram       
+    data:
+      message: "Eirik er på FBU"
+
+- alias: 'Eirik ankommer Gardermoen'
+  trigger:
+    platform: zone
+    event: enter
+    zone: zone.gardermoen
+    entity_id: device_tracker.eirik_mobil
+  action:
+    service: notify.we_telegram       
+    data:
+      message: "Eirik er på gardermoen"
+
+### Eirikz playing with Phil Hawthorns advanced person state ###
+
+- alias: 'Sett Eirik som akkurat kommet hjem'
+  trigger:
+    - platform: state
+      entity_id: device_tracker.eirik_mobil
+      from: 'away'
+      to: 'home'
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.eirik_status_dropdown
+        option: 'Kom akkurat hjem'
+
+- alias: 'Sett Eirik som Hjemme'
+  trigger:
+    - platform: state
+      entity_id: input_select.eirik_status_dropdown
+      to: 'home'
+      for:
+        minutes: 10
+    - platform: state
+      entity_id: input_select.eirik_status_dropdown
+      from: 'Dro akkurat ut'
+      to: 'Kom akkurat hjem'
+  condition:
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.eirik_status_dropdown
+        option: 'Hjemme'
+
+- alias: 'Sett Eirik som akkurat dratt'
+  trigger:
+    - platform: zone
+      entity_id: device_tracker.eirik_mobil
+      zone: 'zone.home'
+      event: 'leave'
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.eirik_status_dropdown
+        option: 'Dro akkurat ut'
+
+- alias: 'Sett Eirik som borte'
+  trigger:
+    - platform: state
+      entity_id: input_select.eirik_status_dropdown
+      to: 'Dro akkurat ut'
+      for:
+        minutes: 10
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.eirik_status_dropdown
+        option: 'Ute'
+
+
+- alias: 'Sett Eirik som bortreist'
+  trigger:
+    - platform: state
+      entity_id: input_select.eirik_status_dropdown
+      to: 'Ute'
+      for:
+        hours: 24
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.eirik_status_dropdown
+        option: 'Bortreist'
+
+
+- alias: 'Sett Weronica som akkurat kommet hjem'
+  trigger:
+    - platform: state
+      entity_id: device_tracker.werofon
+      from: 'away'
+      to: 'home'
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.weronica_status_dropdown
+        option: 'Kom akkurat hjem'
+
+- alias: 'Sett Weronica som Hjemme'
+  trigger:
+    - platform: state
+      entity_id: input_select.weronica_status_dropdown
+      to: 'home'
+      for:
+        minutes: 10
+    - platform: state
+      entity_id: input_select.weronica_status_dropdown
+      from: 'Dro akkurat ut'
+      to: 'Kom akkurat hjem'
+  condition:
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.weronica_status_dropdown
+        option: 'Hjemme'
+
+- alias: 'Sett Weronica som akkurat dratt'
+  trigger:
+    - platform: zone
+      entity_id: device_tracker.werofon
+      zone: 'zone.home'
+      event: 'leave'
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.weronica_status_dropdown
+        option: 'Dro akkurat ut'
+
+- alias: 'Sett Weronica som borte'
+  trigger:
+    - platform: state
+      entity_id: input_select.weronica_status_dropdown
+      to: 'Dro akkurat ut'
+      for:
+        minutes: 10
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.weronica_status_dropdown
+        option: 'Ute'
+
+
+- alias: 'Sett Weronica som bortreist'
+  trigger:
+    - platform: state
+      entity_id: input_select.weronica_status_dropdown
+      to: 'Ute'
+      for:
+        hours: 24
+  action:
+    - service: input_select.select_option
+      data_template:
+        entity_id: input_select.weronica_status_dropdown
+        option: 'Bortreist'
+
+
+### Eirikz added switch to toggle on and off the babycam ###
+
+- alias: 'Toggle babycam'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.babycam_bryter
+      click_type: single
+  action:
+    - service: switch.toggle
+      entity_id: switch.babycam

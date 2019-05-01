@@ -1,0 +1,17 @@
+#  - name: Hjemme
+#    latitude: 60.108663
+#    longitude: 11.368374
+#  
+  - name: FBU
+    latitude: 59.894127
+    longitude: 10.628621 
+
+  - name: Gardermoen
+    latitude: 60.198975
+    longitude: 11.101344
+    radius: 2000
+
+  - name: Oslo
+    latitude: 59.912457
+    longitude: 10.748624
+    radius: 2000

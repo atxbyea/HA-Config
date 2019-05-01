@@ -1,0 +1,78 @@
+  - name: dim oppover dagtid
+    entities:
+        switch.ikea_flux:
+          state: on
+        switch.circadian_lighting_circadian_lighting:
+          state: on
+        light.kjokken:
+          state: on
+          transition: 3
+        light.stue:
+          state: on
+          transition: 3
+        light.dim:
+          state: on
+        media_player.stuetv:
+          state: on
+        media_player.stueforsterker:
+          state: on
+
+
+  - name: dim nedover kveldstid
+    entities:
+        switch.ikea_flux:
+          state: off
+        switch.circadian_lighting_circadian_lighting:
+          state: off
+#        switch.babycam
+#          state: off
+        light.kjokken:
+          state: off
+        light.stue:
+          state: off
+        light.dim:
+          state: off
+        media_player.stuetv:
+          state: off
+        media_player.stueforsterker:
+          state: off
+
+  - name: Loft kun gulvlampe
+    entities:
+        light.gulvlampe_loft_1:
+          state: on
+        light.gulvlampe_loft_2:
+          state: on
+        light.gulvlampe_loft_3:
+          state: on
+        light.loft1_taklys_1:
+          state: off
+        light.loft_taklys_2:
+          state: off
+
+  - name: Loft kun taklamper
+    entities:
+        light.gulvlampe_loft_1:
+          state: off
+        light.gulvlampe_loft_2:
+          state: off
+        light.gulvlampe_loft_3:
+          state: off
+        light.loft_taklys_1:
+          state: on
+        light.loft_taklys_2:
+          state: on
+
+  - name: Loft alle av
+    entities:
+        light.gulvlampe_loft_1:
+          state: off
+        light.gulvlampe_loft_2:
+          state: off
+        light.gulvlampe_loft_3:
+          state: off
+        light.loft_taklys_1:
+          state: off
+        light.loft_taklys_2:
+          state: off
+

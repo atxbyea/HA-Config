@@ -1,0 +1,30 @@
+input_boolean.weather:
+  custom_ui_state_card: custom-weather-card
+  config:
+    weather: weather.yweather
+    sun: sun.sun
+
+sensor.eirik_status:
+  entity_picture: https://vignette.wikia.nocookie.net/uncyclopedia/images/a/a5/RR2.jpg
+
+sensor.weronica_status:
+  entity_picture: https://previews.123rf.com/images/noongraphic/noongraphic1705/noongraphic170500155/77476226-cute-dragon-zodiac-vector-cartoon.jpg
+
+
+binary_sensor.dodor:
+  device_class: door
+
+binary_sensor.garasjedor:
+  device_class: door
+
+binary_sensor.kjeller_apen:
+  device_class: door
+
+binary_sensor.kjellerdor:
+  device_class: door
+
+binary_sensor.sensor_kontor:
+  device_class: motion
+
+binary_sensor.sensor_boddor:
+  device_class: door

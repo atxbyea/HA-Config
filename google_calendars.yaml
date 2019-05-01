@@ -1,0 +1,42 @@
+
+- cal_id: !secret calendar
+  entities:
+  - device_id: eirikzhassgmailcom
+    ignore_availability: true
+    name: eirikzhass@gmail.com
+    track: true
+
+- cal_id: '#contacts@group.v.calendar.google.com'
+  entities:
+  - device_id: contacts2
+    ignore_availability: true
+    name: Contacts
+    track: true
+
+- cal_id: !secret shared_calendar
+  entities:
+  - device_id: calendar
+    ignore_availability: true
+    name: Calendar
+    track: true
+
+- cal_id: no.norwegian#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: helligdager_i_norge
+    ignore_availability: true
+    name: Helligdager i Norge
+    track: true
+
+- cal_id: e_2_no#weeknum@group.v.calendar.google.com
+  entities:
+  - device_id: week_numbers
+    ignore_availability: true
+    name: Week Numbers
+    track: true
+
+- cal_id: addressbook#contacts@group.v.calendar.google.com
+  entities:
+  - device_id: contacts
+    ignore_availability: true
+    name: Contacts
+    track: true

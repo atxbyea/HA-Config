@@ -1,0 +1,571 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 60.108695
+  longitude: 11.368363
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 220
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Oslo
+  # Customization file
+
+##Eirikz added MFA###
+  auth_mfa_modules:
+    - type: totp
+
+  customize: !include customize.yaml
+
+system_health:
+
+# Show links to resources in log and frontend
+#introduction:
+
+# Enables the frontend
+frontend:
+  themes: !include themes.yaml
+
+# Enables configuration UI
+config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+ http:
+    base_url: !secret baseurl
+    ssl_certificate: /home/homeassistant/.homeassistant/certificate.pem
+    ssl_key: /home/homeassistant/.homeassistant/privkey.pem
+    api_password: !secret apipassword
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  include_used_components: true
+
+python_script:
+
+# Discover some devices automatically
+#discovery:
+#  ignore: 
+#    - yeelight
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+### Eirikz added input bolean for wakeup light ###
+input_boolean:
+  wakeup:
+    name: 'Enable wakeup light'
+    icon: mdi:power
+    initial: off
+
+### Eirikz added boolean for more info ###
+  more_info_vacuum:
+    name: More info
+    initial: 'on'
+
+### Eirikz added start of wakeup light ###
+input_datetime:
+  wakeup_time:
+    name: "Start lights at"
+    has_time: true
+    has_date: false
+    initial: "07:30"
+
+input_select:
+
+  eirik_status_dropdown:
+    name: Eirik
+    options:
+      - Hjemme
+      - Kom akkurat hjem
+      - Dro akkurat ut
+      - Ute
+      - Bortreist
+    initial: Hjemme
+
+  weronica_status_dropdown:
+    name: Weronica
+    options:
+      - Hjemme
+      - Kom akkurat hjem
+      - Dro akkurat ut
+      - Ute
+      - Bortreist
+    initial: Hjemme
+
+
+
+# Eirikz added darksky api ###
+weather:
+  - platform: darksky
+    api_key: !secret darksky_api
+    mode: daily
+
+
+# Eirikz added Google TTS ###
+tts:
+  - platform: google_translate
+    service_name: google_say
+    cache: true
+    cache_dir: /tmp/tts
+    base_url: !secret baseurl_ga
+#    language: no
+
+
+# Cloud
+cloud:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+sensor: !include sensors.yaml
+
+
+### Eirikz added logger Warning ###
+logger:
+  default: warn
+  logs:
+   homeassistant.components.ps4.media_player: error 
+
+### Eirikz added Zoneminder platform ###
+camera:
+  - platform: zoneminder
+
+### Eirikz added xiaomi gateway ###
+xiaomi_aqara:
+  discovery_retry: 5
+  gateways:
+    - mac: !secret xiaomimac
+      key: !secret xiaomigw
+      host: !secret xiaomiip
+ 
+### Eirikz added telldus ###
+tellduslive:
+  host: !secret telldusip
+
+### Eirikz added Zoneminder host ###
+zoneminder:
+  host: !secret zmip
+  path: /zm
+  path_zms: /zm/cgi-bin/nph-zms
+  username: !secret zmuser
+  password: !secret zmpass
+  verify_ssl: false
+  ssl: false
+
+### Eirikz added Google Maps device tracker ###
+#device_tracker:
+#  - platform: google_maps
+#    username: !secret googlemail
+#    password: !secret google_pwd
+#    max_gps_accuracy: 200
+
+
+### Eirikz added traccar ###
+device_tracker:
+  - platform: traccar
+    host: !secret traccarip
+    username: !secret traccar_user
+    password: !secret traccar_pwd
+
+  - platform: ping
+    hosts:
+      werofon: !secret werofon
+
+light:
+
+### Eirikz added Mi-Light ###
+
+  - platform: limitlessled
+    bridges:
+      - host: !secret limitlessip
+        groups:
+        - number: 1
+          name: Bokhylle
+
+## Eirikz added light.switch platform ###
+  - platform: switch
+    name: Kjøkken Kjøkkenbord
+    entity_id: switch.kjokkenbord
+
+  - platform: switch
+    name: Stue Gangbord
+    entity_id: switch.lys_gangbord
+
+  - platform: switch
+    name: dim
+    entity_id: switch.dim
+
+  - platform: switch
+    name: Stue Stålampe
+    entity_id: switch.stalampe
+
+### Eirikz added light.group platform ###
+  - platform: group
+    name: dim_oppover_dagtid
+    entities:
+      - light.stuebord
+      - light.yttergang_vegg1
+      - light.kjokken_benk
+      - light.kjokken_vinduet
+
+  - platform: group
+    name: Stue
+    entities:
+      - light.stuebord
+      - light.yttergang_vegg1
+      - light.stue_vindu1
+      - light.stue_vindu2
+      - light.stalampe
+      - light.gulvlampe_stue_1
+      - light.gulvlampe_stue_2
+      - light.gulvlampe_stue_3
+      - light.stue_bikkjelampe
+      - light.stue_lampe_bak_tv
+      - light.stue_stort_vitrineskap
+
+  - platform: group
+    name: Kjokken
+    entities:
+      - light.kjokken_benk
+      - light.kjokken_vindu
+      - light.kjokkenborddimmer
+      - light.kjokkenbenk
+
+  - platform: group
+    name: Soverom
+    entities:
+      - light.soverom_weronica_seng
+      - light.soverom_eirik_seng
+      - light.soveromled
+
+  - platform: group
+    name: Kjeller
+    entities:
+      - light.fryserom
+      - light.trapplampe
+      - light.vaskerom1
+      - light.vaskerom2
+      - light.vaskerom3
+      - light.gang_nede
+
+  - platform: group
+    name: Loft
+    entities:
+      - light.loft_taklys_1
+      - light.loft_taklys_2
+      - light.gulvlampe_loft_1
+      - light.gulvlampe_loft_2
+      - light.gulvlampe_loft_3
+
+  - platform: group
+    name: Kontor
+    entities:
+      - light.kontor1
+      - light.kontor2
+      - light.kontor3
+
+  - platform: group
+    name: Oppholdsrom dagtid
+    entities:
+      - light.kjokken_benk
+      - light.kjokken_vinduet
+      - light.stuebord
+      - light.yttergang_vegg1
+
+  - platform: group
+    name: Oppholdsrom natt
+    entities:
+      - light.stuebord
+
+  - platform: group
+    name: Do
+    entities:
+      - light.do_hylle
+      - light.do_vegglampe
+
+
+### Eirikz added Yeelight platform ###
+yeelight:
+  devices:
+    192.168.1.81:
+      name: "Loft Taklys 1"
+      model: color2
+    192.168.1.82:
+      name: "Loft Taklys 2"
+      model: color2
+    192.168.1.83:
+      name: "Soverom Hodegavel"
+      model: strip1
+
+switch:
+
+### Eirikz added Flux platform for Colour and RGB bulbs ###
+  - platform: flux
+    lights:
+      - light.stuebord
+      - light.yttergang_vegg1
+      - light.do_hylle
+      - light.stue_bikkjelampe
+      - light.stue_vindu1
+      - light.stue_vindu2
+      - light.gulvlampe_loft_1
+      - light.gulvlampe_loft_2
+      - light.gulvlampe_loft_3
+      - light.gulvlampe_stue_1
+      - light.gulvlampe_stue_2
+      - light.gulvlampe_stue_3
+      - light.barnerom_sky
+      - light.gang_nede
+      - light.vaskerom1
+      - light.vaskerom2
+      - light.vaskerom3
+      - light.trapplampe
+      - light.kjokken_benk
+      - light.kjokken_vinduet
+      - light.kontor1
+      - light.kontor2
+      - light.kontor3
+      - light.fryserrom
+      - light.loft_taklys_1
+      - light.loft_taklys_2
+      - light.do_vegglampe
+      - light.barnerom_taklampe
+    name: IKEA Flux
+    mode: mired
+    disable_brightness_adjust: true
+
+### Eirikz addded Circadian Lighting for brightness adjustment of all bulbs ###
+  - platform: circadian_lighting
+    lights_brightness:
+      - light.stuebord
+      - light.yttergang_vegg1
+      - light.do_hylle
+      - light.do_vegglampe
+      - light.stue_bikkjelampe
+      - light.stue_lampe_bak_tv
+      - light.stue_vindu1
+      - light.stue_vindu2
+      - light.gulvlampe_loft_1
+      - light.gulvlampe_loft_2
+      - light.gulvlampe_loft_3
+      - light.gulvlampe_stue_1
+      - light.gulvlampe_stue_2
+      - light.gulvlampe_stue_3
+      - light.barnerom_sky
+      - light.gang_nede
+      - light.vaskerom1
+      - light.vaskerom2
+      - light.vaskerom3
+      - light.trapplampe
+      - light.kjokken_benk
+      - light.kjokken_vindu
+      - light.kontor1
+      - light.kontor2
+      - light.kontor3
+      - light.fryserom
+      - light.loft_taklys_1
+      - light.loft_taklys_2
+      - light.barnerom_taklampe
+      - light.kjellerbod
+    max_brightness: 35
+    min_brightness: 1
+
+
+
+zone: !include zones.yaml 
+
+scene: !include scenes.yaml
+
+### Eirikz added platform for WebOS smart TV ###
+media_player:
+  - platform: webostv
+    host: !secret webosip
+    name: StueTV
+    turn_on_action:
+      service: wake_on_lan.send_magic_packet
+      data:
+        mac: "14-C9-13-15-1F-BD"
+    customize:
+      sources:
+        - livetv
+        - youtube
+        - makotv
+        - netflix
+        - Set-top Box
+
+  - platform: spotify
+    client_id: !secret spotify_clientid
+    client_secret: !secret spotify_clientsecret
+
+### Eirikz added Plex platform ###
+#  - platform: plex
+
+### Eirikz added Onkyo Platform ###
+  - platform: onkyo
+    host: !secret onkyoip
+    name: Stueforsterker    
+
+### Eirikz added WoL platform ###
+wake_on_lan:
+
+### Eirikz added Xiaomi vacuum ###
+vacuum:
+  - platform: xiaomi_miio
+    host: !secret roborockip
+    token: !secret vacuum
+
+### Eirikz added Google Calendar ###
+google:
+  client_id: !secret google_clientid
+  client_secret: !secret google_clientsecret
+
+### Eirikz added Circadian Lighting Custom Component ###
+circadian_lighting:
+  interval: 30
+  transition: 10
+
+
+### Eirikz added yaml mode for Lovelace ###
+lovelace:
+  mode: yaml
+
+### Eirikz added ping binary sensors ###
+binary_sensor:
+  - platform: ping
+    host: 192.168.1.36
+    name: Temari
+    count: 3
+    scan_interval: 30
+
+  - platform: ping
+    host: 192.168.1.40
+    name: Tsunade
+    count: 3
+    scan_interval: 30
+
+### Eirikz added template for both basement doors open \ close will trigger lights in basement ###
+  - platform: template
+    sensors:
+      kjeller_apen:
+        friendly_name: "Kjellerdører åpne"
+        device_class: door
+        value_template: >-
+          {{ is_state('binary_sensor.kjellerdor', 'on') or
+             is_state('binary_sensor.garasjedor', 'on') }}
+
+  - platform: template
+    sensors:
+      qnapsmart:
+        friendly_name: "S.M.A.R.T status Asuma"
+        value_template: >-
+          {{ is_state('sensor.asuma_smart_status_drive_1', 'OK')
+             and is_state('sensor.asuma_smart_status_drive_2', 'OK')
+             and is_state('sensor.asuma_smart_status_drive_3', 'OK')
+             and is_state('sensor.asuma_smart_status_drive_4', 'OK') }}
+
+
+### Eirikz added IFTTT ###
+ifttt:
+  key: !secret iftttkey
+
+
+notify:
+  - name: 'Eirikz Telegram'
+    platform: telegram
+    chat_id: !secret eirikzchatid
+
+  - name: 'W Telegram'
+    platform: telegram
+    chat_id: !secret wchatid
+
+  - name: 'WE Telegram'
+    platform: group
+    services:
+      - service: eirikz_telegram
+      - service: w_telegram 
+
+### Eirikz added MariaDB ###
+recorder:
+  db_url: !secret mariadb
+
+### Eirikz added person ###
+person:
+
+### Eirikz added Telegram-bot ###
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_api
+    allowed_chat_ids:
+      - !secret eirikzchatid
+      - !secret wchatid
+
+### Eirikz added Google Home ###
+googlehome:
+  devices:
+    - host: !secret googlehomekontorip
+
+### Eirikz added Google Keep ###
+google_keep:
+  username: !secret googlemail
+  password: !secret google_pwd
+  list_name: "Home Assistant Generert Liste"
+
+### Eirikz added Samsung AC ###
+climate:
+  platform: climate_ip
+  config_file: '/home/homeassistant/.homeassistant/custom_components/climate_ip/samsung_2878.yaml'
+  ip_address: !secret climateip
+  token: !secret climatetoken
+  mac: !secret climatemac
+  friendly_name: 'Varmepumpe Stue'
+  debug: True
+
+### Eirikz added Roku ###
+roku:
+  - host: 192.168.1.39
+
+
+### Eirikz added utility meter ###
+utility_meter:
+  torketrommel_daglig:
+    source: sensor.torketrommel_power_2
+    cycle: daily
+
+  torketrommel_manedlig:
+    source: sensor.torketrommel_power_2
+    cycle: monthly
+
+
+### Eirikz added influx ###
+influxdb:
+  host: 192.168.1.46
+
+
+### Eirikz added tensorflow ###
+image_processing:
+  - platform: tensorflow
+    source:
+      - entity_id: camera.fremme
+      - entity_id: camera.bak
+    model:
+      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
+
+### Eirikz added ffmpeg ###
+ffmpeg:
