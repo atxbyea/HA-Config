@@ -35,14 +35,14 @@ stovsug_spisestue:
             command: app_zoned_clean
             params: [[28668,17932,37568,22932,1]]
 
-stovsug_yttergang:
-      alias: "Støvsug spisestue"
+stovsug_huset:
+      alias: "Støvsug huset"
       sequence:
         - service: vacuum.send_command
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
             command: app_zoned_clean
-            params: [[32073,22623,34473,25373,1]]
+            params: [[24890,17638,39590,26288,1]]
 
 stovsug_barnerom:
       alias: "Støvsug barnerom"

@@ -26,5 +26,5 @@ binary_sensor.kjellerdor:
 binary_sensor.sensor_kontor:
   device_class: motion
 
-binary_sensor.sensor_boddor:
+binary_sensor.sensor_kjellerbod:
   device_class: door

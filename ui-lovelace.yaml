@@ -18,45 +18,45 @@ views:
   - path: default_view
     title: Temp
     icon: 'mdi:temperature-celsius'
-#    panel: true
+    panel: true
     cards:
       - type: vertical-stack
         cards:
-          - type: glance
-            title: Temperaturer
-            entities:
-              - entity: sensor.inne_dobbelsensor_temperature
-                name: Inne
-              - entity: sensor.barnerom_temp
-                name: Alva
-              - entity: sensor.loft_temp
-                name: Loft
-              - entity: sensor.vaskerom_temperatur
-                name: Vaskerom
-              - entity: sensor.temperature_soverommet
-                name: Soverommet
-              - entity: sensor.temperature_garasjen
-                name: Garasjen
-              - entity: sensor.temperature_badet
-                name: Badet
-              - entity: sensor.temperature_boden
-                name: Boden
-              - entity: sensor.ute_dobbelsensor_temperature
-                name: Ute
-          - type: weather-forecast
-            entity: weather.dark_sky
+          - type: horizontal-stack
+            cards:
+              - type: glance
+                title: Temperaturer
+                entities:
+                  - entity: sensor.inne_dobbelsensor_temperature
+                    name: Inne
+                  - entity: sensor.barnerom_temp
+                    name: Alva
+                  - entity: sensor.loft_temp
+                    name: Loft
+                  - entity: sensor.vaskerom_temperatur
+                    name: Vaskerom
+                  - entity: sensor.temperature_soverommet
+                    name: Soverommet
+                  - entity: sensor.temperature_garasjen
+                    name: Garasjen
+                  - entity: sensor.temperature_badet
+                    name: Badet
+                  - entity: sensor.temperature_boden
+                    name: Boden
+                  - entity: sensor.ute_dobbelsensor_temperature
+                    name: Ute
+              - type: weather-forecast
+                entity: weather.dark_sky
+          - type: horizontal-stack
+            cards:
+              - type: entities
+                entities:
+                  - sensor.eirik_status
+                  - sensor.weronica_status
 
-          - type: entities
-            entities:
-              - sensor.eirik_status
-              - sensor.weronica_status
-
-          - type: thermostat
-            entity: climate.varmepumpe_stue
-            name: Varmepumpe
-
-          - type: 'custom:spotify-card'
-            client_id: !secret spotify_clientid
+              - type: thermostat
+                entity: climate.varmepumpe_stue
+                name: Varmepumpe
 
 
   - path: eirik
@@ -84,180 +84,66 @@ views:
   - path: stovsuger
     title: støvsuger
     icon: 'mdi:robot-vacuum'
+    panel: true
     cards:
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-          - type: picture-elements
-            image: /local/Akino.jpg
-            #image: /local/vacuum_docked.png
-            elements:
-
-              - type: image
-                entity: input_boolean.more_info_vacuum
-                tap_action:
-                  action: toggle
-                image: /local/vacuum_more_info.gif
-                style:
-                  top: 50%
-                  left: 50%
-
-              - type: icon
-                icon: mdi:bell-ring
-                tap_action:
-                  action: call-service
-                  service: vacuum.locate
-                  service_data:
-                    entity_id: vacuum.xiaomi_vacuum_cleaner
-                style:
-                  top: 90%
-                  left: 80%
-                  "--paper-item-icon-color": rgb(115, 122, 130)
-
-              - type: icon
-                icon: mdi:home
-                tap_action:
-                  action: call-service
-                  service: vacuum.return_to_base
-                  service_data:
-                    entity_id: vacuum.xiaomi_vacuum_cleaner
-                style:
-                  top: 90%
-                  left: 65%
-                  "--paper-item-icon-color": rgb(115, 122, 130)
-
-              - type: icon
-                icon: mdi:play
-                tap_action:
-                  action: call-service
-                  service: vacuum.start
-                  service_data:
-                    entity_id: vacuum.xiaomi_vacuum_cleaner
-                style:
-                  top: 90%
-                  left: 50%
-                  "--paper-item-icon-color": rgb(115, 122, 130)
-
-              - type: icon
-                icon: mdi:pause
-                tap_action:
-                  action: call-service
-                  service: vacuum.pause
-                  service_data:
-                    entity_id: vacuum.xiaomi_vacuum_cleaner
-                style:
-                  top: 90%
-                  left: 35%
-                  "--paper-item-icon-color": rgb(115, 122, 130)
-
-              - type: icon
-                icon: mdi:stop
-                tap_action:
-                  action: call-service
-                  service: vacuum.stop
-                  service_data:
-                    entity_id: vacuum.xiaomi_vacuum_cleaner
-                style:
-                  top: 90%
-                  left: 20%
-                  "--paper-item-icon-color": rgb(155, 122, 130)
-
-              - type: state-label
-                entity: sensor.vacuum_status
-                style:
-                  top: 10%
-                  left: 5%
-                  color: rgb(255, 255, 255)
-                  transform: translate(0%,-50%)
-                  pointer-events: none
-                  text-shadow: 1px 1px black
-                  font-family: Trebuchet MS
-                  font-size: 90%
-                  font-weight: bold
-                  border-left-style: solid
-                  border-color: rgb(34, 154, 210)
-                  background-color: rgb(54, 65, 78)
-                  opacity: 0.8
-
-              - type: state-label
-                entity: sensor.vacuum_battery
-                style:
-                  top: 10%
-                  right: 5%
-                  color: rgb(255, 255, 255)
-                  transform: translate(0%,-50%)
-                  pointer-events: none
-                  text-shadow: 1px 1px black
-                  font-family: Trebuchet MS
-                  font-size: 90%
-                  font-weight: bold
-                  border-right-style: solid
-                  border-color: rgb(34, 154, 210)
-                  background-color: rgb(54, 65, 78)
-                  opacity: 0.8
-      - type: conditional
-        conditions:
-          - entity: input_boolean.more_info_vacuum
-            state_not: "off"
-        card:
-          type: vertical-stack
-          cards:
-            - type: markdown
-              content: >
-                ### Støvsug sone:
-            - type: horizontal-stack
-              cards:
-                - type: entity-button
-                  entity: script.tomme
-                  icon: mdi:bitbucket
-                  color: auto
-                  name: Tømme
-                  tap_action:
-                    action: toggle
-                - type: entity-button
-                  entity: script.stovsug_tvstue
-                  icon: mdi:sofa
-                  color: auto
-                  name: Stue
-                - type: entity-button
-                  entity: script.stovsug_kjokken
-                  icon: mdi:stove
-                  color: auto
-                  name: Kjøkken
-                - type: entity-button
-                  entity: script.stovsug_spisestue
-                  icon: mdi:silverware-fork-knife
-                  color: auto
-                  name: Spisestue
-                - type: entity-button
-                  entity: script.stovsug_yttergang
-                  icon: mdi:shoe-formal
-                  color: auto
-                  name: Yttergang
-                - type: entity-button
-                  entity: script.stovsug_barnerom
-                  icon: mdi:baby
-                  color: auto
-                  name: Barnerom
-            - type: markdown
-              content: >
-                ### Siste rengjøring:
-            - type: glance
-              columns: 2
-              show_name: false
-              entities:
-                - entity: sensor.vacuum_cleaned_area
-                - entity: sensor.vacuum_cleaning_time
-            - type: markdown
-              content: >
-                ### Vedlikehold
-            - type: glance
-              columns: 4
-              show_name: true
-              entities:
-                - entity: sensor.vacuum_cleanmainbrush
-                - entity: sensor.vacuum_cleansidebrush
-                - entity: sensor.vacuum_cleanfilter
-                - entity: sensor.vacuum_sensordirtyleft
+          - type: vertical-stack
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: entity-button
+                    entity: script.tomme
+                    icon: mdi:bitbucket
+                    color: auto
+                    name: Tømme
+                    tap_action:
+                      action: toggle
+                  - type: entity-button
+                    entity: script.stovsug_tvstue
+                    icon: mdi:sofa
+                    color: auto
+                    name: Stue
+                  - type: entity-button
+                    entity: script.stovsug_kjokken
+                    icon: mdi:stove
+                    color: auto
+                    name: Kjøkken
+              - type: horizontal-stack
+                cards:
+                  - type: entity-button
+                    entity: script.stovsug_spisestue
+                    icon: mdi:silverware-fork-knife
+                    color: auto
+                    name: Spisestue
+                  - type: entity-button
+                    entity: script.stovsug_huset
+                    icon: mdi:home-circle
+                    color: auto
+                    name: Hele huset
+                  - type: entity-button
+                    entity: script.stovsug_barnerom
+                    icon: mdi:baby
+                    color: auto
+                    name: Barnerom
+          - type: horizontal-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  - type: glance
+                    columns: 2
+                    show_name: true
+                    entities:
+                      - entity: sensor.vacuum_cleaned_area
+                      - entity: sensor.vacuum_cleaning_time
+                  - type: glance
+                    columns: 4
+                    show_name: true
+                    entities:
+                      - entity: sensor.vacuum_cleanmainbrush
+                      - entity: sensor.vacuum_cleansidebrush
+                      - entity: sensor.vacuum_cleanfilter
+                      - entity: sensor.vacuum_sensordirtyleft
 
 
 

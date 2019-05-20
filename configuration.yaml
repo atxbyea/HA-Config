@@ -49,7 +49,7 @@ updater:
 python_script:
 
 # Discover some devices automatically
-#discovery:
+discovery:
 #  ignore: 
 #    - yeelight
 # Allows you to issue voice commands from the frontend in enabled browsers
@@ -317,39 +317,6 @@ yeelight:
 switch:
 
 ### Eirikz added Flux platform for Colour and RGB bulbs ###
-  - platform: flux
-    lights:
-      - light.stuebord
-      - light.yttergang_vegg1
-      - light.do_hylle
-      - light.stue_bikkjelampe
-      - light.stue_vindu1
-      - light.stue_vindu2
-      - light.gulvlampe_loft_1
-      - light.gulvlampe_loft_2
-      - light.gulvlampe_loft_3
-      - light.gulvlampe_stue_1
-      - light.gulvlampe_stue_2
-      - light.gulvlampe_stue_3
-      - light.barnerom_sky
-      - light.gang_nede
-      - light.vaskerom1
-      - light.vaskerom2
-      - light.vaskerom3
-      - light.trapplampe
-      - light.kjokken_benk
-      - light.kjokken_vinduet
-      - light.kontor1
-      - light.kontor2
-      - light.kontor3
-      - light.fryserrom
-      - light.loft_taklys_1
-      - light.loft_taklys_2
-      - light.do_vegglampe
-      - light.barnerom_taklampe
-    name: IKEA Flux
-    mode: mired
-    disable_brightness_adjust: true
 
 ### Eirikz addded Circadian Lighting for brightness adjustment of all bulbs ###
   - platform: circadian_lighting
@@ -387,7 +354,19 @@ switch:
     max_brightness: 35
     min_brightness: 1
 
-
+    lights_ct:
+      - light.stuebord
+      - light.yttergang_vegg1
+      - light.do_hylle
+      - light.stue_bikkjelampe
+      - light.stue_vindu1
+      - light.stue_vindu2
+      - light.do_vegglampe
+      - light.barnerom_taklampe
+      - light.stue_vindu1
+      - light.stue_vindu2
+      - light.loft_taklys_1
+      - light.loft_taklys_2
 
 zone: !include zones.yaml 
 
@@ -415,7 +394,7 @@ media_player:
     client_secret: !secret spotify_clientsecret
 
 ### Eirikz added Plex platform ###
-#  - platform: plex
+  - platform: plex
 
 ### Eirikz added Onkyo Platform ###
   - platform: onkyo
@@ -438,8 +417,8 @@ google:
 
 ### Eirikz added Circadian Lighting Custom Component ###
 circadian_lighting:
-  interval: 30
-  transition: 10
+  interval: 300
+  transition: 20
 
 
 ### Eirikz added yaml mode for Lovelace ###
@@ -559,13 +538,13 @@ influxdb:
 
 
 ### Eirikz added tensorflow ###
-image_processing:
-  - platform: tensorflow
-    source:
-      - entity_id: camera.fremme
-      - entity_id: camera.bak
-    model:
-      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
+#image_processing:
+#  - platform: tensorflow
+#    source:
+#      - entity_id: camera.fremme
+#      - entity_id: camera.bak
+#    model:
+#      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
 
 ### Eirikz added ffmpeg ###
-ffmpeg:
+#ffmpeg:

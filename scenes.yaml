@@ -1,7 +1,5 @@
   - name: dim oppover dagtid
     entities:
-        switch.ikea_flux:
-          state: on
         switch.circadian_lighting_circadian_lighting:
           state: on
         light.kjokken:
@@ -20,12 +18,8 @@
 
   - name: dim nedover kveldstid
     entities:
-        switch.ikea_flux:
-          state: off
         switch.circadian_lighting_circadian_lighting:
           state: off
-#        switch.babycam
-#          state: off
         light.kjokken:
           state: off
         light.stue:
@@ -45,7 +39,7 @@
           state: on
         light.gulvlampe_loft_3:
           state: on
-        light.loft1_taklys_1:
+        light.loft_taklys_1:
           state: off
         light.loft_taklys_2:
           state: off
