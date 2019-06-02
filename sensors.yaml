@@ -209,3 +209,15 @@
           {% endif %}
         value_template: "{{ states('sensor.torketrommel_daglig') | float / 1000 }}"
         unit_of_measurement: 'kWh'
+
+  - platform: zoneminder
+    include_archived: false
+
+  - platform: template
+    sensors:
+      eirik_batteri:
+        friendly_name: 'Eirik Batteri'
+        value_template: '{{ states.device_tracker.eirik_mobil.attributes.battery_level }} %'
+      eirik_motion:
+        friendly_name: 'Eirik i bevegelse'
+        value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'

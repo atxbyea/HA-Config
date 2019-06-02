@@ -13,6 +13,18 @@ resources:
     type: module
   - url: '/local/seventeen-track-card.js?v=1.0'
     type: js
+  - url: /community_plugin/surveillance-card/surveillance-card.js
+    type: module
+  - url: /local/mini-media-player-bundle.js?v=1.1.3
+    type: module
+  - url: /local/simple-thermostat.js?v=1
+    type: module
+  - url: /local/card-modder.js?v=1
+    type: js
+  - url: /local/auto-entities.js?v=1
+    type: js
+  - url: /local/card-tools.js?v=1
+    type: js
 
 views:
   - path: default_view
@@ -22,42 +34,62 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
+            main_config: true
+            menu: clock
+            notifications: hide
+            clock_format: 24
+            swipe: true
+            exceptions:
+              - conditions:
+                  user: eirikz
+                config:
+                  hide_tabs: 3,4,5
+          - type: vertical-stack
+            cards:
+             - type: weather-forecast
+               entity: weather.dark_sky
+             - type: custom:simple-thermostat
+               entity: climate.varmepumpe_stue
+               step_size: 1
+
+  - path: media
+    title: Media
+    icon: 'mdi:music'
+    panel: true
+    cards:
+      - type: vertical-stack
+        cards: 
+          - type: custom:compact-custom-header
           - type: horizontal-stack
             cards:
-              - type: glance
-                title: Temperaturer
-                entities:
-                  - entity: sensor.inne_dobbelsensor_temperature
-                    name: Inne
-                  - entity: sensor.barnerom_temp
-                    name: Alva
-                  - entity: sensor.loft_temp
-                    name: Loft
-                  - entity: sensor.vaskerom_temperatur
-                    name: Vaskerom
-                  - entity: sensor.temperature_soverommet
-                    name: Soverommet
-                  - entity: sensor.temperature_garasjen
-                    name: Garasjen
-                  - entity: sensor.temperature_badet
-                    name: Badet
-                  - entity: sensor.temperature_boden
-                    name: Boden
-                  - entity: sensor.ute_dobbelsensor_temperature
-                    name: Ute
-              - type: weather-forecast
-                entity: weather.dark_sky
+              - entity: media_player.spotify
+                type: custom:mini-media-player
+                info: short
+                artwork: cover
+                hide:
+                  mute: true
+                  icon: true
+                  power: true
+
+              - entity: media_player.kontormini
+                type: custom:mini-media-player
+                info: short
+                artwork: cover
+                hide:
+                  mute: true
+                  icon: true
+                  power_state: false
           - type: horizontal-stack
             cards:
-              - type: entities
-                entities:
-                  - sensor.eirik_status
-                  - sensor.weronica_status
-
-              - type: thermostat
-                entity: climate.varmepumpe_stue
-                name: Varmepumpe
-
+              - entity: media_player.stueforsterker
+                type: custom:mini-media-player
+                info: short
+                artwork: cover
+                hide:
+                  mute: true
+                  icon: true
+                  power_state: false
 
   - path: eirik
     title: Eirik
@@ -66,6 +98,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
           - type: glance
             title: Eirik
             entities:
@@ -73,6 +106,10 @@ views:
                 name: Tid Eirik bruker hjem
               - entity: sensor.hjemmefra_til_jobb
                 name: Tid Eirik bruker til jobb
+              - entity: sensor.eirik_batteri
+                name: Eirik batterinivå
+              - entity: sensor.eirik_motion
+                name: Eirik i bevegelse
           - type: map
             default_zoom: 8
             aspect_ratio: 16:9
@@ -92,6 +129,7 @@ views:
             cards:
               - type: horizontal-stack
                 cards:
+                  - type: custom:compact-custom-header
                   - type: entity-button
                     entity: script.tomme
                     icon: mdi:bitbucket
@@ -154,6 +192,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
           - type: horizontal-stack
             cards:
               - type: light
@@ -191,33 +230,47 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - entity: camera.fremme
-            type: picture-entity
-          - entity: camera.bak
-            type: picture-entity
+          - type: custom:compact-custom-header
+          - type: custom:surveillance-card
+            thumb_interval: 15
+            update_interval: 2
+            cameras:
+              - entity: camera.fremme
+              - entity: camera.bak
         
   - path: Kalender
     title: Kalender
     icon: 'mdi:calendar'
     cards:
-      - entities:
-          - calendar.eirikzhassgmailcom
-          - calendar.calendar
-        cards: null
-        type: 'custom:calendar-card'
+      - type: vertical-stack
+        cards:
+          - type: custom:compact-custom-header
+          - entities:
+              - calendar.eirikzhassgmailcom
+              - calendar.calendar
+            cards: null
+            type: 'custom:calendar-card'
 
   - path: SwAndAut
     title: Brytere og Automasjoner
     icon: 'mdi:toggle-switch'
     show_header_toggle: true
     cards:
-      - type: custom:monster-card
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: "automation.*"
-            - entity_id: "switch.*"
+      - type: horizontal-stack
+        cards:
+          - type: custom:auto-entities
+            card:
+              type: entites
+            filter:
+              include:
+                - domain: automation
+          - type: custom:auto-entities
+            card:
+              type: entities
+            filter:
+              include:
+                - domain: switch
+
   - path: Multimedia
     title: Multimedia
     icon: 'mdi:video-vintage'
@@ -225,16 +278,19 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - type: gauge
-            unit: 'kBps'
-            entity: sensor.qbittorrent_up_speed
+          - type: custom:compact-custom-header
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                unit: 'kBps'
+                entity: sensor.qbittorrent_up_speed
 
-          - type: gauge
-            unit: 'kBps'
-            entity: sensor.qbittorrent_down_speed
+              - type: gauge
+                unit: 'kBps'
+                entity: sensor.qbittorrent_down_speed
 
-          - type: gauge
-            entity: sensor.tautulli
+              - type: gauge
+                entity: sensor.tautulli
 
   - path: Wakeup
     title: Multimedia
@@ -243,6 +299,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
           - type: entities
             entities:
               - automation.wakeup_light_soverom
@@ -257,8 +314,11 @@ views:
     icon: 'mdi:package-variant-closed'
     panel: true
     cards:
-      - type: custom:seventeen-track-card
-        entity: sensor.seventeentrack_packages_in_transit
+      - type: vertical-stack
+        cards:
+          - type: custom:compact-custom-header
+          - type: custom:seventeen-track-card
+            entity: sensor.seventeentrack_packages_in_transit
 
   - path: strom
     title: Strøm
@@ -266,6 +326,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
           - type: horizontal-stack
             cards:
               - type: picture-elements
@@ -384,6 +445,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          - type: custom:compact-custom-header
           - type: glance
             title: Temperaturer
             entities:

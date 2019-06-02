@@ -21,6 +21,13 @@
   action:
     - service: scene.turn_on
       entity_id: scene.dim_nedover_kveldstid
+    - service: light.turn_on
+      entity_id: light.do_hylle
+      data:
+        brightness: 2
+        color_temp: 454
+    - service: light.turn_off
+      entity_id: light.do_hylle
 
 ### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
 
@@ -34,12 +41,6 @@
   action:
     - service: light.turn_on
       entity_id: light.kontor
-      data:
-        transition: 15
-        brightness_pct: 30
-    - service: automation.turn_on
-      data:
-        entity_id: automation.MOTION_OFF
 
 - alias: Skru av kontorlys etter fem minutter
   hide_entity: true
@@ -49,13 +50,10 @@
     from: 'on'
     to: 'off'
     for:
-      minutes: 3
+      minutes: 5
   action:
     - service: light.turn_off
       entity_id: light.kontor
-    - service: automation.turn_off
-      data:
-        entity_id: automation.Motion_off
 
 ### Eirikz added dark theme will always be loaded ###
 
@@ -240,7 +238,7 @@
     entity_id: media_player.den_speaker
     data_template:
       message: >-
-        God morgen Eirik, temperaturen ute er {{states('sensor.ute_dobbelsensor_temperature')|string|replace('.','komma')}} grader og været er {{states('weather.dark_sky')}}, temperaturen i drivhuset er {{states('sensor.drivhus_temp')|string|replace('.', 'komma')}} grader, det tar {{states('sensor.hjemmefra_til_jobb')}} minutter å kjøre til kontoret, akkurat nå strømmer {{states('sensor.tautulli')}} brukere fra plex serveren din, solen er {{states('sun.sun')|replace('_', ' ')}}  
+        God morgen Eirik, temperaturen ute er {{states('sensor.ute_dobbelsensor_temperature')|string|replace('.','komma')}} grader og været er {{states('weather.dark_sky')|replace('partly', 'delvis')|replace('cloudy', 'overskyet')|replace('sunny', 'solfylt')|replace('rain', 'regner')}}, temperaturen i drivhuset er {{states('sensor.drivhusny_temperature')|string|replace('.', 'komma')}} grader, det tar {{states('sensor.hjemmefra_til_jobb')}} minutter å kjøre til kontoret, akkurat nå strømmer {{states('sensor.tautulli')}} brukere fra plex serveren din, solen er {{states('sun.sun')|replace('_', ' ')|replace('above', 'over')|replace('below', 'under')|replace('horizon', 'horisonten')}}  
       language: 'no'
       cache: false
 
@@ -327,18 +325,32 @@
     above: '30'
   action:
     service: notify.we_telegram       
-    data:
-      message: "Drivhus er over 30 grader"
+    data_template:
+      message: >-
+        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
+
+- alias: 'Drivhus er over 35 grader'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.temperature_drivhus
+    above: '35'
+  action:
+    service: notify.we_telegram
+    data_template:
+      message: >- 
+        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
 
 - alias: 'Drivhus er under 18 grader'
   trigger:
     platform: numeric_state
     entity_id: sensor.temperature_drivhus
-    below: '18'
+    below: '19'
   action:
     service: notify.we_telegram       
-    data:
-      message: "Drivhus er under 18 grader"
+    data_template:
+      message: >-
+        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
+
 
 - alias: 'Eirik ankommer FBU'
   trigger:

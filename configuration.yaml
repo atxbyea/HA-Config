@@ -18,6 +18,7 @@ homeassistant:
 
   customize: !include customize.yaml
 
+
 system_health:
 
 # Show links to resources in log and frontend
@@ -47,6 +48,13 @@ updater:
   include_used_components: true
 
 python_script:
+
+##Eirikz added HACS##
+hacs:
+  token: !secret github_token
+
+##Eirikz added breaking changes##
+breaking_changes:
 
 # Discover some devices automatically
 discovery:
