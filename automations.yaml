@@ -1,6 +1,6 @@
 ### Eirikz added wakeup and sleeping of house ###
 
-- alias: Skru på dagtid
+- alias: Vekk huset
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -11,7 +11,7 @@
     - service: scene.turn_on
       entity_id: scene.dim_oppover_dagtid
 
-- alias: Skru av kveldstid
+- alias: Legg huset
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -311,7 +311,7 @@
   trigger:
     platform: zone
     event: leave
-    zone: zone.Hjemme
+    zone: zone.home
     entity_id: device_tracker.eirik_mobil
   action:
     service: notify.we_telegram
@@ -323,6 +323,8 @@
     platform: numeric_state
     entity_id: sensor.temperature_drivhus
     above: '30'
+    for:
+      minutes: 3
   action:
     service: notify.we_telegram       
     data_template:
@@ -334,6 +336,8 @@
     platform: numeric_state
     entity_id: sensor.temperature_drivhus
     above: '35'
+    for:
+    minutes: 3
   action:
     service: notify.we_telegram
     data_template:
@@ -345,6 +349,8 @@
     platform: numeric_state
     entity_id: sensor.temperature_drivhus
     below: '19'
+    for:
+      minutes: 3
   action:
     service: notify.we_telegram       
     data_template:
@@ -358,6 +364,8 @@
     event: enter
     zone: zone.fbu
     entity_id: device_tracker.eirik_mobil
+    for:
+      minutes: 5
   action:
     service: notify.we_telegram       
     data:
@@ -369,6 +377,8 @@
     event: enter
     zone: zone.gardermoen
     entity_id: device_tracker.eirik_mobil
+    for:
+      minutes: 5
   action:
     service: notify.we_telegram       
     data:
@@ -529,3 +539,46 @@
   action:
     - service: switch.toggle
       entity_id: switch.babycam
+
+
+### Eirikz playing with xiaomi cube ###
+
+- alias: Cube event flip90
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.stuekube
+      action_type: free_fall
+  action:
+    - service: notify.stuetv
+      data:
+        message: "Alva og mamma er så søte"
+
+### Eirikz playing with streams ###
+- alias: 'Front stream with motion'
+  trigger:
+  - platform: state
+    entity_id: camera.fremme
+    from: 'idle'
+  action:
+  - service: camera.play_stream
+    data:
+      entity_id: camera.front
+      media_player: media_player.kjokken
+  - service: camera.play_stream
+    data: 
+      entity_id: camera.front
+      media_player: media_player.stuetv
+  - service: camera.snapshot
+    data:
+      entity_id: camera.fremme
+      filename: '/tmp/front.jpg'
+  - service: notify.eirikz_telegram
+    data:
+      title: Ringeklokke
+      message: "Noen ringer på døren"
+      data:
+        photo:
+          - file: /tmp/front.jpg
+            caption: Ringeklokke

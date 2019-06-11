@@ -11,6 +11,8 @@ homeassistant:
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Oslo
   # Customization file
+  whitelist_external_dirs:
+    - /tmp
 
 ##Eirikz added MFA###
   auth_mfa_modules:
@@ -155,6 +157,13 @@ logger:
 camera:
   - platform: zoneminder
 
+#  - platform: generic
+#    name: Front
+#    still_image_url: http://192.168.1.95:8123/local/front.jpg
+#    stream_source: rtsp://192.168.1.63:554/stream1
+#    username: admin
+#    password: admin
+
 ### Eirikz added xiaomi gateway ###
 xiaomi_aqara:
   discovery_retry: 5
@@ -193,6 +202,7 @@ device_tracker:
     password: !secret traccar_pwd
 
   - platform: ping
+    consider_home: 180
     hosts:
       werofon: !secret werofon
 
@@ -208,9 +218,9 @@ light:
           name: Bokhylle
 
 ## Eirikz added light.switch platform ###
-  - platform: switch
-    name: Kjøkken Kjøkkenbord
-    entity_id: switch.kjokkenbord
+#  - platform: switch
+#    name: Kjøkken Kjøkkenbord
+#    entity_id: switch.kjokkenbord
 
   - platform: switch
     name: Stue Gangbord
@@ -324,8 +334,6 @@ yeelight:
 
 switch:
 
-### Eirikz added Flux platform for Colour and RGB bulbs ###
-
 ### Eirikz addded Circadian Lighting for brightness adjustment of all bulbs ###
   - platform: circadian_lighting
     lights_brightness:
@@ -407,7 +415,9 @@ media_player:
 ### Eirikz added Onkyo Platform ###
   - platform: onkyo
     host: !secret onkyoip
-    name: Stueforsterker    
+    name: Stueforsterker
+#    sources:
+#      video2: 'TVTuner'    
 
 ### Eirikz added WoL platform ###
 wake_on_lan:
@@ -488,6 +498,10 @@ notify:
       - service: eirikz_telegram
       - service: w_telegram 
 
+  - platform: webostv
+    host: 192.168.1.32
+    name: stuetv
+
 ### Eirikz added MariaDB ###
 recorder:
   db_url: !secret mariadb
@@ -523,6 +537,7 @@ climate:
   mac: !secret climatemac
   friendly_name: 'Varmepumpe Stue'
   debug: True
+  poll: True
 
 ### Eirikz added Roku ###
 roku:
@@ -539,6 +554,13 @@ utility_meter:
     source: sensor.torketrommel_power_2
     cycle: monthly
 
+  vvb_manedlig:
+    source: sensor.vvb_dagens_forbruk
+    cycle: monthly
+
+  drivhus_manedlig:
+    source: sensor.drivhusvarme_energy_today
+    cycle: monthly
 
 ### Eirikz added influx ###
 influxdb:
@@ -556,3 +578,6 @@ influxdb:
 
 ### Eirikz added ffmpeg ###
 #ffmpeg:
+
+### Eirikz added stream ###
+stream:

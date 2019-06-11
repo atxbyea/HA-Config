@@ -182,7 +182,7 @@
   - platform: template
     sensors:
       vvb_navarende_forbruk:
-        value_template: '{{ states.switch.varmtvannsbereder.attributes.current_power_w | float / 1000 }} W'
+        value_template: '{{ states.switch.varmtvannsbereder.attributes.current_power_w | multiply(0.001) | round(2) }} kW'
         friendly_name: 'Nåværende forbruk'
 
   - platform: template
@@ -190,12 +190,6 @@
       vvb_dagens_forbruk:
         value_template: '{{ states.switch.varmtvannsbereder.attributes.today_energy_kwh }} kWh'
         friendly_name: 'Dagens forbruk'
-
-  - platform: template
-    sensors:
-      vvb_manedlig_forbruk:
-        value_template: '{{ states.switch.varmtvannsbereder.attributes.total_energy_kwh }} kWh'
-        friendly_name: 'Månedlig forbruk'
 
 
   - platform: template
@@ -221,3 +215,11 @@
       eirik_motion:
         friendly_name: 'Eirik i bevegelse'
         value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'
+
+  - platform: plex
+    host: 192.168.1.36
+    port: 32400
+    name: Temari
+    ssl: true
+    verify_ssl: false
+    token: !secret plextoken
