@@ -118,20 +118,20 @@
     username: !secret seventeenuser
     password: !secret seventeenpass
 
-  - platform: qnap
-    host: !secret qnaphost
-    port: 443
-    ssl: true
-    verify_ssl: false
-    username: !secret qnapuser
-    password: !secret qnappassword
-    monitored_conditions:
-      - status
-      - system_temp
-      - network_tx
-      - network_rx
-      - volume_percentage_used
-      - drive_smart_status
+#  - platform: qnap
+#    host: !secret qnaphost
+#    port: 443
+#    ssl: true
+#    verify_ssl: false
+#    username: !secret qnapuser
+#    password: !secret qnappassword
+#    monitored_conditions:
+#      - status
+#      - system_temp
+#      - network_tx
+#      - network_rx
+#      - volume_percentage_used
+#      - drive_smart_status
 
   - platform: rest
     name: Mirai
@@ -223,3 +223,6 @@
     ssl: true
     verify_ssl: false
     token: !secret plextoken
+
+#  - platform: tensorflow
+#    scan_interval: 10000

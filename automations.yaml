@@ -307,82 +307,100 @@
 
 ### Eirikz added telegram notifications ### 
 
-- alias: 'Eirik drar hjemmefra'
-  trigger:
-    platform: zone
-    event: leave
-    zone: zone.home
-    entity_id: device_tracker.eirik_mobil
-  action:
-    service: notify.we_telegram
-    data:
-      message: "Eirik drar hjemmefra"
+#- alias: 'Eirik drar hjemmefra'
+#  trigger:
+#    platform: zone
+#    event: leave
+#    zone: zone.home
+#    entity_id: device_tracker.eirik_mobil
+#  condition:
+#    conditions:
+#      - condition: state
+#        entity_id: device_tracker.werofon
+#        state: 'not_home'
+#  action:
+#    service: notify.w_telegram
+#    data:
+#      message: "Eirik drar hjemmefra"
 
-- alias: 'Drivhus er over 30 grader'
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.temperature_drivhus
-    above: '30'
-    for:
-      minutes: 3
-  action:
-    service: notify.we_telegram       
-    data_template:
-      message: >-
-        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
+#- alias: 'Drivhus er over 30 grader'
+#  trigger:
+#    platform: numeric_state
+#    entity_id: sensor.temperature_drivhus
+#    above: '30'
+#    for:
+#      minutes: 3
+#  condition:
+#    conditions:
+#      - condition: state
+#        entity_id: device_tracker.eirik_mobil
+#        state: 'not_home'
+#  action:
+#    service: notify.w_telegram       
+#    data_template:
+#      message: >-
+#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
 
-- alias: 'Drivhus er over 35 grader'
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.temperature_drivhus
-    above: '35'
-    for:
-    minutes: 3
-  action:
-    service: notify.we_telegram
-    data_template:
-      message: >- 
-        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
+#- alias: 'Drivhus er over 35 grader'
+#  trigger:
+#    platform: numeric_state
+#    entity_id: sensor.temperature_drivhus
+#    above: '35'
+#    for:
+#      minutes: 3
+#  condition:
+#    conditions:
+#      - condition: state
+#        entity_id: device_tracker.eirik_mobil
+#        state: 'not_home'
+#  action:
+#    service: notify.w_telegram
+#    data_template:
+#      message: >- 
+#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
 
-- alias: 'Drivhus er under 18 grader'
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.temperature_drivhus
-    below: '19'
-    for:
-      minutes: 3
-  action:
-    service: notify.we_telegram       
-    data_template:
-      message: >-
-        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
+#- alias: 'Drivhus er under 18 grader'
+#  trigger:
+#    platform: numeric_state
+#    entity_id: sensor.temperature_drivhus
+#    below: '19'
+#    for:
+#      minutes: 3
+#  condition:
+#    conditions:
+#      - condition: state
+#        entity_id: device_tracker.eirik_mobil
+#        state: 'not_home'
+#  action:
+#    service: notify.w_telegram       
+#    data_template:
+#      message: >-
+#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
 
 
-- alias: 'Eirik ankommer FBU'
-  trigger:
-    platform: zone
-    event: enter
-    zone: zone.fbu
-    entity_id: device_tracker.eirik_mobil
-    for:
-      minutes: 5
-  action:
-    service: notify.we_telegram       
-    data:
-      message: "Eirik er på FBU"
-
-- alias: 'Eirik ankommer Gardermoen'
-  trigger:
-    platform: zone
-    event: enter
-    zone: zone.gardermoen
-    entity_id: device_tracker.eirik_mobil
-    for:
-      minutes: 5
-  action:
-    service: notify.we_telegram       
-    data:
-      message: "Eirik er på gardermoen"
+#- alias: 'Eirik ankommer FBU'
+#  trigger:
+#    platform: state
+#    entity_id: device_tracker.eirik_mobil
+#    state: FBU
+#    for:
+#      minutes: 5
+#  action:
+#    service: notify.we_telegram       
+#    data:
+#      message: "Eirik er på FBU"
+#
+#- alias: 'Eirik ankommer Gardermoen'
+#  trigger:
+#    platform: state
+#    entity_id: device_tracker.eirik_mobil
+#    state: Gardermoen
+#    for:
+#      minutes: 5
+#  action:
+#    service: notify.we_telegram       
+#    data:
+#      message: "Eirik er på gardermoen"
 
 ### Eirikz playing with Phil Hawthorns advanced person state ###
 
@@ -460,7 +478,7 @@
   trigger:
     - platform: state
       entity_id: device_tracker.werofon
-      from: 'away'
+      from: 'not_home'
       to: 'home'
   action:
     - service: input_select.select_option
@@ -488,10 +506,10 @@
 
 - alias: 'Sett Weronica som akkurat dratt'
   trigger:
-    - platform: zone
+    - platform: state
       entity_id: device_tracker.werofon
-      zone: 'zone.home'
-      event: 'leave'
+      from: 'home'
+      to: 'not_home'
   action:
     - service: input_select.select_option
       data:
@@ -582,3 +600,113 @@
         photo:
           - file: /tmp/front.jpg
             caption: Ringeklokke
+
+
+### Eirikz adding tensorflow scan on motion ###
+
+- alias: Tensorflow Skanning
+  trigger:
+     - platform: state
+       entity_id:
+         - camera.fremme
+         - camera.bak
+  action:
+    - service: image_processing.scan
+      data_template:
+        entity_id: "image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+
+
+### Eirikz added tensorflow notification ###
+
+- alias: Tensorflow notify
+  trigger:
+    - platform: numeric_state
+      entity_id:
+        - image_processing.tensorflow_fremme
+        - image_processing.tensorflow_bak
+      above: 0
+  action:
+    - service: camera.record
+      data_template:
+        entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[1] }}"
+        filename: "/tmp/videos/{{ trigger.entity_id.split('.')[1].split('_')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+        duration: 20
+        lookback: 10
+    - service: notify.eirikz_telegram
+      data:
+        title: Tensorflow
+        message: "Jeg ser noe"
+        data:
+          video:
+            - file: "/tmp/videos/{{ trigger.entity_id.split('.')[1].split('_')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+              caption: Bevegelse
+
+### Eirikz added dimming of lights while watching a movie ###
+
+- alias: 'Stemning film starter'
+  trigger:
+    platform: state
+    entity_id: media_player.sasuke_2
+    from: 'idle'
+    to: 'playing'
+  action:
+  - service: switch.turn_off
+    entity_id: switch.circadian_lighting_stue
+  - service: light.turn_off
+    entity_id: light.kjokken_vindu
+  - service: light.turn_off
+    entity_id: light.stuebord
+  - service: light.turn_on
+    data:
+      entity_id: light.stue
+      brightness: 1
+      transition: 3
+
+- alias: 'Stemning film pauses'
+  trigger:
+    platform: state
+    entity_id: media_player.sasuke_2   
+    from: 'playing'
+    to: 'paused'
+  action:
+  - service: switch.turn_off       
+    entity_id: switch.circadian_lighting_stue
+  - service: light.turn_on
+    entity_id: light.kjokken_vindu
+  - service: light.turn_on
+    data:
+      entity_id: light.stue
+      brightness: 50
+      transition: 3
+
+- alias: 'Stemning film gjenopptas'
+  trigger:
+    platform: state
+    entity_id: media_player.sasuke_2
+    from: 'paused'
+    to: 'playing'
+  action:
+  - service: switch.turn_off
+    entity_id: switch.circadian_lighting_stue
+  - service: light.turn_off
+    entity_id: light.kjokken_vindu
+  - service: light.turn_on
+    data:
+      entity_id: light.stue
+      brightness: 1
+      transition: 3
+  - service: light.turn_off
+    entity_id: light.stuebord
+
+- alias: 'Stemning film stoppes'
+  trigger:
+    platform: state
+    entity_id: media_player.sasuke_2   
+    to: 'idle'
+  action:
+  - service: switch.turn_on       
+    entity_id: switch.circadian_lighting_stue
+  - service: light.turn_on
+    entity_id: light.kjokken_vindu
+  - service: light.turn_on
+    entity_id: light.stuebord

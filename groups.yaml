@@ -3,38 +3,33 @@ wakeuplight:
   control: hidden
   entities:
     - input_datetime.wakeup_time
-    - input_boolean.wakeup_enabled
-    - input_boolean.wakeup_weekend
+#    - input_boolean.wakeup_enabled
+#    - input_boolean.wakeup_weekend
 
-vacuum:
-   name: Støvsug et rom
-   entities:
-     - input_select.velg_et_rom_a_stovsuge
-     - script.stovsug_rom
 
 freenas:
    name: FreeNAS Server Monitor
    entities:
-     - sensor.fn_version
-     - sensor.fn_alert_level
-     - sensor.fn_alert_message
-     - sensor.fn_storage_report
+     - sensor.versjon
+#     - sensor.fn_alert_level
+#     - sensor.fn_alert_message
+#     - sensor.fn_storage_report
      - sensor.fn_storage_pct_used
 
-qnap:
-   name: QNAP Server Monitor
-   entities:
-     - sensor.asuma_status
-     - sensor.asuma_temperature
-     - sensor.asuma_volume_used_volume_1
-     - sensor.asuma_smart_status_drive_1
-     - sensor.asuma_smart_status_drive_2
-     - sensor.asuma_smart_status_drive_3
-     - sensor.asuma_smart_status_drive_4
-     - sensor.asuma_network_up_eth0
-     - sensor.asuma_network_down_eth0
-     - sensor.asuma_network_up_eth1
-     - sensor.asuma_network_down_eth1
+#qnap:
+#   name: QNAP Server Monitor
+#   entities:
+#     - sensor.asuma_status
+#     - sensor.asuma_temperature
+#     - sensor.asuma_volume_used_volume_1
+#     - sensor.asuma_smart_status_drive_1
+#     - sensor.asuma_smart_status_drive_2
+#     - sensor.asuma_smart_status_drive_3
+#     - sensor.asuma_smart_status_drive_4
+#     - sensor.asuma_network_up_eth0
+#     - sensor.asuma_network_down_eth0
+#     - sensor.asuma_network_up_eth1
+#     - sensor.asuma_network_down_eth1
 
 folk_status:
   name: Status på folk
@@ -42,3 +37,11 @@ folk_status:
     - sensor.eirik_status
     - sensor.weronica_status
 
+circadian:
+  name: circadian gruppe
+  entities:
+    - switch.circadian_lighting_stue
+    - switch.circadian_lighting_kjeller
+    - switch.circadian_lighting_loft
+    - switch.circadian_lighting_kontor
+    - switch.circadian_lighting_kjokken

@@ -25,6 +25,8 @@ resources:
     type: js
   - url: /local/card-tools.js?v=1
     type: js
+  - url: /local/community/travel-time-card/travel-time-card.js
+    type: js
 
 views:
   - path: default_view
@@ -46,7 +48,7 @@ views:
              - type: weather-forecast
                entity: weather.dark_sky
              - type: custom:simple-thermostat
-               entity: climate.varmepumpe_stue
+               entity: climate.climate_ip_samsungrac
                step_size: 1
 
   - path: media
@@ -113,18 +115,26 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - type: custom:compact-custom-header
-          - type: glance
-            title: Eirik
+          - type: 'custom:travel-time-card'
+            title: 'Reisetid'
             entities:
-              - entity: sensor.eirik_til_hjem
-                name: Tid Eirik bruker hjem
-              - entity: sensor.hjemmefra_til_jobb
-                name: Tid Eirik bruker til jobb
-              - entity: sensor.eirik_batteri
-                name: Eirik batterinivå
-              - entity: sensor.eirik_motion
-                name: Eirik i bevegelse
+             - entity: sensor.eirik_til_hjem
+             - entity: sensor.hjemmefra_til_jobb
+#             - entity: sensor.waze_leo_work
+               zone: zone.FBU
+#             - entity: sensor.waze_leo_home
+#          - type: custom:compact-custom-header
+#          - type: glance
+#            title: Eirik
+#            entities:
+#              - entity: sensor.eirik_til_hjem
+#                name: Tid Eirik bruker hjem
+#              - entity: sensor.hjemmefra_til_jobb
+#                name: Tid Eirik bruker til jobb
+#              - entity: sensor.eirik_batteri
+#                name: Eirik batterinivå
+#              - entity: sensor.eirik_motion
+#                name: Eirik i bevegelse
           - type: map
             default_zoom: 8
             aspect_ratio: 16:9

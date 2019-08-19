@@ -1,6 +1,6 @@
   - name: dim oppover dagtid
     entities:
-        switch.circadian_lighting_circadian_lighting:
+        group.circadian:
           state: on
         light.kjokken:
           state: on
@@ -18,7 +18,7 @@
 
   - name: dim nedover kveldstid
     entities:
-        switch.circadian_lighting_circadian_lighting:
+        group.circadian:
           state: off
         light.kjokken:
           state: off

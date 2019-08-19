@@ -97,6 +97,11 @@ input_datetime:
     has_date: false
     initial: "07:30"
 
+  dateandtime:
+    name: "dateandtime"
+    has_time: false
+    has_date: true
+
 input_select:
 
   eirik_status_dropdown:
@@ -135,7 +140,7 @@ tts:
     cache: true
     cache_dir: /tmp/tts
     base_url: !secret baseurl_ga
-#    language: no
+    language: 'no'
 
 
 # Cloud
@@ -336,6 +341,7 @@ switch:
 
 ### Eirikz addded Circadian Lighting for brightness adjustment of all bulbs ###
   - platform: circadian_lighting
+    name: stue
     lights_brightness:
       - light.stuebord
       - light.yttergang_vegg1
@@ -345,28 +351,9 @@ switch:
       - light.stue_lampe_bak_tv
       - light.stue_vindu1
       - light.stue_vindu2
-      - light.gulvlampe_loft_1
-      - light.gulvlampe_loft_2
-      - light.gulvlampe_loft_3
       - light.gulvlampe_stue_1
       - light.gulvlampe_stue_2
       - light.gulvlampe_stue_3
-      - light.barnerom_sky
-      - light.gang_nede
-      - light.vaskerom1
-      - light.vaskerom2
-      - light.vaskerom3
-      - light.trapplampe
-      - light.kjokken_benk
-      - light.kjokken_vindu
-      - light.kontor1
-      - light.kontor2
-      - light.kontor3
-      - light.fryserom
-      - light.loft_taklys_1
-      - light.loft_taklys_2
-      - light.barnerom_taklampe
-      - light.kjellerbod
     max_brightness: 35
     min_brightness: 1
 
@@ -378,11 +365,53 @@ switch:
       - light.stue_vindu1
       - light.stue_vindu2
       - light.do_vegglampe
-      - light.barnerom_taklampe
       - light.stue_vindu1
       - light.stue_vindu2
+
+  - platform: circadian_lighting
+    name: kjeller
+    lights_brightness:
+      - light.gang_nede
+      - light.vaskerom1
+      - light.vaskerom2
+      - light.vaskerom3
+      - light.trapplampe
+      - light.fryserom
+      - light.kjellerbod
+    max_brightness: 35
+    min_brightness: 1
+
+  - platform: circadian_lighting
+    name: loft
+    lights_brightness:
+      - light.gulvlampe_loft_1
+      - light.gulvlampe_loft_2
+      - light.gulvlampe_loft_3
       - light.loft_taklys_1
       - light.loft_taklys_2
+    max_brightness: 35
+    min_brightness: 1
+
+    lights_ct:
+      - light.loft_taklys_1
+      - light.loft_taklys_2
+
+  - platform: circadian_lighting
+    name: kjokken   
+    lights_brightness:
+      - light.kjokken_benk
+      - light.kjokken_vindu
+    max_brightness: 35
+    min_brightness: 1
+
+  - platform: circadian_lighting
+    name: kontor
+    lights_brightness:
+      - light.kontor1
+      - light.kontor2
+      - light.kontor3
+    max_brightness: 35
+    min_brightness: 1
 
 zone: !include zones.yaml 
 
@@ -412,6 +441,9 @@ media_player:
 ### Eirikz added Plex platform ###
   - platform: plex
 
+### Eirikz added roku ###
+  - platform: roku
+    scan_interval: 1
 ### Eirikz added Onkyo Platform ###
   - platform: onkyo
     host: !secret onkyoip
@@ -437,7 +469,6 @@ google:
 circadian_lighting:
   interval: 300
   transition: 20
-
 
 ### Eirikz added yaml mode for Lovelace ###
 lovelace:
@@ -467,15 +498,15 @@ binary_sensor:
           {{ is_state('binary_sensor.kjellerdor', 'on') or
              is_state('binary_sensor.garasjedor', 'on') }}
 
-  - platform: template
-    sensors:
-      qnapsmart:
-        friendly_name: "S.M.A.R.T status Asuma"
-        value_template: >-
-          {{ is_state('sensor.asuma_smart_status_drive_1', 'OK')
-             and is_state('sensor.asuma_smart_status_drive_2', 'OK')
-             and is_state('sensor.asuma_smart_status_drive_3', 'OK')
-             and is_state('sensor.asuma_smart_status_drive_4', 'OK') }}
+#  - platform: template
+#    sensors:
+#      qnapsmart:
+#        friendly_name: "S.M.A.R.T status Asuma"
+#        value_template: >-
+#          {{ is_state('sensor.asuma_smart_status_drive_1', 'OK')
+#             and is_state('sensor.asuma_smart_status_drive_2', 'OK')
+#             and is_state('sensor.asuma_smart_status_drive_3', 'OK')
+#             and is_state('sensor.asuma_smart_status_drive_4', 'OK') }}
 
 
 ### Eirikz added IFTTT ###
@@ -521,6 +552,7 @@ telegram_bot:
 googlehome:
   devices:
     - host: !secret googlehomekontorip
+      track_devices: false
 
 ### Eirikz added Google Keep ###
 google_keep:
@@ -535,13 +567,13 @@ climate:
   ip_address: !secret climateip
   token: !secret climatetoken
   mac: !secret climatemac
-  friendly_name: 'Varmepumpe Stue'
+#  friendly_name: 'Varmepumpe Stue'
   debug: True
   poll: True
 
 ### Eirikz added Roku ###
-roku:
-  - host: 192.168.1.39
+#roku:
+#  - host: 192.168.1.39
 
 
 ### Eirikz added utility meter ###
@@ -568,16 +600,40 @@ influxdb:
 
 
 ### Eirikz added tensorflow ###
-#image_processing:
-#  - platform: tensorflow
-#    source:
-#      - entity_id: camera.fremme
-#      - entity_id: camera.bak
-#    model:
-#      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
+image_processing:
+  - platform: tensorflow
+    scan_interval: 10000
+    source:
+      - entity_id: camera.fremme
+      - entity_id: camera.bak
+    model:
+      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
 
 ### Eirikz added ffmpeg ###
 #ffmpeg:
 
 ### Eirikz added stream ###
 stream:
+
+### Eirikz added HLK-SW16 ###
+
+### Eirikz added LIFE360 ###
+life360:
+  accounts:
+    - username: !secret LIFE360_USERNAME
+      password: !secret LIFE360_PASSWORD
+  driving_speed: 30
+  interval_seconds: 10
+  max_gps_accuracy: 200
+  max_update_wait:
+    minutes: 45
+  show_as_state:
+    - driving
+    - moving
+  warning_threshold: 2
+  error_threshold: 3
+
+
+### Eirikz added WWLLN ###
+wwlln:
+  radius: 50
