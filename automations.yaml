@@ -608,8 +608,8 @@
   trigger:
      - platform: state
        entity_id:
-         - camera.fremme
-         - camera.bak
+         - camera.rear
+         - camera.front
   action:
     - service: image_processing.scan
       data_template:

@@ -20,6 +20,12 @@ homeassistant:
 
   customize: !include customize.yaml
 
+### Eirikz added panel iframe ###
+panel_iframe:
+  esphomeyaml:
+    title: 'esphomeyaml'
+    url: 'http://192.168.1.40:6052'
+
 
 system_health:
 
@@ -36,8 +42,8 @@ config:
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
  http:
     base_url: !secret baseurl
-    ssl_certificate: /home/homeassistant/.homeassistant/certificate.pem
-    ssl_key: /home/homeassistant/.homeassistant/privkey.pem
+    ssl_certificate: /config/certificate.pem
+    ssl_key: /config/privkey.pem
     api_password: !secret apipassword
 
 # Checks for available updates
@@ -52,11 +58,11 @@ updater:
 python_script:
 
 ##Eirikz added HACS##
-hacs:
-  token: !secret github_token
+#hacs:
+#  token: !secret github_token
 
 ##Eirikz added breaking changes##
-breaking_changes:
+#breaking_changes:
 
 # Discover some devices automatically
 discovery:
@@ -78,51 +84,51 @@ map:
 sun:
 
 ### Eirikz added input bolean for wakeup light ###
-input_boolean:
-  wakeup:
-    name: 'Enable wakeup light'
-    icon: mdi:power
-    initial: off
+#input_boolean:
+#  wakeup:
+#    name: 'Enable wakeup light'
+#    icon: mdi:power
+#    initial: off
 
 ### Eirikz added boolean for more info ###
-  more_info_vacuum:
-    name: More info
-    initial: 'on'
+#  more_info_vacuum:
+#    name: More info
+#    initial: 'on'
 
 ### Eirikz added start of wakeup light ###
-input_datetime:
-  wakeup_time:
-    name: "Start lights at"
-    has_time: true
-    has_date: false
-    initial: "07:30"
+#input_datetime:
+#  wakeup_time:
+#    name: "Start lights at"
+#    has_time: true
+#    has_date: false
+#    initial: "07:30"
 
-  dateandtime:
-    name: "dateandtime"
-    has_time: false
-    has_date: true
+#  dateandtime:
+#    name: "dateandtime"
+#    has_time: false
+#    has_date: true
 
-input_select:
+#input_select:
 
-  eirik_status_dropdown:
-    name: Eirik
-    options:
-      - Hjemme
-      - Kom akkurat hjem
-      - Dro akkurat ut
-      - Ute
-      - Bortreist
-    initial: Hjemme
+#  eirik_status_dropdown:
+#    name: Eirik
+#    options:
+#      - Hjemme
+#      - Kom akkurat hjem
+#      - Dro akkurat ut
+#      - Ute
+#      - Bortreist
+#    initial: Hjemme
 
-  weronica_status_dropdown:
-    name: Weronica
-    options:
-      - Hjemme
-      - Kom akkurat hjem
-      - Dro akkurat ut
-      - Ute
-      - Bortreist
-    initial: Hjemme
+#  weronica_status_dropdown:
+#    name: Weronica
+#    options:
+#      - Hjemme
+#      - Kom akkurat hjem
+#      - Dro akkurat ut
+#      - Ute
+#      - Bortreist
+#    initial: Hjemme
 
 
 
@@ -160,14 +166,22 @@ logger:
 
 ### Eirikz added Zoneminder platform ###
 camera:
-  - platform: zoneminder
+#  - platform: zoneminder
 
-#  - platform: generic
-#    name: Front
-#    still_image_url: http://192.168.1.95:8123/local/front.jpg
-#    stream_source: rtsp://192.168.1.63:554/stream1
-#    username: admin
-#    password: admin
+  - platform: generic
+    name: Front
+    still_image_url: http://192.168.1.40:8123/local/front.jpg
+    stream_source: rtsp://192.168.1.63:554/stream1
+    username: admin
+    password: admin
+
+
+  - platform: generic
+    name: Rear
+    still_image_url: http://192.168.1.40:8123/local/front.jpg
+    stream_source: rtsp://192.168.1.62:554/stream1
+    username: admin
+    password: admin
 
 ### Eirikz added xiaomi gateway ###
 xiaomi_aqara:
@@ -182,14 +196,14 @@ tellduslive:
   host: !secret telldusip
 
 ### Eirikz added Zoneminder host ###
-zoneminder:
-  host: !secret zmip
-  path: /zm
-  path_zms: /zm/cgi-bin/nph-zms
-  username: !secret zmuser
-  password: !secret zmpass
-  verify_ssl: false
-  ssl: false
+#zoneminder:
+#  host: !secret zmip
+#  path: /zm
+#  path_zms: /zm/cgi-bin/nph-zms
+#  username: !secret zmuser
+#  password: !secret zmpass
+#  verify_ssl: false
+#  ssl: false
 
 ### Eirikz added Google Maps device tracker ###
 #device_tracker:
@@ -212,6 +226,58 @@ device_tracker:
       werofon: !secret werofon
 
 light:
+
+### Eirikz added zigbee2mqtt groups ###
+
+  - platform: mqtt
+    schema: json
+    name: kjellergruppe
+    command_topic: "zigbee2mqtt/kjellergruppe/set"
+    state_topic: "zigbee2mqtt/kjellergruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
+
+  - platform: mqtt
+    schema: json
+    name: kjokkengruppe
+    command_topic: "zigbee2mqtt/kjokkengruppe/set"
+    state_topic: "zigbee2mqtt/kjellergruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
+
+  - platform: mqtt
+    schema: json
+    name: loftgruppe
+    command_topic: "zigbee2mqtt/loftgruppe/set"
+    state_topic: "zigbee2mqtt/loftgruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
+
+  - platform: mqtt
+    schema: json
+    name: eirikkontorgruppe
+    command_topic: "zigbee2mqtt/eirikkontorgruppe/set"
+    state_topic: "zigbee2mqtt/eirikkontorgruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
+
+  - platform: mqtt
+    schema: json
+    name: alvagruppe
+    command_topic: "zigbee2mqtt/alvagruppe/set"
+    state_topic: "zigbee2mqtt/alvagruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
 
 ### Eirikz added Mi-Light ###
 
@@ -244,7 +310,7 @@ light:
     name: dim_oppover_dagtid
     entities:
       - light.stuebord
-      - light.yttergang_vegg1
+      - light.stue_yttergang
       - light.kjokken_benk
       - light.kjokken_vinduet
 
@@ -252,7 +318,7 @@ light:
     name: Stue
     entities:
       - light.stuebord
-      - light.yttergang_vegg1
+      - light.stue_yttergang
       - light.stue_vindu1
       - light.stue_vindu2
       - light.stalampe
@@ -269,7 +335,8 @@ light:
       - light.kjokken_benk
       - light.kjokken_vindu
       - light.kjokkenborddimmer
-      - light.kjokkenbenk
+      - light.kjokkenbenk_2
+      - light.kjokken_taklampe
 
   - platform: group
     name: Soverom
@@ -282,11 +349,12 @@ light:
     name: Kjeller
     entities:
       - light.fryserom
-      - light.trapplampe
+      - light.trappelampe
       - light.vaskerom1
       - light.vaskerom2
       - light.vaskerom3
       - light.gang_nede
+      - light.kjellerbod
 
   - platform: group
     name: Loft
@@ -308,9 +376,9 @@ light:
     name: Oppholdsrom dagtid
     entities:
       - light.kjokken_benk
-      - light.kjokken_vinduet
+      - light.kjokken_vindu
       - light.stuebord
-      - light.yttergang_vegg1
+      - light.stue_yttergang
 
   - platform: group
     name: Oppholdsrom natt
@@ -323,7 +391,7 @@ light:
       - light.do_hylle
       - light.do_vegglampe
 
-
+ 
 ### Eirikz added Yeelight platform ###
 yeelight:
   devices:
@@ -344,7 +412,7 @@ switch:
     name: stue
     lights_brightness:
       - light.stuebord
-      - light.yttergang_vegg1
+      - light.stue_yttergang
       - light.do_hylle
       - light.do_vegglampe
       - light.stue_bikkjelampe
@@ -359,7 +427,7 @@ switch:
 
     lights_ct:
       - light.stuebord
-      - light.yttergang_vegg1
+      - light.stue_yttergang
       - light.do_hylle
       - light.stue_bikkjelampe
       - light.stue_vindu1
@@ -375,7 +443,7 @@ switch:
       - light.vaskerom1
       - light.vaskerom2
       - light.vaskerom3
-      - light.trapplampe
+      - light.trappelampe
       - light.fryserom
       - light.kjellerbod
     max_brightness: 35
@@ -413,6 +481,15 @@ switch:
     max_brightness: 35
     min_brightness: 1
 
+#  - platform: flux
+#    lights:
+#      - light.alle
+#    name: Flux
+#    start_time: '7:00'
+#    stop_time: '23:00'
+#    mode: xy
+#    transition: 30
+#    interval: 60
 zone: !include zones.yaml 
 
 scene: !include scenes.yaml
@@ -443,7 +520,7 @@ media_player:
 
 ### Eirikz added roku ###
   - platform: roku
-    scan_interval: 1
+    scan_interval: 10
 ### Eirikz added Onkyo Platform ###
   - platform: onkyo
     host: !secret onkyoip
@@ -468,7 +545,7 @@ google:
 ### Eirikz added Circadian Lighting Custom Component ###
 circadian_lighting:
   interval: 300
-  transition: 20
+  transition: 5
 
 ### Eirikz added yaml mode for Lovelace ###
 lovelace:
@@ -510,19 +587,19 @@ binary_sensor:
 
 
 ### Eirikz added IFTTT ###
-ifttt:
-  key: !secret iftttkey
+#ifttt:
+#  key: !secret iftttkey
 
 
 notify:
   - name: 'Eirikz Telegram'
     platform: telegram
     chat_id: !secret eirikzchatid
-
+#
   - name: 'W Telegram'
     platform: telegram
     chat_id: !secret wchatid
-
+#
   - name: 'WE Telegram'
     platform: group
     services:
@@ -549,21 +626,21 @@ telegram_bot:
       - !secret wchatid
 
 ### Eirikz added Google Home ###
-googlehome:
-  devices:
-    - host: !secret googlehomekontorip
-      track_devices: false
+#googlehome:
+#  devices:
+#    - host: !secret googlehomekontorip
+#      track_devices: false
 
 ### Eirikz added Google Keep ###
-google_keep:
-  username: !secret googlemail
-  password: !secret google_pwd
-  list_name: "Home Assistant Generert Liste"
+#google_keep:
+#  username: !secret googlemail
+#  password: !secret google_pwd
+#  list_name: "Home Assistant Generert Liste"
 
 ### Eirikz added Samsung AC ###
 climate:
   platform: climate_ip
-  config_file: '/home/homeassistant/.homeassistant/custom_components/climate_ip/samsung_2878.yaml'
+  config_file: '/config/custom_components/climate_ip/samsung_2878.yaml'
   ip_address: !secret climateip
   token: !secret climatetoken
   mac: !secret climatemac
@@ -577,40 +654,40 @@ climate:
 
 
 ### Eirikz added utility meter ###
-utility_meter:
-  torketrommel_daglig:
-    source: sensor.torketrommel_power_2
-    cycle: daily
+#utility_meter:
+#  torketrommel_daglig:
+#    source: sensor.torketrommel_power_2
+#    cycle: daily
 
-  torketrommel_manedlig:
-    source: sensor.torketrommel_power_2
-    cycle: monthly
+#  torketrommel_manedlig:
+#    source: sensor.torketrommel_power_2
+#    cycle: monthly
 
-  vvb_manedlig:
-    source: sensor.vvb_dagens_forbruk
-    cycle: monthly
+#  vvb_manedlig:
+#    source: sensor.vvb_dagens_forbruk
+#    cycle: monthly
 
-  drivhus_manedlig:
-    source: sensor.drivhusvarme_energy_today
-    cycle: monthly
+#  drivhus_manedlig:
+#    source: sensor.drivhusvarme_energy_today
+#    cycle: monthly
 
 ### Eirikz added influx ###
-influxdb:
-  host: 192.168.1.46
+#influxdb:
+#  host: 192.168.1.46
 
 
 ### Eirikz added tensorflow ###
-image_processing:
-  - platform: tensorflow
-    scan_interval: 10000
-    source:
-      - entity_id: camera.fremme
-      - entity_id: camera.bak
-    model:
-      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
+#image_processing:
+#  - platform: tensorflow
+#    scan_interval: 10000
+#    source:
+#      - entity_id: camera.rear
+#      - entity_id: camera.front
+#    model:
+#      graph: /home/homeassistant/.homeassistant/tensorflow/frozen_inference_graph.pb
 
 ### Eirikz added ffmpeg ###
-#ffmpeg:
+ffmpeg:
 
 ### Eirikz added stream ###
 stream:
@@ -637,3 +714,16 @@ life360:
 ### Eirikz added WWLLN ###
 wwlln:
   radius: 50
+
+
+### Eirikz added mqtt for zigbee2mqtt ###
+mqtt:
+  discovery: true
+  broker: 192.168.1.40
+  birth_message:
+    topic: 'hass/status'
+    payload: 'online'
+  will_message:
+    topic: 'hass/status'
+    payload: 'offline'
+

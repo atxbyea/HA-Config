@@ -40,3 +40,10 @@
     ignore_availability: true
     name: Contacts
     track: true
+
+- cal_id: no.danish#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: helligdager_i_danmark
+    ignore_availability: true
+    name: Helligdager i Danmark
+    track: true

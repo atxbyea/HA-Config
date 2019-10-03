@@ -4,10 +4,8 @@
           state: on
         light.kjokken:
           state: on
-          transition: 3
         light.stue:
           state: on
-          transition: 3
         light.dim:
           state: on
         media_player.stuetv:

@@ -12,9 +12,9 @@
     realtime: true
     region: 'EU'
 
-  - platform: tautulli
-    api_key: !secret tautulli
-    host: !secret tautullihost
+#  - platform: tautulli
+#    api_key: !secret tautulli
+#    host: !secret tautullihost
 
   - platform: template
     sensors:
@@ -109,10 +109,10 @@
       vacuum_accessories:
         value_template: 'Vedlikehold'
 
-  - platform: qbittorrent
-    url: !secret qbittorrenthost
-    username: !secret qbittorrentuser
-    password: !secret qbittorrentpassword
+#  - platform: qbittorrent
+#    url: !secret qbittorrenthost
+#    username: !secret qbittorrentuser
+#    password: !secret qbittorrentpassword
 
   - platform: seventeentrack
     username: !secret seventeenuser
@@ -204,8 +204,8 @@
         value_template: "{{ states('sensor.torketrommel_daglig') | float / 1000 }}"
         unit_of_measurement: 'kWh'
 
-  - platform: zoneminder
-    include_archived: false
+#  - platform: zoneminder
+#    include_archived: false
 
   - platform: template
     sensors:
@@ -216,13 +216,13 @@
         friendly_name: 'Eirik i bevegelse'
         value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'
 
-  - platform: plex
-    host: 192.168.1.36
-    port: 32400
-    name: Temari
-    ssl: true
-    verify_ssl: false
-    token: !secret plextoken
+#  - platform: plex
+#    host: 192.168.1.36
+#    port: 32400
+#    name: Temari
+#    ssl: true
+#    verify_ssl: false
+#    token: !secret plextoken
 
 #  - platform: tensorflow
 #    scan_interval: 10000
