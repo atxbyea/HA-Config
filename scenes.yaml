@@ -68,3 +68,78 @@
         light.loft_taklys_2:
           state: off
 
+
+  - name: Full
+    entities:
+        light.loft:
+            state: on
+            brightness: 254
+
+  - name: Femti
+    entities:
+        light.loft:
+            state: on
+            brightness: 128
+
+  - name: Ti
+    entities:
+        light.loft:
+            state: on
+            brightness: 25
+
+  - name: Av
+    entities:
+        light.loft:
+            state: off
+
+  - name: KjokkenTi
+    entities:
+        light.kjokken:
+            state: on
+            brightness: 25
+        light.kjokken_benke_underlys:
+            state: on
+            xy_color: [0.54, 0.39]
+
+  - name: KjokkenTretti
+    entities:
+        light.kjokken:
+            state: on
+            brightness: 75
+        light.kjokken_benke_underlys:
+            state: on
+            xy_color: [0.54, 0.39]
+
+  - name: KjokkenSeksti
+    entities:
+        light.kjokken:
+            state: on
+            brightness: 150
+        light.kjokken_benke_underlys:
+            state: on
+            xy_color: [0.42, 0.39]
+
+  - name: KjokkenAtti
+    entities:
+        light.kjokken:
+            state: on
+            brightness: 200
+        light.kjokken_benke_underlys:
+            state: on
+#            xy_color: [0.53, 0.41]
+            color_temp: 500
+
+  - name: KjokkenHundre
+    entities:
+        light.kjokken:
+            state: on
+            brightness: 254 
+        light.kjokken_benke_underlys:
+            state: on
+#            xy_color: [0.53, 0.41]
+            color_temp: 500
+
+  - name: KjokkenAv
+    entities:
+        light.kjokken:
+          state: off

@@ -42,14 +42,25 @@ views:
             notifications: hide
             clock_format: 24
             swipe: true
-
-          - type: vertical-stack
+          - type: horizontal-stack
             cards:
-             - type: weather-forecast
-               entity: weather.dark_sky
+              - type: weather-forecast
+                entity: weather.dark_sky
+              - type: glance
+                entities:
+                  - sensor.temperatur_alva
+                  - sensor.soverom_temperatur
+                  - sensor.temperatur_bod
+                  - sensor.temperatur_garasje
+          - type: horizontal-stack
+            cards:
              - type: custom:simple-thermostat
                entity: climate.climate_ip_samsungrac
                step_size: 1
+             - type: glance
+               entities:
+                 - sensor.inne_dobbelsensor_temperature
+                 - sensor.ute_dobbelsensor_temperature
 
   - path: media
     title: Media

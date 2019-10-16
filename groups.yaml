@@ -11,10 +11,12 @@ freenas:
    name: FreeNAS Server Monitor
    entities:
      - sensor.versjon
-#     - sensor.fn_alert_level
-#     - sensor.fn_alert_message
-#     - sensor.fn_storage_report
+     - sensor.fn_alerts
+     - sensor.fn_beskjed
+     - sensor.fn_storage_report
      - sensor.fn_storage_pct_used
+     - sensor.fn_storage4tb_pct_used
+     - sensor.fn_storage4tb_report
 
 #qnap:
 #   name: QNAP Server Monitor

@@ -6,7 +6,7 @@
     event_type: xiaomi_aqara.click
     event_data:
       entity_id: binary_sensor.stue_veggbryter
-      click_type: single
+      click_type: single  
   action:
     - service: scene.turn_on
       entity_id: scene.dim_oppover_dagtid
@@ -91,12 +91,11 @@
         step_in_level_pct: 1
 
 ### Eirikz added automatic turn on and off lights in the W.C and only turn on small light at night ###
-
 - alias: 'Skru på dolys'
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.dodor
+    entity_id: binary_sensor.dodor_contact
     from: 'off'
     to: 'on'
   action:
@@ -107,7 +106,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.dodor
+    entity_id: binary_sensor.dodor_contact
     from: 'off'
     to: 'on'
   condition:
@@ -123,7 +122,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.dodor
+    entity_id: binary_sensor.dodor_contact
     from: 'on'
     to: 'off'
     for:
@@ -153,7 +152,7 @@
     from: 'on'
     to: 'off'
     for:
-      minutes: 2
+      minutes: 5
   action:
     - service: light.turn_off
       entity_id: light.kjeller
@@ -248,7 +247,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.kjellerbod
+    entity_id: binary_sensor.kjeller_boddor_contact
     from: 'off'
     to: 'on'
   action:
@@ -262,7 +261,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.kjellerbod
+    entity_id: binary_sensor.kjeller_boddor_contact
     from: 'on'
     to: 'off'
   action:
@@ -710,3 +709,111 @@
     entity_id: light.kjokken_vindu
   - service: light.turn_on
     entity_id: light.stuebord
+
+
+- alias: 'test eirikz z2m'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/0x00178801067347bc'
+  condition:
+    condition: template
+    value_template: '{{ "off-press" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_off
+      entity_id: light.kontor
+
+
+- alias: 'test eirikz z2m2'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/0x00178801067347bc'
+  condition:
+    condition: template
+    value_template: '{{ "on-press" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      entity_id: light.kontor
+
+
+
+- alias: 'test eirikz z2m3'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/0x00178801067347bc'
+  condition:
+    condition: template
+    value_template: '{{ "up-press" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      data_template:
+        entity_id: light.kontor
+        brightness_pct: >
+          {% if state_attr('light.kontor' , 'brightness_pct') < 90 %}
+            {{ state_attr('light.kontor' , 'brightness_pct') + 10 }}
+          {% else %} 100 {% endif %}
+
+#- alias: 'test eirikz z2m4'
+#  trigger:
+#    platform: mqtt
+#    topic: 'zigbee2mqtt/0x00178801067347bc'
+#  condition:
+#    condition: template
+#    value_template: '{{ "down-press" == trigger.payload_json.action }}'
+#  action:
+#    - service: light.turn_on
+#      data_template:
+#        entity_id: light.kontor
+#        brightness_pct: >
+#          {% if state_attr('light.kontor' , 'brightness_pct') < 101 %}
+#            {{ state_attr('light.kontor' , 'brightness_pct') - 10 }}
+#          {% else %} 0 {% endif %}
+
+
+
+
+- alias: Lys loft
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.loft_veggbryter
+      click_type: single
+  action:
+    - service: input_select.select_next
+      entity_id: input_select.loftlys
+    - service: scene.turn_on
+      data_template:
+        entity_id: 'scene.{{ states.input_select.loftlys.state }}'
+
+
+
+- alias : Lys Kjøkken
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Kjøkken Minibryter'
+  condition:
+    condition: template
+    value_template: '{{ "single" == trigger.payload_json.click }}'
+  action:
+    - service: input_select.select_next
+      entity_id: input_select.kjokken
+    - service: scene.turn_on
+      data_template:
+        entity_id: 'scene.{{ states.input_select.kjokken.state }}'
+
+
+- alias : Lys Kjøkken Av
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Kjøkken Minibryter'
+  condition:
+    condition: template
+    value_template: '{{ "double" == trigger.payload_json.click }}'
+  action:
+    - service: scene.turn_on
+      entity_id: scene.kjokkenav
+    - service: input_select.select_option
+      data:      
+        entity_id: input_select.kjokken
+        option: KjokkenHundre
+

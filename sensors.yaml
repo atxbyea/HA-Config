@@ -148,13 +148,39 @@
     headers:
       Content-Type: application/json
 
+
   - platform: template    
     sensors:
       fn_storage_pct_used:
         friendly_name: "Prosent Full"
         value_template: '{{ states.sensor.mirai.attributes["used_pct"].title() }}'
         entity_id: sensor.mirai
+
+  - platform: rest
+    name: Mirai4tb
+    json_attributes:
+      - name
+      - status
+      - used_pct
+      - is_decrypted
+    resource: !secret mirai_rest_storage4tb
+    value_template: '{{ value_json.status }}'
+    username: !secret fn_user
+    password: !secret fn_password
+    authentication: basic
+    headers:
+      Content-Type: application/json
+
+
+  - platform: template
+    sensors:
+      fn_storage4tb_pct_used:
+        friendly_name: "Prosent Full"
+        value_template: '{{ states.sensor.mirai.attributes["used_pct"].title() }}'
+        entity_id: sensor.mirai4tb
+
   
+
   - platform: rest
     name: Versjon
     json_attributes:
@@ -168,6 +194,27 @@
     authentication: basic
     headers:
       Content-Type: application/json
+
+  - platform: rest
+    name: FN_alert
+    resource: !secret mirai_alerts
+    value_template: '{{ value_json.objects[0].level }}'
+    username: !secret fn_user
+    password: !secret fn_password
+    authentication: basic
+    headers:
+      Content-Type: application/json
+
+  - platform: rest
+    name: FN_beskjed
+    resource: !secret mirai_beskjed
+    value_template: '{{ value_json.objects[0].message }}'
+    username: !secret fn_user
+    password: !secret fn_password
+    authentication: basic
+    headers:
+      Content-Type: application/json
+
 
   - platform: template
     sensors:
