@@ -1,7 +1,3 @@
-#  - name: Hjemme
-#    latitude: 60.108663
-#    longitude: 11.368374
-#  
   - name: FBU
     latitude: 59.894127
     longitude: 10.628621 
