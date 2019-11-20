@@ -1,0 +1,30 @@
+path: temp_mobile
+title: Temp
+icon: 'mdi:temperature-celsius'
+#panel: true
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards:
+      - type: weather-forecast
+        entity: weather.dark_sky
+      - type: glance
+        entities:
+          - entity: sensor.temperatur_alva
+            name: Alva
+          - entity: sensor.soverom_temperatur
+            name: Soverom
+          - entity: sensor.temperatur_bod
+            name: Bod
+          - entity: sensor.temperatur_garasje
+            name: Garasje
+      - type: custom:simple-thermostat
+        entity: climate.varmepumpe_stue
+        step_size: 1
+      - type: glance
+        entities:
+          - sensor.inne_dobbelsensor_temperature
+          - sensor.ute_dobbelsensor_temperature
+

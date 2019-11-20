@@ -1,0 +1,13 @@
+path: drivhus
+title: Drivhus
+icon: 'mdi:flower'
+cards:
+  - type: vertical-stack
+    cards:
+      - type: glance
+        title: Temperaturer
+        entities:
+          - entity: sensor.temperature_drivhus
+            name: Drivhus Aqara
+          - entity: sensor.drivhusny_temperature
+            name: Drivhus 433

@@ -1,0 +1,17 @@
+path: Kamera_mobile
+title: Kamera
+icon: 'mdi:cctv'
+panel: true
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards:
+      - type: picture-entity
+        entity: camera.fremme
+        camera_view: live
+
+      - type: picture-entity
+        entity: camera.bak
+        camera_view: live

@@ -1,0 +1,22 @@
+path: eirik_mobile
+title: Eirik
+icon: 'mdi:briefcase'
+panel: true
+visible:
+  - user: b2d109cb37f0446d8bf837dd59a06e57
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: 'custom:travel-time-card'
+        title: 'Reisetid'
+        entities:
+         - entity: sensor.eirik_til_hjem
+         - entity: sensor.hjemmefra_til_jobb
+      - type: map
+        default_zoom: 8
+        aspect_ratio: 16:9
+        entities:
+          - device_tracker.eirik_mobil
+          - zone.hjemme
+          - zone.FBU
+

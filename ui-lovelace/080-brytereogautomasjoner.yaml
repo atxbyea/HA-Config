@@ -1,0 +1,19 @@
+path: SwAndAut
+title: Brytere og Automasjoner
+icon: 'mdi:toggle-switch'
+show_header_toggle: true
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: custom:auto-entities
+        card:
+          type: entites
+        filter:
+          include:
+            - domain: automation
+      - type: custom:auto-entities
+        card:
+          type: entities
+        filter:
+          include:
+            - domain: switch

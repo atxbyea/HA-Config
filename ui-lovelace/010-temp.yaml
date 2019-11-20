@@ -1,0 +1,29 @@
+path: default_view
+title: Temp
+icon: 'mdi:temperature-celsius'
+panel: true
+visible: 
+  - user: b2d109cb37f0446d8bf837dd59a06e57
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: weather-forecast
+            entity: weather.dark_sky
+          - type: glance
+            entities:
+              - sensor.temperatur_alva
+              - sensor.soverom_temperatur
+              - sensor.temperatur_bod
+              - sensor.temperatur_garasje
+      - type: horizontal-stack
+        cards:
+          - type: custom:simple-thermostat
+            entity: climate.varmepumpe_stue
+            step_size: 1
+          - type: glance
+            entities:
+              - sensor.inne_dobbelsensor_temperature
+              - sensor.ute_dobbelsensor_temperature
+

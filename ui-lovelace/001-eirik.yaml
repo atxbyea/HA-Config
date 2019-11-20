@@ -1,0 +1,32 @@
+path: eirikz
+title: Eirikz
+icon: 'mdi:cowboy'
+panel: true
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: switch.garasjedor
+            name: Garasjeport
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: light.eirik
+            name: Kontorlys
+            tap_action:
+              action: toggle
+
+      - type: horizontal-stack
+        cards:
+          - type: glance
+            entities:
+              - entity: binary_sensor.garasjeport_sensor
+                name: Garasje
+                icon: 'mdi:garage'
+              - entity: sensor.drivhusny_temperature
+                name: Drivhus
+                icon: 'mdi:flower'

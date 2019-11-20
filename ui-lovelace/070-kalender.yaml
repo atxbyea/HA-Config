@@ -1,0 +1,11 @@
+path: Kalender
+title: Kalender
+icon: 'mdi:calendar'
+cards:
+  - type: vertical-stack
+    cards:
+      - entities:
+          - calendar.eirikzhassgmailcom
+          - calendar.calendar
+        cards: null
+        type: 'custom:calendar-card'

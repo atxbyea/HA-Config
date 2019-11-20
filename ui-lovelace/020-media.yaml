@@ -1,0 +1,54 @@
+path: media
+title: Media
+icon: 'mdi:music'
+panel: true
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards: 
+      - entity: media_player.spotify
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power: true
+
+      - entity: media_player.w_kontor_mini
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.stueforsterker
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.kjokken
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.sasuke_2
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false

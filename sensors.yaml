@@ -1,6 +1,6 @@
   - platform: waze_travel_time
     name: Eirik til Hjem
-    origin: device_tracker.eirik_mobil
+    origin: device_tracker.life360_eirik_zakariassen
     destination: zone.home
     realtime: true
     region: 'EU'
@@ -12,9 +12,9 @@
     realtime: true
     region: 'EU'
 
-#  - platform: tautulli
-#    api_key: !secret tautulli
-#    host: !secret tautullihost
+  - platform: tautulli
+    api_key: !secret tautulli
+    host: !secret tautullihost
 
   - platform: template
     sensors:
@@ -109,29 +109,15 @@
       vacuum_accessories:
         value_template: 'Vedlikehold'
 
-#  - platform: qbittorrent
-#    url: !secret qbittorrenthost
-#    username: !secret qbittorrentuser
-#    password: !secret qbittorrentpassword
+  - platform: qbittorrent
+    url: !secret qbittorrenthost
+    username: !secret qbittorrentuser
+    password: !secret qbittorrentpassword
 
   - platform: seventeentrack
     username: !secret seventeenuser
     password: !secret seventeenpass
 
-#  - platform: qnap
-#    host: !secret qnaphost
-#    port: 443
-#    ssl: true
-#    verify_ssl: false
-#    username: !secret qnapuser
-#    password: !secret qnappassword
-#    monitored_conditions:
-#      - status
-#      - system_temp
-#      - network_tx
-#      - network_rx
-#      - volume_percentage_used
-#      - drive_smart_status
 
   - platform: rest
     name: Mirai
@@ -176,7 +162,7 @@
     sensors:
       fn_storage4tb_pct_used:
         friendly_name: "Prosent Full"
-        value_template: '{{ states.sensor.mirai.attributes["used_pct"].title() }}'
+        value_template: '{{ states.sensor.mirai4tb.attributes["used_pct"].title() }}'
         entity_id: sensor.mirai4tb
 
   
@@ -221,9 +207,9 @@
       eirik_status:
         value_template: '{{ states.input_select.eirik_status_dropdown.state }}'
         friendly_name: 'Eirik'
-      weronica_status:
-        value_template: '{{ states.input_select.weronica_status_dropdown.state }}'
-        friendly_name: 'Weronica'
+      w_status:
+        value_template: '{{ states.input_select.w_status_dropdown.state }}'
+        friendly_name: 'W'
 
 
   - platform: template
@@ -251,25 +237,44 @@
         value_template: "{{ states('sensor.torketrommel_daglig') | float / 1000 }}"
         unit_of_measurement: 'kWh'
 
-#  - platform: zoneminder
-#    include_archived: false
+
+#  - platform: template
+#    sensors:
+#      eirik_batteri:
+#        friendly_name: 'Eirik Batteri'
+#        value_template: '{{ states.device_tracker.eirik_mobil.attributes.battery_level }} %'
+#      eirik_motion:
+#        friendly_name: 'Eirik i bevegelse'
+#        value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'
+
+
+  - platform: template
+    sensors:
+      stuetv_source:
+        friendly_name: "Stuetv source"
+        value_template: "{{ state_attr('media_player.stuetv', 'source') }}"
+
 
   - platform: template
     sensors:
       eirik_batteri:
-        friendly_name: 'Eirik Batteri'
-        value_template: '{{ states.device_tracker.eirik_mobil.attributes.battery_level }} %'
-      eirik_motion:
-        friendly_name: 'Eirik i bevegelse'
-        value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'
+        friendly_name: "Eirik Batteri"
+        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'battery') }}"
 
-#  - platform: plex
-#    host: 192.168.1.36
-#    port: 32400
-#    name: Temari
-#    ssl: true
-#    verify_ssl: false
-#    token: !secret plextoken
+  - platform: template
+    sensors:
+      eirik_lader:
+        friendly_name: "Eirik Lader"
+        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'battery_charging') }}"
 
-#  - platform: tensorflow
-#    scan_interval: 10000
+  - platform: template
+    sensors:
+      eirik_kjorer:
+        friendly_name: "Eirik Kjører"
+        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'driving') }}"
+
+  - platform: template
+    sensors:
+      eirik_hastighet:
+        friendly_name: "Eirik hastighet"
+        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'raw_speed') }}"

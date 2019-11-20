@@ -1,0 +1,17 @@
+path: Multimedia
+title: Multimedia
+icon: 'mdi:video-vintage'
+panel: true
+cards:
+  - type: vertical-stack
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            unit: 'kBps'
+            entity: sensor.qbittorrent_up_speed
+          - type: gauge
+            unit: 'kBps'
+            entity: sensor.qbittorrent_down_speed
+          - type: gauge
+            entity: sensor.tautulli

@@ -3,8 +3,6 @@ wakeuplight:
   control: hidden
   entities:
     - input_datetime.wakeup_time
-#    - input_boolean.wakeup_enabled
-#    - input_boolean.wakeup_weekend
 
 
 freenas:
@@ -18,26 +16,11 @@ freenas:
      - sensor.fn_storage4tb_pct_used
      - sensor.fn_storage4tb_report
 
-#qnap:
-#   name: QNAP Server Monitor
-#   entities:
-#     - sensor.asuma_status
-#     - sensor.asuma_temperature
-#     - sensor.asuma_volume_used_volume_1
-#     - sensor.asuma_smart_status_drive_1
-#     - sensor.asuma_smart_status_drive_2
-#     - sensor.asuma_smart_status_drive_3
-#     - sensor.asuma_smart_status_drive_4
-#     - sensor.asuma_network_up_eth0
-#     - sensor.asuma_network_down_eth0
-#     - sensor.asuma_network_up_eth1
-#     - sensor.asuma_network_down_eth1
-
 folk_status:
   name: Status på folk
   entities:
     - sensor.eirik_status
-    - sensor.weronica_status
+    - sensor.w_status
 
 circadian:
   name: circadian gruppe
@@ -47,3 +30,4 @@ circadian:
     - switch.circadian_lighting_loft
     - switch.circadian_lighting_kontor
     - switch.circadian_lighting_kjokken
+    - switch.circadian_lighting_do

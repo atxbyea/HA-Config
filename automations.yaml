@@ -197,17 +197,17 @@
 
 ### Eirikz added wireless button to bedside lamps ###
 
-- alias: 'Skru av og på soverom Weronica'
+- alias: 'Skru av og på soverom W'
   hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
     event_data:
-      entity_id: binary_sensor.soverom_bryter_weronica
+      entity_id: binary_sensor.soverom_bryter_w
       click_type: single
   action:
     service: light.toggle
-    entity_id: light.soverom_weronica_seng
+    entity_id: light.soverom_w
 
 - alias: 'Skru av og på soverom Eirik'
   hide_entity: true
@@ -247,7 +247,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.kjeller_boddor_contact
+    entity_id: binary_sensor.boddor_contact
     from: 'off'
     to: 'on'
   action:
@@ -261,7 +261,7 @@
   hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.kjeller_boddor_contact
+    entity_id: binary_sensor.boddor_contact
     from: 'on'
     to: 'off'
   action:
@@ -311,11 +311,11 @@
 #    platform: zone
 #    event: leave
 #    zone: zone.home
-#    entity_id: device_tracker.eirik_mobil
+#    entity_id: device_tracker.life360_eirik_zakariassen
 #  condition:
 #    conditions:
 #      - condition: state
-#        entity_id: device_tracker.werofon
+#        entity_id: device_tracker.life360_weronica
 #        state: 'not_home'
 #  action:
 #    service: notify.w_telegram
@@ -332,7 +332,7 @@
 #  condition:
 #    conditions:
 #      - condition: state
-#        entity_id: device_tracker.eirik_mobil
+#        entity_id: device_tracker.life360_eirik_zakariassen
 #        state: 'not_home'
 #  action:
 #    service: notify.w_telegram       
@@ -350,7 +350,7 @@
 #  condition:
 #    conditions:
 #      - condition: state
-#        entity_id: device_tracker.eirik_mobil
+#        entity_id: device_tracker.life360_eirik_zakariassen
 #        state: 'not_home'
 #  action:
 #    service: notify.w_telegram
@@ -368,7 +368,7 @@
 #  condition:
 #    conditions:
 #      - condition: state
-#        entity_id: device_tracker.eirik_mobil
+#        entity_id: device_tracker.life360_eirik_zakariassen
 #        state: 'not_home'
 #  action:
 #    service: notify.w_telegram       
@@ -380,7 +380,7 @@
 #- alias: 'Eirik ankommer FBU'
 #  trigger:
 #    platform: state
-#    entity_id: device_tracker.eirik_mobil
+#    entity_id: device_tracker.life360_eirik_zakariassen
 #    state: FBU
 #    for:
 #      minutes: 5
@@ -392,7 +392,7 @@
 #- alias: 'Eirik ankommer Gardermoen'
 #  trigger:
 #    platform: state
-#    entity_id: device_tracker.eirik_mobil
+#    entity_id: device_tracker.life360_eirik_zakariassen
 #    state: Gardermoen
 #    for:
 #      minutes: 5
@@ -406,7 +406,7 @@
 - alias: 'Sett Eirik som akkurat kommet hjem'
   trigger:
     - platform: state
-      entity_id: device_tracker.eirik_mobil
+      entity_id: device_tracker.life360_eirik_zakariassen
       from: 'away'
       to: 'home'
   action:
@@ -436,7 +436,7 @@
 - alias: 'Sett Eirik som akkurat dratt'
   trigger:
     - platform: zone
-      entity_id: device_tracker.eirik_mobil
+      entity_id: device_tracker.life360_eirik_zakariassen
       zone: 'zone.home'
       event: 'leave'
   action:
@@ -473,79 +473,79 @@
         option: 'Bortreist'
 
 
-- alias: 'Sett Weronica som akkurat kommet hjem'
+- alias: 'Sett W som akkurat kommet hjem'
   trigger:
     - platform: state
-      entity_id: device_tracker.werofon
+      entity_id: device_tracker.life360_weronica
       from: 'not_home'
       to: 'home'
   action:
     - service: input_select.select_option
       data:
-        entity_id: input_select.weronica_status_dropdown
+        entity_id: input_select.w_status_dropdown
         option: 'Kom akkurat hjem'
 
-- alias: 'Sett Weronica som Hjemme'
+- alias: 'Sett W som Hjemme'
   trigger:
     - platform: state
-      entity_id: input_select.weronica_status_dropdown
+      entity_id: input_select.w_status_dropdown
       to: 'home'
       for:
         minutes: 10
     - platform: state
-      entity_id: input_select.weronica_status_dropdown
+      entity_id: input_select.w_status_dropdown
       from: 'Dro akkurat ut'
       to: 'Kom akkurat hjem'
   condition:
   action:
     - service: input_select.select_option
       data:
-        entity_id: input_select.weronica_status_dropdown
+        entity_id: input_select.w_status_dropdown
         option: 'Hjemme'
 
-- alias: 'Sett Weronica som akkurat dratt'
+- alias: 'Sett W som akkurat dratt'
   trigger:
     - platform: state
-      entity_id: device_tracker.werofon
+      entity_id: device_tracker.life360_weronica
       from: 'home'
       to: 'not_home'
   action:
     - service: input_select.select_option
       data:
-        entity_id: input_select.weronica_status_dropdown
+        entity_id: input_select.w_status_dropdown
         option: 'Dro akkurat ut'
 
-- alias: 'Sett Weronica som borte'
+- alias: 'Sett W som borte'
   trigger:
     - platform: state
-      entity_id: input_select.weronica_status_dropdown
+      entity_id: input_select.w_status_dropdown
       to: 'Dro akkurat ut'
       for:
         minutes: 10
   action:
     - service: input_select.select_option
       data:
-        entity_id: input_select.weronica_status_dropdown
+        entity_id: input_select.w_status_dropdown
         option: 'Ute'
 
 
-- alias: 'Sett Weronica som bortreist'
+- alias: 'Sett W som bortreist'
   trigger:
     - platform: state
-      entity_id: input_select.weronica_status_dropdown
+      entity_id: input_select.w_status_dropdown
       to: 'Ute'
       for:
         hours: 24
   action:
     - service: input_select.select_option
       data_template:
-        entity_id: input_select.weronica_status_dropdown
+        entity_id: input_select.w_status_dropdown
         option: 'Bortreist'
 
 
 ### Eirikz added switch to toggle on and off the babycam ###
 
-- alias: 'Toggle babycam'
+- alias: 'Matlaging'
   hide_entity: true
   trigger:
     platform: event
@@ -554,8 +554,23 @@
       entity_id: binary_sensor.babycam_bryter
       click_type: single
   action:
-    - service: switch.toggle
-      entity_id: switch.babycam
+    - service: switch.turn_off
+      entity_id: switch.circadian_lighting_kjokken
+    - service: light.turn_on
+      data:
+        entity_id: light.kjokken
+        brightness: 200
+
+- alias: 'Matlaging ferdig'
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.babycam_bryter
+      click_type: double
+  action:
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_kjokken
 
 
 ### Eirikz playing with xiaomi cube ###
@@ -573,32 +588,32 @@
         message: "Alva og mamma er så søte"
 
 ### Eirikz playing with streams ###
-- alias: 'Front stream with motion'
-  trigger:
-  - platform: state
-    entity_id: camera.fremme
-    from: 'idle'
-  action:
-  - service: camera.play_stream
-    data:
-      entity_id: camera.front
-      media_player: media_player.kjokken
-  - service: camera.play_stream
-    data: 
-      entity_id: camera.front
-      media_player: media_player.stuetv
-  - service: camera.snapshot
-    data:
-      entity_id: camera.fremme
-      filename: '/tmp/front.jpg'
-  - service: notify.eirikz_telegram
-    data:
-      title: Ringeklokke
-      message: "Noen ringer på døren"
-      data:
-        photo:
-          - file: /tmp/front.jpg
-            caption: Ringeklokke
+#- alias: 'Front stream with motion'
+#  trigger:
+#  - platform: state
+#    entity_id: camera.fremme
+#    from: 'idle'
+#  action:
+#  - service: camera.play_stream
+#    data:
+#      entity_id: camera.fremme
+#      media_player: media_player.kjokken
+#  - service: camera.play_stream
+#    data: 
+#      entity_id: camera.fremme
+#      media_player: media_player.stuetv
+#  - service: camera.snapshot
+#    data:
+#      entity_id: camera.fremme
+#      filename: '/tmp/front.jpg'
+#  - service: notify.eirikz_telegram
+#    data:
+#      title: Ringeklokke
+#      message: "Noen ringer på døren"
+#      data:
+#        photo:
+#          - file: /tmp/front.jpg
+#            caption: Ringeklokke
 
 
 ### Eirikz adding tensorflow scan on motion ###
@@ -607,12 +622,13 @@
   trigger:
      - platform: state
        entity_id:
-         - camera.rear
-         - camera.front
+         - camera.bak
+         - camera.fremme
+       from: 'idle'
   action:
     - service: image_processing.scan
       data_template:
-        entity_id: "image_processing.tensorflow_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+        entity_id: "image_processing.doods_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
 
 
 ### Eirikz added tensorflow notification ###
@@ -621,8 +637,8 @@
   trigger:
     - platform: numeric_state
       entity_id:
-        - image_processing.tensorflow_fremme
-        - image_processing.tensorflow_bak
+        - image_processing.doods_fremme
+        - image_processing.doods_bak
       above: 0
   action:
     - service: camera.record
@@ -817,3 +833,137 @@
         entity_id: input_select.kjokken
         option: KjokkenHundre
 
+
+
+
+
+- alias: Skru på halloween
+#  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.trapp_ute
+    from: 'off'
+  action:
+    - service: light.turn_on
+      entity_id: light.halloween
+      data_template:
+        effect: '{{ (["Lightning", "Rainbow", "Flash", "Blink", "Fire Flicker", "Solid", "Chase", "Breathe"] | random) }}'
+        rgb_color: ["{{range(256)|random}}","{{range(256)|random}}","{{range(256)|random}}"]
+    - service: light.turn_on 
+      entity_id: light.ute
+      data_template:
+        brightness: 100
+#    - service: script.turn_on
+#      entity_id: script.flash_ute_fire
+#    - service: light.turn_on
+#      entity_id: light.ute
+
+
+- alias: Skru av halloween
+#  hide_entity: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.trapp_ute
+    to: 'off'
+    for:
+      minutes: 3
+  action:
+    - service: light.turn_off
+      entity_id: light.halloween
+#    - service: script.turn_off
+#      entity_id: script.flash_room1
+#      entity_id: script.flash_loop
+
+- alias: 'Ringeklokke'
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.ringeklokke
+      click_type: single
+  action:
+#    - service: script.turn_on
+#      entity_id: script.flash_ute_fire
+#    - service: homeassistant.turn_off
+#      entity_id: automation.fire
+    
+    - service: camera.snapshot
+      data:
+        entity_id: camera.fremme
+        filename: '/tmp/fremme.jpg'
+    - service: notify.we_telegram
+      data:
+        title: Ringeklokke
+        message: "Noen ringer på døren"
+        data:
+          photo:
+            - file: /tmp/fremme.jpg
+              caption: Ringeklokke
+    - service: notify.stuetv
+      data:
+        message: "Noen ringer på døren"
+
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.kjokken
+        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_type: audio/mp3
+
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.w_kontor_mini    
+        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_type: audio/mp3
+
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.eirik_kontor    
+        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_type: audio/mp3
+
+#- alias: ringeklokke
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.ringeklokke
+#      click_type: single
+#  action:
+#    - service: notify.stuetv
+#      data:
+#        message: "Noen ringer på døren"
+#    - service: script.turn_on
+#      entity_id: script.ringeklokke
+#    - service: tts.google_say
+#      entity_id: media_player.kjokken
+#      data:
+#        message:
+#          'Det ringer på døren'
+#        language: 'no'
+#        cache: false
+
+
+- alias: turn on an automation after three minutes
+  trigger:
+    platform: state
+    entity_id: automation.fire
+    to: 'off'
+    for: '00:03:00'
+  action: 
+    - service: homeassistant.turn_on
+      entity_id: automation.fire
+
+
+
+
+- alias: 'Garasjeport åpen i tre minutter'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.garasjeport_sensor
+    to: 'on'
+    for:
+      minutes: 1
+  action:
+    service: notify.we_telegram
+    data:
+      message: "Garasjeporten har vært åpen i tre minutter"

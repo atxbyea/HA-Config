@@ -7,24 +7,24 @@ input_boolean.weather:
 sensor.eirik_status:
   entity_picture: https://vignette.wikia.nocookie.net/uncyclopedia/images/a/a5/RR2.jpg
 
-sensor.weronica_status:
+sensor.w_status:
   entity_picture: https://previews.123rf.com/images/noongraphic/noongraphic1705/noongraphic170500155/77476226-cute-dragon-zodiac-vector-cartoon.jpg
 
 
-binary_sensor.dodor:
+binary_sensor.dodor_contact:
   device_class: door
 
-binary_sensor.garasjedor:
+binary_sensor.kjeller_garasjedor_contact:
   device_class: door
 
 binary_sensor.kjeller_apen:
   device_class: door
 
-binary_sensor.kjellerdor:
+binary_sensor.kjeller_trappsensor_contact:
   device_class: door
 
 binary_sensor.sensor_kontor:
   device_class: motion
 
-binary_sensor.sensor_kjellerbod:
+binary_sensor.boddor_contact:
   device_class: door

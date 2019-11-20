@@ -1,0 +1,37 @@
+path: Lys_mobile
+title: Lys
+icon: 'mdi:lightbulb'
+panel: true
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: light
+            entity: light.kjokken
+            name: Kjøkken
+          - type: light
+            entity: light.stue
+            name: Stue
+          - type: light
+            entity: light.eirik
+            name: Kontor
+      - type: horizontal-stack
+        cards:
+          - type: light
+            entity: light.soverom
+            name: Soverom
+          - type: light
+            entity: light.loft
+            name: Loft
+          - type: light
+            entity: light.kjeller
+            name: Kjeller
+      - type: horizontal-stack
+        cards:
+          - type: light
+            entity: light.nattlys
+            name: Nattlys

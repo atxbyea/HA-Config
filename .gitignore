@@ -8,6 +8,8 @@
 !*.md
 !custom_components/
 !custom_components/**
+!ui-lovelace/
+!ui-lovelace/**
 # Ignore folders.
 .storage
 .cloud

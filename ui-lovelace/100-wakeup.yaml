@@ -1,0 +1,14 @@
+path: Wakeup
+title: Multimedia
+icon: 'mdi:weather-sunset'
+panel: true
+cards:
+  - type: vertical-stack
+    cards:
+      - type: entities
+        entities:
+          - automation.wakeup_light_soverom
+          - input_boolean.wakeup
+      - type: entities
+        entities:
+          - input_datetime.wakeup_time

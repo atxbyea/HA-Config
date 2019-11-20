@@ -1,0 +1,16 @@
+path: Kamera
+title: Kamera
+icon: 'mdi:cctv'
+panel: true
+visible:
+  - user: b2d109cb37f0446d8bf837dd59a06e57
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: picture-entity
+        entity: camera.fremme
+        camera_view: live
+
+      - type: picture-entity
+        entity: camera.bak
+        camera_view: live

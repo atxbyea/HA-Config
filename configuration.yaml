@@ -26,10 +26,10 @@ panel_iframe:
     title: 'esphomeyaml'
     url: 'http://192.168.1.40:6052'
 
-  networkmap:
-    title: 'Zigbee Map'
-    url: '/local/community/zigbee2mqtt_networkmap/map.html'
-    icon: 'mdi:graphql'
+#  networkmap:
+#    title: 'Zigbee Map'
+#    url: '/local/community/zigbee2mqtt_networkmap/map.html'
+#    icon: 'mdi:graphql'
 
 
 system_health:
@@ -113,27 +113,6 @@ sun:
 #    has_time: false
 #    has_date: true
 
-#input_select:
-
-#  eirik_status_dropdown:
-#    name: Eirik
-#    options:
-#      - Hjemme
-#      - Kom akkurat hjem
-#      - Dro akkurat ut
-#      - Ute
-#      - Bortreist
-#    initial: Hjemme
-
-#  weronica_status_dropdown:
-#    name: Weronica
-#    options:
-#      - Hjemme
-#      - Kom akkurat hjem
-#      - Dro akkurat ut
-#      - Ute
-#      - Bortreist
-#    initial: Hjemme
 
 input_select:
    loftlys:
@@ -155,7 +134,25 @@ input_select:
        - KjokkenAtti
        - KjokkenHundre
 
+   eirik_status_dropdown:
+     name: Eirik
+     options:
+       - Hjemme
+       - Kom akkurat hjem
+       - Dro akkurat ut
+       - Ute
+       - Bortreist
+     initial: Hjemme
 
+   w_status_dropdown:
+     name: W
+     options:
+       - Hjemme
+       - Kom akkurat hjem
+       - Dro akkurat ut
+       - Ute
+       - Bortreist
+     initial: Hjemme
 
 # Eirikz added darksky api ###
 weather:
@@ -163,8 +160,8 @@ weather:
     api_key: !secret darksky_api
     mode: daily
 
-  - platform: bom
-    station: IDN60801.94596
+#  - platform: bom
+#    station: IDN60801.94596
 
 # Eirikz added Google TTS ###
 tts:
@@ -195,18 +192,23 @@ logger:
 camera:
 #  - platform: zoneminder
 
+#  - platform: ffmpeg
+#    input: rtsp://admin:admin@192.168.1.63:554/stream1
+#    name: Front
+
+
   - platform: generic
-    name: Front
+    name: Bak
     still_image_url: http://192.168.1.40:8123/local/front.jpg
-    stream_source: rtsp://192.168.1.63:554/stream1
+    stream_source: rtsp://192.168.1.62:554/stream1
     username: admin
     password: admin
 
 
   - platform: generic
-    name: Rear
+    name: Fremme
     still_image_url: http://192.168.1.40:8123/local/front.jpg
-    stream_source: rtsp://192.168.1.62:554/stream1
+    stream_source: rtsp://192.168.1.63:554/stream1
     username: admin
     password: admin
 
@@ -242,10 +244,10 @@ tellduslive:
 
 ### Eirikz added traccar ###
 device_tracker:
-  - platform: traccar
-    host: !secret traccarip
-    username: !secret traccar_user
-    password: !secret traccar_pwd
+#  - platform: traccar
+#    host: !secret traccarip
+#    username: !secret traccar_user
+#    password: !secret traccar_pwd
 
   - platform: ping
     consider_home: 180
@@ -255,6 +257,44 @@ device_tracker:
 
 
 light:
+
+### Eirikz added halloween lights ###
+
+#  - platform: mqtt
+#    schema: json
+#    name: "grin"
+#    state_topic: "diy/esps/c887b5"
+#    command_topic: "diy/esps/c887b5/set"
+#    brightness: true
+#    rgb: true
+#    effect: true
+#    effect_list:
+#      - Solid
+#      - Blink
+#      - Flash
+#      - Rainbow
+#      - Chase
+#      - Fire flicker
+#      - Lightning
+#      - Breathe
+
+#  - platform: mqtt
+#    schema: json
+#    name: "smile"
+#    state_topic: "diy/esps/651ee9"
+#    command_topic: "diy/esps/651ee9/set"
+#    brightness: true
+#    rgb: true
+#    effect: true
+#    effect_list:
+#      - Solid
+#      - Blink
+#      - Flash
+#      - Rainbow
+#      - Chase
+#      - Fire flicker
+#      - Lightning
+#      - Breathe
 
 ### Eirikz added zigbee2mqtt groups ###
 #
@@ -370,7 +410,7 @@ light:
 #  - platform: group
 #    name: Soverom
 #    entities:
-#      - light.soverom_weronica_seng
+#      - light.soverom_w_seng
 #      - light.soverom_eirik_seng
 #      - light.soveromled
 
@@ -420,7 +460,11 @@ light:
 #      - light.do_hylle
 #      - light.do_vegglampe
 
- 
+  - platform: group
+    name: halloween
+    entities:
+      - light.grin
+      - light.smile
 ### Eirikz added Yeelight platform ###
 yeelight:
   devices:
@@ -436,65 +480,90 @@ yeelight:
 
 switch:
 
+  - platform: template
+    switches:
+      garasjedor:
+        value_template: "{{ is_state('binary_sensor.garasjeport_sensor', 'on') }}"
+        turn_on:
+          service: cover.open_cover
+          data:
+            entity_id: cover.garasjeport_cover
+        turn_off:
+          service: cover.close_cover
+          data:
+            entity_id: cover.garasjeport_cover
+        icon_template: >-
+          {% if is_state('cover.garasjeport_cover', 'open') %}
+            mdi:garage-open
+          {% else %}
+            mdi:garage
+          {% endif %}
+
+
 ### Eirikz addded Circadian Lighting for brightness adjustment of all bulbs ###
   - platform: circadian_lighting
     name: stue
     lights_brightness:
-      - light.stuebord
-      - light.stue_yttergang
-      - light.stue_bikkjelampe
-      - light.stue_lampe_bak_tv
-      - light.stue_vindu1
-      - light.stue_vindu2
-      - light.gulvlampe_stue_1
-      - light.gulvlampe_stue_2
-      - light.gulvlampe_stue_3
+#      - light.stuebord
+#      - light.stue_yttergang
+#      - light.stue_bikkjelampe
+#      - light.stue_lampe_bak_tv
+#      - light.stue_vindu1
+#      - light.stue_vindu2
+#      - light.gulvlampe_stue_1
+#      - light.gulvlampe_stue_2
+#      - light.gulvlampe_stue_3
+      - light.stue
     max_brightness: 75
     min_brightness: 1
 
     lights_ct:
-      - light.stue_yttergang
-      - light.stue_bikkjelampe
-      - light.stue_vindu1
-      - light.stue_vindu2
-      - light.stuebord
+#      - light.stue_yttergang
+#      - light.stue_bikkjelampe
+#      - light.stue_vindu1
+#      - light.stue_vindu2
+#      - light.stuebord
+      - light.stue
 
 
   - platform: circadian_lighting
     name: do
     lights_brightness:
-      - light.do_hylle
-      - light.do_vegglampe
+#      - light.do_vegglampe
+      - light.do
     max_brightness: 35
     min_brightness: 1
 
     lights_ct:
-      - light.do_vegglampe
-      - light.do_hylle
+#      - light.do_vegglampe
+#      - light.do_hylle
+      - light.do
 
 
 
   - platform: circadian_lighting
     name: kjeller
     lights_brightness:
-      - light.gang_nede
-      - light.vaskerom1
-      - light.vaskerom2
-      - light.vaskerom3
-      - light.trappelampe
-      - light.fryserom
-      - light.kjellerbod
+#      - light.gang_nede
+#      - light.vaskerom1
+#      - light.vaskerom2
+#      - light.vaskerom3
+#      - light.trappelampe
+#      - light.fryserom
+#      - light.kjellerbod
+      - light.kjeller
     max_brightness: 75
     min_brightness: 1
 
   - platform: circadian_lighting
     name: loft
     lights_brightness:
-      - light.gulvlampe_loft_1
-      - light.gulvlampe_loft_2
-      - light.gulvlampe_loft_3
-      - light.loft_taklys_1
-      - light.loft_taklys_2
+#      - light.gulvlampe_loft_1
+#      - light.gulvlampe_loft_2
+#      - light.gulvlampe_loft_3
+#      - light.loft_taklys_1
+#      - light.loft_taklys_2
+      - light.loft
     max_brightness: 75
     min_brightness: 1
 
@@ -505,11 +574,12 @@ switch:
   - platform: circadian_lighting
     name: kjokken   
     lights_brightness:
-      - light.kjokken_benk
-      - light.kjokken_vindu
-      - light.kjokken_taklampe
-      - light.kjokken_bordlampe
-      - light.kjokken_benke_underlys
+#      - light.kjokken_benk
+#      - light.kjokken_vindu
+#      - light.kjokken_taklampe
+#      - light.kjokken_bordlampe
+#      - light.kjokken_benke_underlys
+      - light.kjokken
     max_brightness: 75
     min_brightness: 1
 
@@ -517,9 +587,10 @@ switch:
   - platform: circadian_lighting
     name: kontor
     lights_brightness:
-      - light.kontor1
-      - light.kontor2
-      - light.kontor3
+#      - light.kontor1
+#      - light.kontor2
+#      - light.kontor3
+      - light.eirik
     max_brightness: 75
     min_brightness: 1
 
@@ -558,7 +629,7 @@ media_player:
     client_secret: !secret spotify_clientsecret
 
 ### Eirikz added Plex platform ###
-  - platform: plex
+#  - platform: plex
 
 ### Eirikz added roku ###
   - platform: roku
@@ -604,9 +675,13 @@ binary_sensor:
 
   - platform: ping
     host: 192.168.1.40
-    name: Tsunade
+    name: Kakuzu
     count: 3
     scan_interval: 30
+
+#  - platform: ffmpeg_motion
+#    name: frcam
+#    input: rtsp://admin:admin@192.168.1.63:554/stream1
 
 ### Eirikz added template for both basement doors open \ close will trigger lights in basement ###
   - platform: template
@@ -687,8 +762,8 @@ climate:
   ip_address: !secret climateip
   token: !secret climatetoken
   mac: !secret climatemac
-#  friendly_name: 'Varmepumpe Stue'
-  debug: True
+  name: 'Varmepumpe Stue'
+#    debug: True
   poll: True
 
 ### Eirikz added Roku ###
@@ -715,8 +790,13 @@ climate:
 #    cycle: monthly
 
 ### Eirikz added influx ###
-#influxdb:
-#  host: 192.168.1.46
+influxdb:
+  host: 192.168.1.40
+  port: 8086
+  username: !secret influxdbuser
+  password: !secret influxdbpass
+  ssl: false
+  verify_ssl: false
 
 
 ### Eirikz added tensorflow ###
@@ -733,8 +813,9 @@ image_processing:
   - platform: doods
     scan_interval: 10000
     url: "http://192.168.1.40:8011"
+    detector: default
     source:
-      - entity_id: camera.front
+      - entity_id: camera.fremme
       - entity_id: camera.bak
 
 
@@ -751,7 +832,7 @@ life360:
   accounts:
     - username: !secret LIFE360_USERNAME
       password: !secret LIFE360_PASSWORD
-  driving_speed: 30
+  driving_speed: 15
   interval_seconds: 10
   max_gps_accuracy: 200
   max_update_wait:
@@ -769,15 +850,15 @@ wwlln:
 
 
 ### Eirikz added mqtt for zigbee2mqtt ###
-mqtt:
-  discovery: true
-  broker: 192.168.1.40
-  birth_message:
-    topic: 'hass/status'
-    payload: 'online'
-  will_message:
-    topic: 'hass/status'
-    payload: 'offline'
+#mqtt:
+#  discovery: true
+#  broker: 192.168.1.40
+#  birth_message:
+#    topic: 'hass/status'
+#    payload: 'online'
+#  will_message:
+#    topic: 'hass/status'
+#    payload: 'offline'
 
 
 ### Eirikz added zigbee2mqttmap ###
@@ -786,3 +867,18 @@ webhook:
  
 zigbee2mqtt_networkmap:
   #topic: your topic (optional, default zigbee2mqtt)
+
+
+### Eirikz added Sonos ####
+
+sonos:
+  media_player:
+    hosts:
+      - !secret sonoskontorip
+
+### Eirikz added cast ###
+
+cast:
+  media_player:
+    - host: !secret kjokkenhubip
+    - host: !secret wkontorip

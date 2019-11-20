@@ -1,0 +1,49 @@
+path: w
+title: w
+icon: 'mdi:face-woman'
+panel: true
+visible:
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: switch.garasjedor
+            name: Garasjeport
+            tap_action:
+              action: toggle
+          - type: entity-button
+            entity: light.soverom_w
+            name: Soverom
+            tap_action:
+              action: toggle
+
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: light.w_kontor
+            name: Kontor
+            tap_action:
+              action: toggle
+
+      - type: horizontal-stack
+        cards:
+          - type: glance
+            entities:
+              - entity: sensor.eirik_batteri
+                name: Batteri
+                icon: 'mdi:battery'
+              - entity: sensor.eirik_lader
+                name: Lader
+                icon: 'mdi:flash'
+              - entity: sensor.eirik_kjorer
+                name: Kjører
+                icon: 'mdi:car'
+              - entity: sensor.eirik_hastighet
+                name: Hastighet
+                icon: 'mdi:speedometer'
+              - entity: device_tracker.life360_eirik_zakariassen
+                name: Hjemme
+                icon: 'mdi:home'

@@ -52,3 +52,145 @@ stovsug_barnerom:
             entity_id: vacuum.xiaomi_vacuum_cleaner
             command: app_zoned_clean
             params: [[36507,22525,39607,25325,1]]
+
+
+flash_ute_fire:
+  alias: Flash Ute fire ganger
+  sequence:
+    - alias: Light Room1 On1
+      service: homeassistant.turn_on
+      entity_id: light.ute
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'
+
+        
+    - delay:
+        # time for flash light on
+        seconds: 2
+
+    - alias: Light Room1 Off1
+      service: homeassistant.turn_off
+      data:
+        entity_id: light.ute
+
+    - delay:
+        seconds: 2
+
+    - alias: Light Room1 On2
+      service: homeassistant.turn_on
+      entity_id: light.ute
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'
+
+
+    - delay:
+        # time for flash light on
+        seconds: 2
+
+    - alias: Light Room1 Off2
+      service: homeassistant.turn_off
+      data:
+        entity_id: light.ute
+
+    - delay:
+        seconds: 2
+ 
+    - alias: Light Room1 On3
+      service: homeassistant.turn_on
+      entity_id: light.ute
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'
+
+
+    - delay:
+        # time for flash light on
+        seconds: 2
+
+    - alias: Light Room1 Off3
+      service: homeassistant.turn_off
+      data:
+        entity_id: light.ute
+
+    - delay:
+        seconds: 2
+
+    - alias: Light Room1 On4
+      service: homeassistant.turn_on
+      entity_id: light.ute
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'
+
+
+    - delay:
+        # time for flash light on
+        seconds: 2
+
+    - alias: Light Room1 Off4
+      service: homeassistant.turn_off
+      data:
+        entity_id: light.ute
+
+    - delay:
+        seconds: 2
+    
+    - alias: done
+      service: homeassistant.turn_on
+      data:
+        entity_id: light.ute
+
+
+#    - alias: loop_room1
+#      service: script.turn_on
+#      data:
+#        entity_id: script.flash_loop
+
+
+#flash_loop:
+#  alias: Flash loop
+#  sequence:
+#    - delay:
+#        # time for flash light off
+#        seconds: 1
+#    - alias: loop_room1
+#      service: script.turn_on
+#      data:
+#        entity_id: script.flash_room1
+
+
+ringeklokke:
+  alias: Flash Ute fire ganger
+  sequence:
+    - alias: Ringebikkje1
+      service: homeassistant.turn_off
+      entity_id: light.stue_bikkjelampe
+
+    - delay:
+        # time for flash light on
+        seconds: 2
+
+    - alias: Ringebikkje2
+      service: homeassistant.turn_on
+      data:
+        entity_id: light.stue_bikkjelampe
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'
+
+    - delay:
+        seconds: 2
+
+    - alias: Ringebikkje3
+      service: homeassistant.turn_off
+      entity_id: light.stue_bikkjelampe
+
+    - alias: Ringebikkje4
+      service: homeassistant.turn_on 
+      data:
+        entity_id: light.stue_bikkjelampe
+      data_template:
+        color_temp: '{{ (["250", "454"] | random) }}'
+        brightness: '{{ (["254", "110"] | random) }}'

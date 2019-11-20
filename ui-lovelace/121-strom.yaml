@@ -1,0 +1,177 @@
+path: strom_mobile
+title: Strøm
+icon: 'mdi:power'
+visible:
+  - user: eb7d260c8fd54c08b2451ca5dfc15e61
+  - user: c666ad3fb69a4e74818d415386ef902b
+cards:
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: picture-elements
+            title: VVB
+            image: '/local/varmtvannsbereder.jpg'
+            style:
+              width: 50%
+              height: 50%
+            elements:
+              - type: state-label
+                entity: sensor.vvb_navarende_forbruk
+                prefix: "Nåværende Forbruk"
+                style:
+                  top: 20%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+              - type: state-label
+                entity: sensor.vvb_dagens_forbruk
+                prefix: "Daglig Forbruk"
+                style:
+                  top: 48%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+              - type: state-label
+                entity: sensor.vvb_manedlig_forbruk
+                prefix: "Månedlig Forbruk: "
+                style:
+                  top: 74%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+          - type: picture-elements
+            title: Tørketrommel
+            image: '/local/torketrommel.webp'
+            style:
+              width: 50%
+              height: 50%
+            elements:
+              - type: state-label
+                entity: sensor.torketrommel_manedlig
+                prefix: "Månedlig Forbruk: "
+                style:
+                  top: 80%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+              - type: state-label
+                entity: sensor.torketrommel_daglig
+                prefix: "Daglig Forbruk: "
+                style:
+                  top: 50%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+              - type: state-label
+                entity: sensor.torketrommel_power_2
+                prefix: "Nåværende Forbruk: "
+                style:
+                  top: 20%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+   
+      - type: horizontal-stack
+        cards:
+          - type: picture-elements
+            title: Drivhus
+            image: '/local/drivhus.jpg'
+            style:
+              width: 50%
+              height: 50%
+            elements:
+              - type: state-label
+                entity: sensor.drivhusvarme_energy_power
+                prefix: "Nåværende Forbruk"
+                style:
+                  top: 20%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
+              - type: state-label
+                entity: sensor.drivhusvarme_energy_today
+                prefix: "Daglig Forbruk"
+                style:
+                  top: 48%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+              - type: state-label
+                entity: sensor.drivhus_manedlig
+                prefix: "Månedlig Forbruk: "
+                style:
+                  top: 74%
+                  right: 1%
+                  color: rgb(0, 0, 0)
+                  transform: translate(0%,-50%)
+                  pointer-events: none
+                  font-family: Trebuchet MS
+                  font-size: 90%
+                  font-weight: bold
+                  border-color: rgb(34, 154, 210)
+                  background-color: '#3090C7'
+                  border-radius: 6px
+
