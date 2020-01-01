@@ -23,6 +23,8 @@ cards:
       - type: custom:simple-thermostat
         entity: climate.varmepumpe_stue
         step_size: 1
+        control:
+          - hvac
       - type: glance
         entities:
           - sensor.inne_dobbelsensor_temperature

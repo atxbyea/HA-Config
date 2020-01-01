@@ -309,4 +309,3 @@ class CircadianLighting(object):
         self.data['hs_color'] = self.calc_hs()
         dispatcher_send(self.hass, CIRCADIAN_LIGHTING_UPDATE_TOPIC)
         _LOGGER.debug("Circadian Lighting Component Updated")
-

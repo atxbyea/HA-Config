@@ -221,6 +221,29 @@
     service: light.toggle
     entity_id: light.soverom_eirik_seng
 
+- alias: 'Skru av og på soverom Eirik Bryter Venstre'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.soverom_eirik_venstre
+      click_type: single
+  action:
+    service: light.toggle
+    entity_id: light.soverom_w
+
+- alias: 'Skru av og på soverom Eirik Bryter Høyre'
+  hide_entity: true
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      entity_id: binary_sensor.soverom_eirik_hoyre
+      click_type: single
+  action:
+    service: light.toggle
+    entity_id: light.soverom_eirik_seng
 ### Eirikz added Google Home Mini annonuncement ###
 
 - alias: 'Morgenhilsen på kontoret'
@@ -407,7 +430,7 @@
   trigger:
     - platform: state
       entity_id: device_tracker.life360_eirik_zakariassen
-      from: 'away'
+      from: 'not_home'
       to: 'home'
   action:
     - service: input_select.select_option
@@ -435,10 +458,10 @@
 
 - alias: 'Sett Eirik som akkurat dratt'
   trigger:
-    - platform: zone
+    - platform: state
       entity_id: device_tracker.life360_eirik_zakariassen
-      zone: 'zone.home'
-      event: 'leave'
+      from: 'home'
+      to: 'not_home'
   action:
     - service: input_select.select_option
       data:
@@ -489,7 +512,7 @@
   trigger:
     - platform: state
       entity_id: input_select.w_status_dropdown
-      to: 'home'
+      to: 'Kom akkurat hjem'
       for:
         minutes: 10
     - platform: state
@@ -616,44 +639,76 @@
 #            caption: Ringeklokke
 
 
-### Eirikz adding tensorflow scan on motion ###
+### Eirikz adding doods scan on motion ###
 
-- alias: Tensorflow Skanning
+- alias: Doods Skanning Fremme
   trigger:
      - platform: state
        entity_id:
-         - camera.bak
-         - camera.fremme
-       from: 'idle'
+         - binary_sensor.fremme
+       from: 'off'
   action:
     - service: image_processing.scan
       data_template:
-        entity_id: "image_processing.doods_{{ trigger.entity_id.split('.')[1].split('_')[0] }}"
+        entity_id: "image_processing.doods_fremme"
 
+- alias: Doods Skanning Bak
+  trigger:
+     - platform: state
+       entity_id:
+         - binary_sensor.bak
+       from: 'off'
+  action:
+    - service: image_processing.scan
+      data_template:
+        entity_id: "image_processing.doods_bak"
 
-### Eirikz added tensorflow notification ###
+### Eirikz added doods notification ###
 
 - alias: Tensorflow notify
   trigger:
     - platform: numeric_state
       entity_id:
         - image_processing.doods_fremme
+      above: 0
+  action:
+    - service: camera.record
+      data_template:
+        entity_id: "camera.fremme"
+        filename: "/config/www/fremme.mp4"
+        duration: 20
+        lookback: 10
+    - service: notify.eirikz_telegram
+      data:
+        title: Doods
+        message: "Jeg ser noe"
+        data:
+          video:
+            - file: "/config/www/fremme.mp4"
+              caption: Bevegelse
+
+### Eirikz added doods notification ###
+
+- alias: Tensorflow notify
+  trigger:
+    - platform: numeric_state
+      entity_id:
         - image_processing.doods_bak
       above: 0
   action:
     - service: camera.record
       data_template:
-        entity_id: "camera.{{ trigger.entity_id.split('.')[1].split('_')[1] }}"
-        filename: "/tmp/videos/{{ trigger.entity_id.split('.')[1].split('_')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+        entity_id: "camera.bak" 
+        filename: "/config/www/bak.mp4"
         duration: 20
         lookback: 10
     - service: notify.eirikz_telegram
       data:
-        title: Tensorflow
+        title: Doods
         message: "Jeg ser noe"
         data:
           video:
-            - file: "/tmp/videos/{{ trigger.entity_id.split('.')[1].split('_')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+            - file: "/config/www/bak.mp4"
               caption: Bevegelse
 
 ### Eirikz added dimming of lights while watching a movie ###
@@ -887,18 +942,18 @@
 #    - service: homeassistant.turn_off
 #      entity_id: automation.fire
     
-    - service: camera.snapshot
-      data:
-        entity_id: camera.fremme
-        filename: '/tmp/fremme.jpg'
-    - service: notify.we_telegram
-      data:
-        title: Ringeklokke
-        message: "Noen ringer på døren"
-        data:
-          photo:
-            - file: /tmp/fremme.jpg
-              caption: Ringeklokke
+#    - service: camera.snapshot
+#      data:
+#        entity_id: camera.fremme
+#        filename: '/tmp/fremme_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+#    - service: notify.we_telegram
+#      data:
+#        title: Ringeklokke
+#        message: "Noen ringer på døren"
+#        data:
+#          photo:
+#            - file: '/tmp/fremme_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+#              caption: Ringeklokke
     - service: notify.stuetv
       data:
         message: "Noen ringer på døren"
@@ -962,8 +1017,22 @@
     entity_id: binary_sensor.garasjeport_sensor
     to: 'on'
     for:
-      minutes: 1
+      minutes: 3
   action:
     service: notify.we_telegram
     data:
       message: "Garasjeporten har vært åpen i tre minutter"
+
+
+### Eirikz added automatic vacuuming of kitchen every day ###
+
+- alias: 'Automatisk Støvsuging av kjøkken'
+  trigger:
+    platform: time
+    at: '05:30:00'
+  action:
+  - service: xiaomi_miio.vacuum_clean_zone
+    data:
+      entity_id: vacuum.xiaomi_vacuum_cleaner
+      repeats: 3
+      zone: [[19036,24821,26336,28271]]

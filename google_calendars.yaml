@@ -48,3 +48,24 @@
 #    name: Helligdager i Danmark
 #    track: true
 
+
+- cal_id: no.danish#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: helligdager_i_danmark
+    ignore_availability: true
+    name: Helligdager i Danmark
+    track: true
+
+- cal_id: no.norwegian#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: helligdager_i_norge
+    ignore_availability: true
+    name: Helligdager i Norge
+    track: true
+
+- cal_id: e_2_no#weeknum@group.v.calendar.google.com
+  entities:
+  - device_id: week_numbers
+    ignore_availability: true
+    name: Week Numbers
+    track: true

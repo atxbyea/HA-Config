@@ -30,3 +30,7 @@ cards:
               - entity: sensor.drivhusny_temperature
                 name: Drivhus
                 icon: 'mdi:flower'
+      - type: horizontal-stack
+        cards:
+          - type: custom:upcoming-media-card
+            entity: sensor.plex_recently_added

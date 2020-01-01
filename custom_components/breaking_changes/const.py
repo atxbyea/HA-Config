@@ -2,9 +2,9 @@
 # Base component constants
 DOMAIN = "breaking_changes"
 DOMAIN_DATA = "{}_data".format(DOMAIN)
-VERSION = "0.1.0"
-PLATFORMS = ["binary_sensor", "sensor"]
-REQUIRED_FILES = ["binary_sensor.py", "const.py", "sensor.py"]
+VERSION = "0.3.6"
+PLATFORMS = ["sensor"]
+REQUIRED_FILES = ["const.py", "sensor.py"]
 ISSUE_URL = "https://github.com/custom-components/breaking_changes/issues"
 
 STARTUP = """
@@ -28,3 +28,6 @@ CONF_NAME = "name"
 
 # Defaults
 DEFAULT_NAME = "Potential breaking changes"
+
+# Interval in seconds
+INTERVAL = 60

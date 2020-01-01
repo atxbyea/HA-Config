@@ -187,9 +187,9 @@ logger:
   default: warn
   logs:
    homeassistant.components.ps4.media_player: error 
-
+   hacs: debug
 ### Eirikz added Zoneminder platform ###
-camera:
+#camera:
 #  - platform: zoneminder
 
 #  - platform: ffmpeg
@@ -197,20 +197,29 @@ camera:
 #    name: Front
 
 
-  - platform: generic
-    name: Bak
-    still_image_url: http://192.168.1.40:8123/local/front.jpg
-    stream_source: rtsp://192.168.1.62:554/stream1
-    username: admin
-    password: admin
+#  - platform: generic
+#    name: Bak
+#    still_image_url: http://192.168.1.40:8123/local/front.jpg
+#    stream_source: rtsp://192.168.1.62:554/stream1
+#    username: admin
+#    password: admin
 
 
-  - platform: generic
-    name: Fremme
-    still_image_url: http://192.168.1.40:8123/local/front.jpg
-    stream_source: rtsp://192.168.1.63:554/stream1
-    username: admin
-    password: admin
+#  - platform: generic
+#    name: Fremme
+#    still_image_url: http://192.168.1.40:8123/local/front.jpg
+#    stream_source: rtsp://192.168.1.63:554/stream1
+#    username: admin
+#    password: admin
+
+
+#  - platform: ffmpeg
+#    name: Bak
+#    input: '-rtsp_transport tcp -i rtsp://admin:admin@192.168.1.62:554/stream1'
+
+#  - platform: ffmpeg
+#    name: Fremme
+#    input: '-rtsp_transport tcp -i rtsp://admin:admin@192.168.1.63:554/stream1'
 
 ### Eirikz added xiaomi gateway ###
 xiaomi_aqara:
@@ -480,6 +489,12 @@ yeelight:
 
 switch:
 
+  - platform: broadlink
+    host: 192.168.1.211
+    mac: 'c8:f7:42:75:0a:28'
+    type: rm_mini
+
+
   - platform: template
     switches:
       garasjedor:
@@ -679,6 +694,22 @@ binary_sensor:
     count: 3
     scan_interval: 30
 
+  - platform: mqtt
+    name: "fremme"
+    state_topic: "cameras/fremme/motion"
+
+  - platform: mqtt
+    name: "bak"
+    state_topic: "cameras/bak/motion"
+
+
+#  - platform: ffmpeg_motion
+#    name: Fremme Kamera Bevegelse
+#    input: '-rtsp_transport tcp -i rtsp://admin:admin@192.168.1.63:554/stream1'
+
+#  - platform: ffmpeg_motion
+#    name: Bak Kamera Bevegelse
+#    input: '-rtsp_transport tcp -i rtsp://admin:admin@192.168.1.62:554/stream1'
 #  - platform: ffmpeg_motion
 #    name: frcam
 #    input: rtsp://admin:admin@192.168.1.63:554/stream1
@@ -817,7 +848,22 @@ image_processing:
     source:
       - entity_id: camera.fremme
       - entity_id: camera.bak
-
+    file_out:
+      - "/config/www/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    confidence: 50
+    labels:
+      - name: person
+        confidence: 40
+        area:
+          # Exclude top 1% of image
+          top: 0.01
+          # Exclude right 1% of image
+          right: 0.01
+          # Any part of the detection inside this area will trigger
+          covers: false
+      - car
+      - dog
+      - cat
 
 ### Eirikz added ffmpeg ###
 ffmpeg:
@@ -882,3 +928,21 @@ cast:
   media_player:
     - host: !secret kjokkenhubip
     - host: !secret wkontorip
+
+
+### Eirikz added mjpeg camera from Kerberos ###
+camera:
+  - platform: generic
+    name: Fremme
+    stream_source: rtsp://192.168.1.63/stream1
+    still_image_url: http://192.168.1.40:20100/picture/1/current/
+    username: admin
+    password: admin
+
+
+  - platform: generic
+    name: Bak
+    stream_source: rtsp://192.168.1.62/stream1
+    still_image_url: http://192.168.1.40:20100/picture/2/current/
+    username: admin
+    password: admin
