@@ -24,12 +24,12 @@ homeassistant:
 panel_iframe:
   esphomeyaml:
     title: 'esphomeyaml'
-    url: 'http://192.168.1.40:6052'
+    url: 'https://hass.eirikz.com/esphomeyaml'
 
-#  networkmap:
-#    title: 'Zigbee Map'
-#    url: '/local/community/zigbee2mqtt_networkmap/map.html'
-#    icon: 'mdi:graphql'
+  networkmap:
+    title: 'Zigbee Map'
+    url: '/local/community/zigbee2mqtt_networkmap/map.html'
+    icon: 'mdi:graphql'
 
 
 system_health:
@@ -118,11 +118,12 @@ input_select:
    loftlys:
      name: Loftlys
      options:
-       - Full
-       - Femti
-       - Ti
-       - Av
-     initial: Femti
+#       - Full
+#       - Femti
+#       - Ti
+#       - Av
+       - loftheltpa
+       - loftheltav
      icon: mdi:lightbulb-on-outline
 
    kjokken:
@@ -258,6 +259,15 @@ device_tracker:
 #    username: !secret traccar_user
 #    password: !secret traccar_pwd
 
+  - platform: snmp
+    host: 192.168.1.1
+    community: public
+    baseoid: 1.3.6.1.2.1.4.22.1.2
+    interval_seconds: 30
+    consider_home: 120
+
+#  - platform: pfsense
+
   - platform: ping
     consider_home: 180
     hosts:
@@ -306,16 +316,37 @@ light:
 #      - Breathe
 
 ### Eirikz added zigbee2mqtt groups ###
-#
-#  - platform: mqtt
-#    schema: json
-#    name: kjellergruppe
-#    command_topic: "zigbee2mqtt/kjellergruppe/set"
-#    state_topic: "zigbee2mqtt/kjellergruppe"
 
-#    color_temp: false
-#    brightness: true
-#    rgb: false
+  - platform: mqtt
+    schema: json
+    name: StueGruppe
+    command_topic: "zigbee2mqtt/stuegruppe/set"
+    state_topic: "zigbee2mqtt/stuegruppe"
+
+    color_temp: true
+    brightness: true
+    rgb: false
+
+  - platform: mqtt
+    schema: json
+    name: KjøkkenGruppe
+    command_topic: "zigbee2mqtt/kjokkengruppe/set"
+    state_topic: "zigbee2mqtt/kjokkengruppe"
+
+    color_temp: true
+    brightness: true
+    rgb: false
+
+
+  - platform: mqtt
+    schema: json
+    name: KjellerGruppe
+    command_topic: "zigbee2mqtt/kjellergruppe/set"
+    state_topic: "zigbee2mqtt/kjellergruppe"
+
+    color_temp: false
+    brightness: true
+    rgb: false
 
 #  - platform: mqtt
 #    schema: json
@@ -392,29 +423,32 @@ light:
 #      - light.kjokken_benk
 #      - light.kjokken_vinduet
 
-#  - platform: group
-#    name: Stue
-#    entities:
-#      - light.stuebord
-#      - light.stue_yttergang
-#      - light.stue_vindu1
-#      - light.stue_vindu2
+  - platform: group
+    name: Stue_lys
+    entities:
+      - light.stue_stuebord_light
+      - light.stue_yttergang_vegglys
+      - light.stue_vinduslampe1_light
+      - light.stue_vinduslampe2_light
 #      - light.stalampe
-#      - light.gulvlampe_stue_1
-#      - light.gulvlampe_stue_2
-#      - light.gulvlampe_stue_3
-#      - light.stue_bikkjelampe
-#      - light.stue_lampe_bak_tv
-#      - light.stue_stort_vitrineskap
+      - light.stue_gulvlampe1_light
+      - light.stue_gulvlampe2_light
+      - light.stue_gulvlampe3_light
+      - light.stue_bikkjelampe_light
+      - light.stue_lys_bak_tv_light
+      - light.stue_stort_vitrineskap_light
+      - light.stue_lite_vitrineskap
+      - light.stue_lyst_vitrineskap
+      - light.stue_peislys
 
-#  - platform: group
-#    name: Kjokken
-#    entities:
-#      - light.kjokken_benk
-#     - light.kjokken_vindu
-#      - light.kjokken_bordlampe
-#      - light.kjokken_benke_underlys
-#      - light.kjokken_taklampen
+  - platform: group
+    name: Kjokken_lys
+    entities:
+      - light.kjokken_benkelys_light
+      - light.kjokken_vinduslampe_light
+      - light.kjokken_bordlampe_light
+      - light.kjokken_benke_underlys_light
+      - light.kjokken_taklampe_light
 
 #  - platform: group
 #    name: Soverom
@@ -423,16 +457,16 @@ light:
 #      - light.soverom_eirik_seng
 #      - light.soveromled
 
-#  - platform: group
-#    name: Kjeller
-#    entities:
-#      - light.fryserom
-#      - light.trappelampe
-#      - light.vaskerom1
-#      - light.vaskerom2
-#      - light.vaskerom3
-#      - light.gang_nede
-#      - light.kjellerbod
+  - platform: group
+    name: Kjeller_lys
+    entities:
+      - light.kjeller_ganglys_light
+      - light.kjeller_vaskerom1_light
+      - light.kjeller_vaskerom2_light
+      - light.kjeller_vaskerom3_light
+      - light.kjeller_trappelys_light
+      - light.kjeller_fryserom_light
+      - light.kjeller_bod_light
 
 #  - platform: group
 #    name: Loft
@@ -463,11 +497,11 @@ light:
 #    entities:
 #      - light.stuebord
 
-#  - platform: group
-#    name: Do
-#    entities:
-#      - light.do_hylle
-#      - light.do_vegglampe
+  - platform: group
+    name: Do_lys
+    entities:
+      - light.do_hyllelampe_light
+      - light.do_vegglampe_light
 
   - platform: group
     name: halloween
@@ -488,6 +522,15 @@ yeelight:
       model: strip1
 
 switch:
+
+#  - platform: command_line
+#    switches:
+#      twinkly:
+#        command_on: "python3 /config/python_scripts/twinkly.py 192.168.1.216 on"
+#        command_off: "python3 /config/python_scripts/twinkly.py 192.168.1.216 off" 
+#        command_state: "python3 /config/python_scripts/twinkly.py 192.168.1.216 state"
+#        value_template: "{{ value == \"1\" }}"
+#        friendly_name: Twinkly
 
   - platform: broadlink
     host: 192.168.1.211
@@ -519,54 +562,71 @@ switch:
   - platform: circadian_lighting
     name: stue
     lights_brightness:
-#      - light.stuebord
-#      - light.stue_yttergang
-#      - light.stue_bikkjelampe
-#      - light.stue_lampe_bak_tv
-#      - light.stue_vindu1
-#      - light.stue_vindu2
-#      - light.gulvlampe_stue_1
-#      - light.gulvlampe_stue_2
-#      - light.gulvlampe_stue_3
+      - light.stue_stuebord_light
+      - light.stue_yttergang_vegglys
+      - light.stue_bikkjelampe_light
+      - light.stue_lys_bak_tv_light
+      - light.stue_vinduslampe1_light
+      - light.stue_vinduslampe2_light
+      - light.stue_gulvlampe1_light
+      - light.stue_gulvlampe2_light
+      - light.stue_gulvlampe3_light
       - light.stue
+      - light.stue_lite_vitrineskap
+      - light.stue_lyst_vitrineskap
+#      - light.stue_peislys
+      - light.stue_stort_vitrineskap_light
+#      - light.stuegruppe
     max_brightness: 75
     min_brightness: 1
 
     lights_ct:
-#      - light.stue_yttergang
-#      - light.stue_bikkjelampe
-#      - light.stue_vindu1
-#      - light.stue_vindu2
-#      - light.stuebord
+      - light.stue_yttergang_vegglys
+      - light.stue_bikkjelampe_light
+      - light.stue_vinduslampe1_light
+      - light.stue_vinduslampe2_light
+      - light.stue_stuebord_light
       - light.stue
+#      - light.stuegruppe
+#      - light.stue_peislys
 
+  - platform: circadian_lighting
+    name: peis
+    lights_brightness:
+      - light.stue_peislys
+    max_brightness: 75
+    min_brightness: 12
+
+    lights_ct:
+      - light.stue_peislys 
 
   - platform: circadian_lighting
     name: do
     lights_brightness:
-#      - light.do_vegglampe
-      - light.do
+      - light.do_vegglampe_light
+      - light.do_hyllelampe_light
+#      - light.do
     max_brightness: 35
     min_brightness: 1
 
     lights_ct:
-#      - light.do_vegglampe
-#      - light.do_hylle
-      - light.do
+      - light.do_vegglampe_light
+      - light.do_hyllelampe_light
+#      - light.do
 
 
 
   - platform: circadian_lighting
     name: kjeller
     lights_brightness:
-#      - light.gang_nede
-#      - light.vaskerom1
-#      - light.vaskerom2
-#      - light.vaskerom3
-#      - light.trappelampe
-#      - light.fryserom
-#      - light.kjellerbod
-      - light.kjeller
+      - light.kjeller_ganglys_light
+      - light.kjeller_vaskerom1_light
+      - light.kjeller_vaskerom2_light
+      - light.kjeller_vaskerom3_light
+      - light.kjeller_trappelys_light
+      - light.kjeller_fryserom_light
+      - light.kjeller_bod_light
+#      - light.kjeller
     max_brightness: 75
     min_brightness: 1
 
@@ -589,12 +649,13 @@ switch:
   - platform: circadian_lighting
     name: kjokken   
     lights_brightness:
-#      - light.kjokken_benk
-#      - light.kjokken_vindu
-#      - light.kjokken_taklampe
-#      - light.kjokken_bordlampe
-#      - light.kjokken_benke_underlys
+      - light.kjokken_benkelys_light
+      - light.kjokken_vinduslampe_light
+      - light.kjokken_taklampe_light
+      - light.kjokken_bordlampe_light
+      - light.kjokken_benke_underlys_light
       - light.kjokken
+#      - light.kjokkengruppe
     max_brightness: 75
     min_brightness: 1
 
@@ -622,26 +683,31 @@ zone: !include zones.yaml
 
 scene: !include scenes.yaml
 
-### Eirikz added platform for WebOS smart TV ###
-media_player:
-  - platform: webostv
-    host: !secret webosip
-    name: StueTV
-    turn_on_action:
-      service: wake_on_lan.send_magic_packet
-      data:
-        mac: "14-C9-13-15-1F-BD"
-    customize:
-      sources:
-        - livetv
-        - youtube
-        - makotv
-        - netflix
-        - Set-top Box
+spotify:
+  client_id: !secret spotify_clientid
+  client_secret: !secret spotify_clientsecret
 
-  - platform: spotify
-    client_id: !secret spotify_clientid
-    client_secret: !secret spotify_clientsecret
+### Eirikz added platform for WebOS smart TV ###
+#media_player:
+webostv:
+  host: 192.168.1.32
+  name: StueTV
+  turn_on_action:
+    service: wake_on_lan.send_magic_packet
+    data:
+      mac: "14-C9-13-15-1F-BD"
+#    customize:
+#      sources:
+#        - livetv
+#        - youtube
+#        - makotv
+#        - netflix
+#        - Set-top Box
+
+media_player:
+#  - platform: spotify
+#    client_id: !secret spotify_clientid
+#    client_secret: !secret spotify_clientsecret
 
 ### Eirikz added Plex platform ###
 #  - platform: plex
@@ -721,8 +787,8 @@ binary_sensor:
         friendly_name: "Kjellerdører åpne"
         device_class: door
         value_template: >-
-          {{ is_state('binary_sensor.kjeller_trappsensor_contact', 'on') or
-             is_state('binary_sensor.kjeller_garasjedor_contact', 'on') }}
+          {{ is_state('binary_sensor.kjeller_trapp', 'on') or
+             is_state('binary_sensor.kjeller_garasjedor', 'on') }}
 
 #  - platform: template
 #    sensors:
@@ -755,9 +821,9 @@ notify:
       - service: eirikz_telegram
       - service: w_telegram 
 
-  - platform: webostv
-    host: 192.168.1.32
-    name: stuetv
+#  - platform: webostv
+#    host: 192.168.1.32
+#    name: stuetv
 
 ### Eirikz added MariaDB ###
 recorder:
@@ -844,27 +910,18 @@ image_processing:
   - platform: doods
     scan_interval: 10000
     url: "http://192.168.1.40:8011"
-    detector: default
+    detector: tensorflow
     source:
       - entity_id: camera.fremme
       - entity_id: camera.bak
     file_out:
+      - "/config/www/{{ camera_entity.split('.')[1] }}_latest.jpg"
       - "/config/www/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
-    confidence: 50
+    confidence: 20
     labels:
-      - name: person
-        confidence: 40
-        area:
-          # Exclude top 1% of image
-          top: 0.01
-          # Exclude right 1% of image
-          right: 0.01
-          # Any part of the detection inside this area will trigger
-          covers: false
+      - person
       - car
-      - dog
       - cat
-
 ### Eirikz added ffmpeg ###
 ffmpeg:
 
@@ -896,15 +953,15 @@ wwlln:
 
 
 ### Eirikz added mqtt for zigbee2mqtt ###
-#mqtt:
-#  discovery: true
-#  broker: 192.168.1.40
-#  birth_message:
-#    topic: 'hass/status'
-#    payload: 'online'
-#  will_message:
-#    topic: 'hass/status'
-#    payload: 'offline'
+mqtt:
+  discovery: true
+  broker: 192.168.1.40
+  birth_message:
+    topic: 'hass/status'
+    payload: 'online'
+  will_message:
+    topic: 'hass/status'
+    payload: 'offline'
 
 
 ### Eirikz added zigbee2mqttmap ###

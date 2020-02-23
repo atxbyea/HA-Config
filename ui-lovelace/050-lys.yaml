@@ -10,10 +10,10 @@ cards:
       - type: horizontal-stack
         cards:
           - type: light
-            entity: light.kjokken
+            entity: light.kjokkengruppe
             name: Kjøkken
           - type: light
-            entity: light.stue
+            entity: light.stuegruppe
             name: Stue
       - type: horizontal-stack
         cards:

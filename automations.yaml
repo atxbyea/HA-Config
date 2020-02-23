@@ -1,38 +1,51 @@
 ### Eirikz added wakeup and sleeping of house ###
 
-- alias: Vekk huset
+#- alias: Vekk huset
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.stue_veggbryter
+#      click_type: single  
+- alias: 'Vekk Huset'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.stue_veggbryter
-      click_type: single  
+    platform: mqtt
+    topic: 'zigbee2mqtt/Stue Veggbryteren'
+  condition:
+    condition: template
+    value_template: '{{ "on" == trigger.payload_json.click }}'
   action:
     - service: scene.turn_on
       entity_id: scene.dim_oppover_dagtid
 
-- alias: Legg huset
+#- alias: Legg huset
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.stue_veggbryter
+#      click_type: double
+- alias: 'Vekk Huset'
   trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.stue_veggbryter
-      click_type: double
+    platform: mqtt
+    topic: 'zigbee2mqtt/Stue Veggbryteren'
+  condition:
+    condition: template
+    value_template: '{{ "off" == trigger.payload_json.click }}'
   action:
     - service: scene.turn_on
       entity_id: scene.dim_nedover_kveldstid
     - service: light.turn_on
-      entity_id: light.do_hylle
+      entity_id: light.do_hyllelampe_light
       data:
         brightness: 2
         color_temp: 454
     - service: light.turn_off
-      entity_id: light.do_hylle
+      entity_id: light.do_hyllelampe_light
 
 ### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
 
 - alias: Skru på kontorlys
-  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.sensor_kontor
@@ -43,7 +56,6 @@
       entity_id: light.kontor
 
 - alias: Skru av kontorlys etter fem minutter
-  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.sensor_kontor
@@ -58,7 +70,6 @@
 ### Eirikz added dark theme will always be loaded ###
 
 - alias: 'Sett mørkt tema'
-  hide_entity: true
   initial_state: 'on'
   trigger:
     - platform: homeassistant
@@ -92,21 +103,19 @@
 
 ### Eirikz added automatic turn on and off lights in the W.C and only turn on small light at night ###
 - alias: 'Skru på dolys'
-  hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.dodor_contact
+    entity_id: binary_sensor.do_dodor_sensoren
     from: 'off'
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.do_hylle
+      entity_id: light.do_hyllelampe_light
 
 - alias: 'Skru på vegglys do dagtid'
-  hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.dodor_contact
+    entity_id: binary_sensor.do_dodor_sensoren
     from: 'off'
     to: 'on'
   condition:
@@ -115,11 +124,10 @@
     before: '23:00:00'
   action:
     - service: light.turn_on
-      entity_id: light.do_vegglampe
+      entity_id: light.do_vegglampe_light
 
 
 - alias: 'Skru av dolys'
-  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.dodor_contact
@@ -129,12 +137,11 @@
       minutes: 10
   action:
     - service: light.turn_off
-      entity_id: light.do
+      entity_id: light.do_lys
 
 ### Eirikz added automatic lighting in basement ###
 
 - alias: 'Skru på kjellerlys'
-  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.kjeller_apen
@@ -142,63 +149,87 @@
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.kjeller
+      entity_id: light.kjellergruppe
+
+#- alias: 'Skru av kjellerlys'
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.kjeller_apen
+#    from: 'on'
+#    to: 'off'
+#    for:
+#      minutes: 10
+#  condition:
+#    condition: template
+#    value_template: "{{ (as_timestamp(now())-as_timestamp(states.binary_sensor.kjeller_vaskerom_bevegelse.last_changed)) < 300 }}"
+#  action:
+#    - service: light.turn_off
+#      entity_id: light.kjellergruppe
 
 - alias: 'Skru av kjellerlys'
-  hide_entity: true
   trigger:
-    platform: state
-    entity_id: binary_sensor.kjeller_apen
-    from: 'on'
-    to: 'off'
-    for:
-      minutes: 5
+    - platform: state
+      entity_id: binary_sensor.kjeller_apen
+      from: 'on'
+      to: 'off'
+      for: '00:10:00'
+    - platform: state
+      entity_id: binary_sensor.kjeller_vaskerom_bevegelse
+      from: 'on'
+      to: 'off'
+      for: '00:05:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.kjeller_apen
+      state: 'off'
+      for: '00:10:00'
+    - condition: state
+      entity_id: binary_sensor.kjeller_vaskerom_bevegelse
+      state: 'off'
+      for: '00:05:00'
   action:
     - service: light.turn_off
-      entity_id: light.kjeller
+      entity_id: light.kjellergruppe
+
 
 ### Eirikz added different scenes for attic living room ###
 
-- alias: 'Skru på gulvlampe loft'
-  hide_entity: true
-  trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.loft_veggbryter
-      click_type: single
-  action:
-    service: scene.turn_on
-    entity_id: scene.loft_kun_gulvlampe
+#- alias: 'Skru på gulvlampe loft'
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.loft_veggbryter
+#      click_type: single
+#  action:
+#    service: scene.turn_on
+#    entity_id: scene.loft_kun_gulvlampe
 
-- alias: 'Skru på taklamper loft'
-  hide_entity: true
-  trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.loft_veggbryter
-      click_type: double
-  action:
-    service: scene.turn_on
-    entity_id: scene.loft_kun_taklamper
+#- alias: 'Skru på taklamper loft'
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.loft_veggbryter
+#      click_type: double
+#  action:
+#    service: scene.turn_on
+#    entity_id: scene.loft_kun_taklamper
 
-- alias: Skru av alle på loft
-  hide_entity: true
-  trigger:
-    platform: event
-    event_type: xiaomi_aqara.click
-    event_data:
-      entity_id: binary_sensor.loft_veggbryter
-      click_type: hold
-  action:
-    service: scene.turn_on
-    entity_id: scene.loft_alle_av
+#- alias: Skru av alle på loft
+#  trigger:
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.loft_veggbryter
+#      click_type: hold
+#  action:
+#    service: scene.turn_on
+#    entity_id: scene.loft_alle_av
 
 ### Eirikz added wireless button to bedside lamps ###
 
 - alias: 'Skru av og på soverom W'
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -210,7 +241,6 @@
     entity_id: light.soverom_w
 
 - alias: 'Skru av og på soverom Eirik'
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -222,7 +252,6 @@
     entity_id: light.soverom_eirik_seng
 
 - alias: 'Skru av og på soverom Eirik Bryter Venstre'
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -234,7 +263,6 @@
     entity_id: light.soverom_w
 
 - alias: 'Skru av og på soverom Eirik Bryter Høyre'
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -267,34 +295,31 @@
 ### Eirikz added automatic lighting in downstairs pantry ###
 
 - alias: 'Skru på kjellerbod'
-  hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.boddor_contact
+    entity_id: binary_sensor.kjeller_boddor_sensor
     from: 'off'
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.kjellerbod
-      data:
-        transition: 15
-        brightness_pct: 30
+      entity_id: light.kjeller_bod_light
+#      data:
+#        transition: 15
+#        brightness_pct: 30
 
 - alias: 'Skru av kjellerbod etter fem minutter'
-  hide_entity: true
   trigger:
     platform: state
-    entity_id: binary_sensor.boddor_contact
+    entity_id: binary_sensor.kjeller_boddor_sensor
     from: 'on'
     to: 'off'
   action:
     - service: light.turn_off
-      entity_id: light.kjellerbod
+      entity_id: light.kjeller_bod_light
 
 ### Eirikz experimenting with keyboard commands telegram bot ###
 
 - alias: 'Keyboard Travel'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -311,7 +336,6 @@
 
 
 - alias: 'Keyboard Train'
-  hide_entity: true
   trigger:
     platform: event
     event_type: telegram_command
@@ -569,7 +593,6 @@
 ### Eirikz added switch to toggle on and off the babycam ###
 
 - alias: 'Matlaging'
-  hide_entity: true
   trigger:
     platform: event
     event_type: xiaomi_aqara.click
@@ -581,7 +604,9 @@
       entity_id: switch.circadian_lighting_kjokken
     - service: light.turn_on
       data:
-        entity_id: light.kjokken
+        entity_id:
+          - light.kjokken_lys
+          - light.kjokkengruppe
         brightness: 200
 
 - alias: 'Matlaging ferdig'
@@ -644,13 +669,37 @@
 - alias: Doods Skanning Fremme
   trigger:
      - platform: state
-       entity_id:
-         - binary_sensor.fremme
-       from: 'off'
+       entity_id: binary_sensor.fremme
+       to: 'on'
+  condition:
+    - condition: template
+      value_template: "{{ as_timestamp(now()) - as_timestamp(states.automation.doods_skanning_fremme.attributes.last_triggered) | int > 60 }}"
   action:
     - service: image_processing.scan
-      data_template:
-        entity_id: "image_processing.doods_fremme"
+      entity_id: "image_processing.doods_fremme"
+
+- alias: "doods fremme video"
+  trigger:
+    platform: state
+    entity_id: image_processing.doods_fremme
+#  condition:
+#    condition: template
+#    value_template: "{{ 'person' in state_attr('image_processing.doods_fremme', 'summary') }}"
+  action:
+    - service: notify.eirikz_telegram
+      data:
+        title: "Doods"
+        message: "fremme"
+        data:
+          photo:
+            url: "https://hass.eirikz.com/local/fremme_latest.jpg"  
+#    - service: camera.record
+#      data:
+#        entity_id: camera.fremme
+#        filename: "/tmp/fremme_{{ now().strftime('%Y%m%d_%H%M%S') }}.mp4"
+#        duration: 20
+#        lookback: 10
+
 
 - alias: Doods Skanning Bak
   trigger:
@@ -665,27 +714,27 @@
 
 ### Eirikz added doods notification ###
 
-- alias: Tensorflow notify
-  trigger:
-    - platform: numeric_state
-      entity_id:
-        - image_processing.doods_fremme
-      above: 0
-  action:
-    - service: camera.record
-      data_template:
-        entity_id: "camera.fremme"
-        filename: "/config/www/fremme.mp4"
-        duration: 20
-        lookback: 10
-    - service: notify.eirikz_telegram
-      data:
-        title: Doods
-        message: "Jeg ser noe"
-        data:
-          video:
-            - file: "/config/www/fremme.mp4"
-              caption: Bevegelse
+#- alias: Tensorflow notify
+#  trigger:
+#    - platform: numeric_state
+#      entity_id:
+#        - image_processing.doods_fremme
+#      above: 0
+#  action:
+#    - service: camera.record
+#      data_template:
+#        entity_id: "camera.fremme"
+#        filename: "/config/www/fremme.mp4"
+#        duration: 20
+#        lookback: 10
+#    - service: notify.eirikz_telegram
+#      data:
+#        title: Doods
+#        message: "Jeg ser noe"
+#        data:
+#          video:
+#            - file: "/config/www/fremme.mp4"
+#              caption: Bevegelse
 
 ### Eirikz added doods notification ###
 
@@ -823,23 +872,92 @@
             {{ state_attr('light.kontor' , 'brightness_pct') + 10 }}
           {% else %} 100 {% endif %}
 
-#- alias: 'test eirikz z2m4'
+- alias: 'W lys opp'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/0xd0cf5efffe1f5be3'
+  condition:
+    condition: template
+    value_template: '{{ "brightness_up_click" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      data_template:
+        entity_id: light.soverom
+        transition: '1'
+        brightness: >
+         {%- if states.light.soverom.attributes.brightness <= 25 %}
+           51
+         {% elif states.light.soverom.attributes.brightness <= 51 %}
+           77
+         {% elif states.light.soverom.attributes.brightness <= 77 %}
+           102
+         {% elif states.light.soverom.attributes.brightness <= 102 %}
+           128
+         {% elif states.light.soverom.attributes.brightness <= 128 %}
+           153
+         {% elif states.light.soverom.attributes.brightness <= 153 %}
+           179
+         {% elif states.light.soverom.attributes.brightness <= 179 %}
+           205
+         {% elif states.light.soverom.attributes.brightness <= 205 %}
+           230
+         {% elif states.light.soverom.attributes.brightness <= 230 %}
+           255
+         {% endif %}
+
+- alias: 'W lys ned'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/0xd0cf5efffe1f5be3'
+  condition:
+    condition: template
+    value_template: '{{ "brightness_down_click" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      data_template:
+        entity_id: light.soverom
+        transition: '1'
+        brightness: >
+         {%- if states.light.soverom.attributes.brightness <= 51 %}
+           25
+         {% elif states.light.soverom.attributes.brightness <= 77 %}
+           51
+         {% elif states.light.soverom.attributes.brightness <= 102 %}
+           77
+         {% elif states.light.soverom.attributes.brightness <= 128 %}
+           102
+         {% elif states.light.soverom.attributes.brightness <= 153 %}
+           128
+         {% elif states.light.soverom.attributes.brightness <= 179 %}
+           153
+         {% elif states.light.soverom.attributes.brightness <= 205 %}
+           179
+         {% elif states.light.soverom.attributes.brightness <= 230 %}
+           205
+         {% elif states.light.soverom.attributes.brightness <= 255 %}
+           230
+         {% endif %}
+
+#- alias: 'Dimming av lys W bryter soverom'
 #  trigger:
-#    platform: mqtt
-#    topic: 'zigbee2mqtt/0x00178801067347bc'
-#  condition:
-#    condition: template
-#    value_template: '{{ "down-press" == trigger.payload_json.action }}'
+#    platform: event
+#    event_type: xiaomi_aqara.click
+#    event_data:
+#      entity_id: binary_sensor.soverom_bryter_w
+#      action_type: long
 #  action:
 #    - service: light.turn_on
+#      entity_id: light.soverom_w
 #      data_template:
-#        entity_id: light.kontor
-#        brightness_pct: >
-#          {% if state_attr('light.kontor' , 'brightness_pct') < 101 %}
-#            {{ state_attr('light.kontor' , 'brightness_pct') - 10 }}
-#          {% else %} 0 {% endif %}
-
-
+#        transition: 1
+#        brightness: >
+#          {% set state = (states.light.soverom_w.attributes.brightness|float) -%}
+#          {%- if state > 2 -%}
+#            {%- set state = states.light.soverom_w.attributes.brightness + 10 -%}
+#          {%- elif state < 2 -%}
+##            {%- set state = states.light.soverom_w.attributes.brightness - 10 -%}
+#         {%- endif %}
+#         {{ state }}
 
 
 - alias: Lys loft
@@ -856,7 +974,23 @@
       data_template:
         entity_id: 'scene.{{ states.input_select.loftlys.state }}'
 
+- alias: Lys loft følger fysisk bryter av
+  trigger:
+    platform: state
+    entity_id: light.loft_taklys_1
+    to: 'unavailable'
+  action:
+    - service: light.turn_off
+      entity_id: light.loft
 
+- alias: Lys loft følger fysisk bryter på
+  trigger:
+    platform: state
+    entity_id: light.loft_taklys_1
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.loft
 
 - alias : Lys Kjøkken
   trigger:
@@ -893,7 +1027,6 @@
 
 
 - alias: Skru på halloween
-#  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.trapp_ute
@@ -915,7 +1048,6 @@
 
 
 - alias: Skru av halloween
-#  hide_entity: true
   trigger:
     platform: state
     entity_id: binary_sensor.trapp_ute
@@ -1036,3 +1168,11 @@
       entity_id: vacuum.xiaomi_vacuum_cleaner
       repeats: 3
       zone: [[19036,24821,26336,28271]]
+
+- alias: 'Zigbee Map aktualisieren'  
+  trigger:
+    platform: time_pattern
+    minutes: '/60'
+    seconds: 00
+  action:
+    service: zigbee2mqtt_networkmap.update

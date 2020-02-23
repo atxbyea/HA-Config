@@ -8,7 +8,7 @@ visible:
 cards:
   - type: vertical-stack
     cards: 
-      - entity: media_player.spotify
+      - entity: media_player.spotify_eirikz
         type: custom:mini-media-player
         info: short
         artwork: cover

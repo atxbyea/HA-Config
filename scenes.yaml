@@ -4,10 +4,28 @@
           state: on
         light.kjokken:
           state: on
+        light.kjokkengruppe:
+          state: on
         light.stue:
           state: on
-        light.dim:
+        light.stuegruppe:
           state: on
+#        light.dim:
+#          state: on
+        switch.stue_stalampe:
+          state: on
+        switch.stue_gangbordlampe:
+          state: on
+        light.stue_bikkjelampe_light:
+          state: on
+        light.kjokken_benke_underlys_light:
+          state: on
+#        light.stue_lite_vitrineskap:
+#          state: on
+#        light.stue_lyst_vitrineskap:
+#          state: on
+#        light.stue_peislys:
+#          state: on
         media_player.stuetv:
           state: on
         media_player.stueforsterker:
@@ -20,10 +38,28 @@
           state: off
         light.kjokken:
           state: off
+        light.kjokkengruppe:
+          state: off
         light.stue:
           state: off
-        light.dim:
+        light.stuegruppe:
           state: off
+        light.kjokken_benke_underlys_light:
+          state: off
+#        light.dim:
+#          state: off
+        switch.stue_stalampe:
+          state: off
+        switch.stue_gangbordlampe:
+          state: off
+        light.stue_bikkjelampe_light:
+          state: off
+#        light.stue_lite_vitrineskap:
+#          state: off
+#        light.stue_lyst_vitrineskap:
+#          state: off
+#        light.stue_peislys:
+#          state: off
         media_player.stuetv:
           state: off
         media_player.stueforsterker:
@@ -143,3 +179,30 @@
     entities:
         light.kjokken:
           state: off
+
+
+  - name: loftheltav
+    entities: 
+        light.gulvlampe_loft_1:
+          state: off
+        light.gulvlampe_loft_2:
+          state: off
+        light.gulvlampe_loft_3:
+          state: off
+        light.loft_taklys_1:
+          state: off
+        light.loft_taklys_2:
+          state: off
+  - name: loftheltpa
+    entities:
+        light.gulvlampe_loft_1:
+          state: on
+        light.gulvlampe_loft_2:
+          state: on
+        light.gulvlampe_loft_3:
+          state: on
+        light.loft_taklys_1:
+          state: on
+        light.loft_taklys_2:
+          state: on
+

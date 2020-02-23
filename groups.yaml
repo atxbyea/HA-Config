@@ -1,6 +1,6 @@
 wakeuplight:
   name: Wakeup light
-  control: hidden
+#  control: hidden
   entities:
     - input_datetime.wakeup_time
 
@@ -31,3 +31,4 @@ circadian:
     - switch.circadian_lighting_kontor
     - switch.circadian_lighting_kjokken
     - switch.circadian_lighting_do
+    - switch.circadian_lighting_peis
