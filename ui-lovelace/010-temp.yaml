@@ -3,7 +3,7 @@ title: Temp
 icon: 'mdi:temperature-celsius'
 panel: true
 visible: 
-  - user: b2d109cb37f0446d8bf837dd59a06e57
+  - user: 1ea5bb36c8254b57845c94867aee1f14
 cards:
   - type: vertical-stack
     cards:
@@ -13,10 +13,17 @@ cards:
             entity: weather.dark_sky
           - type: glance
             entities:
-              - sensor.temperatur_alva
-              - sensor.soverom_temperatur
-              - sensor.temperatur_bod
-              - sensor.temperatur_garasje
+              - entity: sensor.0x00158d0002720f9f_temperature
+                name: Alva
+              - entity: sensor.0x00158d00025efd10_temperature
+                name: Soverom
+              - entity: sensor.0x00158d00025f040e_temperature
+                name: Bod
+              - entity: sensor.0x00158d0002e94b50_temperature
+                name: Garasje
+              - entity: sensor.0x00158d0002e91e9a_temperature
+                name: Bad
+
       - type: horizontal-stack
         cards:
           - type: custom:simple-thermostat
@@ -24,6 +31,9 @@ cards:
             step_size: 1
             control:
               - hvac
+          - type: custom:simple-thermostat
+            entity: climate.varmepumpe_loft
+            step_size: 1
           - type: glance
             entities:
               - sensor.inne_dobbelsensor_temperature

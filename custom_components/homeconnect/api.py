@@ -1,265 +1,401 @@
-from requests_oauthlib import OAuth2Session
-from .sseclient import SSEClient
-from threading import Thread
-import json
-import os
-import time
+"""API for Home Connect bound to HASS OAuth."""
+
+from asyncio import run_coroutine_threadsafe
+import logging
+
+import homeconnect
+from homeconnect.api import HomeConnectError
+
+from homeassistant import config_entries, core
+from homeassistant.core import callback
+from homeassistant.helpers import config_entry_oauth2_flow
+from homeassistant.helpers.entity import Entity
+
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
-URL_API = 'https://api.home-connect.com'
-URL_SIM = 'https://simulator.home-connect.com'
-ENDPOINT_AUTHORIZE = '/security/oauth/authorize'
-ENDPOINT_TOKEN = '/security/oauth/token'
-ENDPOINT_APPLIANCES = '/api/homeappliances'
+class ConfigEntryAuth(homeconnect.HomeConnectAPI):
+    """Provide Home Connect authentication tied to an OAuth2 based config entry."""
 
-class HomeConnectError(Exception):
-    pass
+    def __init__(
+        self,
+        hass: core.HomeAssistant,
+        config_entry: config_entries.ConfigEntry,
+        implementation: config_entry_oauth2_flow.AbstractOAuth2Implementation,
+    ):
+        """Initialize Home Connect Auth."""
+        self.hass = hass
+        self.config_entry = config_entry
+        self.session = config_entry_oauth2_flow.OAuth2Session(
+            hass, config_entry, implementation
+        )
+        super().__init__(self.session.token)
+        self.devices = []
 
-class HomeConnect:
-    """Connection to the HomeConnect OAuth API."""
-    def __init__(self, client_id, client_secret='', redirect_uri='',
-                 simulate=False,
-                 token_cache=None):
-        """Initialize the connection."""
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.redirect_uri = redirect_uri
-        self.simulate = simulate
-        self.oauth = None
-        self.token_cache = token_cache or 'homeconnect_oauth_token.json'
-        self.connect()
+    def refresh_tokens(self) -> dict:
+        """Refresh and return new Home Connect tokens using Home Assistant OAuth2 session."""
+        run_coroutine_threadsafe(
+            self.session.async_ensure_token_valid(), self.hass.loop
+        ).result()
 
-    def get_uri(self, endpoint):
-        """Get the full URL for a specific endpoint."""
-        if self.simulate:
-            return URL_SIM + endpoint
-        else:
-            return URL_API + endpoint
+        return self.session.token
 
-    def token_dump(self, token):
-        """Dump the token to a JSON file."""
-        with open(self.token_cache, 'w') as f:
-            json.dump(token, f)
-
-    def token_load(self):
-        """Load the token from the cache if exists it and is not expired,
-        otherwise return None."""
-        if not os.path.exists(self.token_cache):
-            return None
-        with open(self.token_cache, 'r') as f:
-            token = json.load(f)
-        now = int(time.time())
-        token['expires_in'] = token.get('expires_at', now - 1) - now
-        return token
-
-    def token_expired(self, token):
-        """Check if the token is expired."""
-        now = int(time.time())
-        return token['expires_at'] - now < 60
-
-    def connect(self):
-        """Connect to the OAuth APIself.
-
-        Called at instantiation."""
-        refresh_kwargs = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-        }
-        refresh_url = self.get_uri(ENDPOINT_TOKEN)
-        token = self.token_load()
-        if token:
-            self.oauth = OAuth2Session(self.client_id,
-                                   token=token,
-                                   auto_refresh_url=refresh_url,
-                                   auto_refresh_kwargs=refresh_kwargs,
-                                   token_updater=self.token_dump)
-        else:
-            self.oauth = OAuth2Session(self.client_id,
-                                   redirect_uri=self.redirect_uri,
-                                   auto_refresh_url=refresh_url,
-                                   auto_refresh_kwargs=refresh_kwargs,
-                                   token_updater=self.token_dump)
-
-    def get_authurl(self):
-        """Get the URL needed for the authorization code grant flow."""
-        uri = self.get_uri(ENDPOINT_AUTHORIZE)
-        authorization_url, state = self.oauth.authorization_url(uri)
-        return authorization_url
-
-    def get_token(self, authorization_response):
-        """Get the token given the redirect URL obtained from the
-        authorization."""
-        uri = self.get_uri(ENDPOINT_TOKEN)
-        token = self.oauth.fetch_token(uri,
-            authorization_response=authorization_response,
-            client_secret=self.client_secret)
-        self.token_dump(token)
-
-    def get(self, endpoint):
-        """Get data as dictionary from an endpoint."""
-        uri = self.get_uri(endpoint)
-        res = self.oauth.get(uri)
-        if not res.content:
-            return {}
-        try:
-            res = res.json()
-        except:
-            raise ValueError("Cannot parse {} as JSON".format(res))
-        if 'error' in res:
-            raise HomeConnectError(res['error'])
-        elif 'data' not in res:
-            raise HomeConnectError("Unexpected error")
-        return res['data']
-
-    def put(self, endpoint, data):
-        """Send (PUT) data to an endpoint."""
-        uri = self.get_uri(endpoint)
-        res = self.oauth.put(
-            uri,
-            json.dumps(data),
-            headers={
-            'Content-Type': 'application/vnd.bsh.sdk.v1+json',
-            'accept': 'application/vnd.bsh.sdk.v1+json'
-            })
-        if not res.content:
-            return {}
-        try:
-            res = res.json()
-        except:
-            raise ValueError("Cannot parse {} as JSON".format(res))
-        if 'error' in res:
-            raise HomeConnectError(res['error'])
-        return res
-
-    def delete(self, endpoint):
-        """Delete an endpoint."""
-        uri = self.get_uri(endpoint)
-        res = self.oauth.delete(uri)
-        res = res.json()
-        if 'error' in res:
-            raise HomeConnectError(res['error'])
-        return res
-
-    def get_appliances(self):
-        """Return a list of `HomeConnectAppliance` instances for all
-        appliances."""
-        data = self.get(ENDPOINT_APPLIANCES)
-        return [HomeConnectAppliance(self, **app)
-                for app in data['homeappliances']]
-
-
-class HomeConnectAppliance:
-    """Class representing a single appliance."""
-    def __init__(self, hc, haId, vib=None, brand=None, type=None, name=None,
-                 enumber=None, connected=False):
-        self.hc = hc
-        self.haId = haId
-        self.vib = vib or ''
-        self.brand = brand or ''
-        self.type = type or ''
-        self.name = name or ''
-        self.enumber = enumber or ''
-        self.connected = connected
-        self.status = {}
-
-    def __repr__(self):
-        return "HomeConnectAppliance(hc, haId='{}', vib='{}', brand='{}', type='{}', name='{}', enumber='{}', connected={})".format(
-            self.haId, self.vib, self.brand, self.type, self.name, self.enumber, self.connected)
-
-    def listen_events(self, callback=None):
-        """Spawn a thread with an event listener that updates the status."""
-        uri = self.hc.get_uri('{}/{}{}'.format('/api/homeappliances', self.haId, '/events'))
-        from requests.exceptions import HTTPError
-        sse = None
-        while True:
-            try:
-                sse = SSEClient(uri, session=self.hc.oauth, retry=100)
-            except HTTPError:
-                print('HTTPError while trying to listen')
-                time.sleep(0.1)
+    def get_devices(self):
+        """Get a dictionary of devices."""
+        appl = self.get_appliances()
+        devices = []
+        for app in appl:
+            if app.type == "Dryer":
+                device = Dryer(app)
+            elif app.type == "Washer":
+                device = Washer(app)
+            elif app.type == "Dishwasher":
+                device = Dishwasher(app)
+            elif app.type == "FridgeFreezer":
+                device = FridgeFreezer(app)
+            elif app.type == "Oven":
+                device = Oven(app)
+            elif app.type == "CoffeeMaker":
+                device = CoffeeMaker(app)
+            elif app.type == "Hood":
+                device = Hood(app)
+            elif app.type == "Hob":
+                device = Hob(app)
+            else:
+                _LOGGER.warning("Appliance type %s not implemented.", app.type)
                 continue
-            break
-        Thread(target=self._listen, args=(sse, callback)).start()
+            devices.append({"device": device, "entities": device.get_entities()})
+        self.devices = devices
+        return devices
 
-    def _listen(self, sse, callback=None):
-        """Worker function for listener."""
-        for event in sse:
-            try:
-                self.handle_event(event, callback)
-            except ValueError:
-                pass
 
-    @staticmethod
-    def json2dict(lst):
-        """Turn a list of dictionaries where one key is called 'key'
-        into a dictionary with the value of 'key' as key."""
-        return {d.pop('key'): d for d in lst}
+class HomeConnectDevice:
+    """Generic Home Connect device."""
 
-    def handle_event(self, event, callback=None):
-        """Handle a new event.
+    # for some devices, this is instead 'BSH.Common.EnumType.PowerState.Standby'
+    # see https://developer.home-connect.com/docs/settings/power_state
+    power_off_state = "BSH.Common.EnumType.PowerState.Off"
 
-        Updates the status with the event data and executes any callback
-        function."""
-        event = json.loads(event.data)
-        self.status.update(self.json2dict(event['items']))
-        if callback is not None:
-            callback(self)
+    def __init__(self, appliance):
+        """Initialize the device class."""
+        self.appliance = appliance
+        self.entities = []
 
-    def get(self, endpoint):
-        """Get data (as dictionary) from an endpoint."""
-        return self.hc.get('{}/{}{}'.format(ENDPOINT_APPLIANCES, self.haId, endpoint))
+    def initialize(self):
+        """Fetch the info needed to initialize the device."""
+        try:
+            self.appliance.get_status()
+        except (HomeConnectError, ValueError):
+            _LOGGER.debug("Unable to fetch appliance status. Probably offline.")
+        try:
+            self.appliance.get_settings()
+        except (HomeConnectError, ValueError):
+            _LOGGER.debug("Unable to fetch settings. Probably offline.")
+        try:
+            program_active = self.appliance.get_programs_active()
+        except (HomeConnectError, ValueError):
+            _LOGGER.debug("Unable to fetch active programs. Probably offline.")
+            program_active = None
+        if program_active and "key" in program_active:
+            self.appliance.status["BSH.Common.Root.ActiveProgram"] = {
+                "value": program_active["key"]
+            }
+        self.appliance.listen_events(callback=self.event_callback)
 
-    def delete(self, endpoint):
-        """Delete endpoint."""
-        return self.hc.delete('{}/{}{}'.format(ENDPOINT_APPLIANCES, self.haId, endpoint))
+    def event_callback(self, appliance):
+        """Handle event."""
+        _LOGGER.debug("Update triggered on %s", appliance.name)
+        _LOGGER.debug(self.entities)
+        _LOGGER.debug(self.appliance.status)
+        for entity in self.entities:
+            entity.async_entity_update()
 
-    def put(self, endpoint, data):
-        """Send (PUT) data to an endpoint."""
-        return self.hc.put('{}/{}{}'.format(ENDPOINT_APPLIANCES, self.haId, endpoint), data)
 
-    def get_programs_active(self):
-        """Get active programs."""
-        return self.get('/programs/active')
+class HomeConnectEntity(Entity):
+    """Generic Home Connect entity (base class)."""
 
-    def get_programs_selected(self):
-        """Get selected programs."""
-        return self.get('/programs/selected')
+    def __init__(self, device, name):
+        """Initialize the entity."""
+        self.device = device
+        self._name = name
+
+    @property
+    def should_poll(self):
+        """No polling needed."""
+        return False
+
+    @property
+    def name(self):
+        """Return the name of the node (used for Entity_ID)."""
+        return self._name
+
+    @property
+    def unique_id(self):
+        """Return the unique id base on the id returned by Home Connect and the entity name."""
+        return f"{self.device.appliance.haId}-{self.name}"
+
+    @property
+    def device_info(self):
+        """Return info about the device."""
+        return {
+            "identifiers": {(DOMAIN, self.device.appliance.haId)},
+            "name": self.device.appliance.name,
+            "manufacturer": self.device.appliance.brand,
+            "model": self.device.appliance.vib,
+        }
+
+    @callback
+    def async_entity_update(self):
+        """Update the entity."""
+        _LOGGER.debug("Entity update triggered on %s", self)
+        self.async_schedule_update_ha_state(True)
+
+
+class DeviceWithPrograms(HomeConnectDevice):
+    """Device with programs."""
+
+    _programs = []
 
     def get_programs_available(self):
-        """Get available programs."""
-        programs = self.get('/programs/available')
-        if not programs or 'programs' not in programs:
-            return []
-        return [p['key'] for p in programs['programs']]
+        """Get the available programs."""
+        return self._programs
 
-    def start_program(self, program):
-        """Start a program."""
-        return self.put('/programs/active', {'data': {'key': program}})
+    def get_program_switches(self):
+        """Get a dictionary with info about program switches.
 
-    def stop_program(self):
-        """Stop a program."""
-        return self.delete('/programs/active')
+        There will be one switch for each program.
+        """
+        programs = self.get_programs_available()
+        return [{"device": self, "program_name": p["name"]} for p in programs]
 
-    def select_program(self, data):
-        """Select a program."""
-        return self.put('/programs/selected', data)
+    def get_program_sensors(self):
+        """Get a dictionary with info about program sensors.
 
-    def get_status(self):
-        """Get the status (as dictionary) and update `self.status`."""
-        status = self.get('/status')
-        if not status or 'status' not in status:
-            return {}
-        self.status = self.json2dict(status['status'])
-        return self.status
+        There will be one of the four types of sensors or each
+        device.
+        """
+        sensors = {
+            "Remaining Program Time": "s",
+            "Elapsed Program Time": "s",
+            "Duration": "s",
+            "Program Progress": "%",
+        }
+        return [
+            {
+                "device": self,
+                "name": " ".join((self.appliance.name, name)),
+                "unit": unit,
+                "key": "BSH.Common.Option.{}".format(name.replace(" ", "")),
+            }
+            for name, unit in sensors.items()
+        ]
 
-    def get_settings(self):
-        """Get the current settings."""
-        settings = self.get('/settings')
-        if not settings or 'settings' not in settings:
-            return {}
-        self.status.update(self.json2dict(settings['settings']))
-        return self.status
 
-    def set_setting(self, settingkey, value):
-        """Change the current setting of `settingkey`."""
-        return self.put('/settings/{}'.format(settingkey), {'data': {'key': settingkey, 'value': value}})
+class DeviceWithDoor(HomeConnectDevice):
+    """Device that has a door sensor."""
+
+    def get_door_entity(self):
+        """Get a dictionary with info about the door binary sensor."""
+        return {
+            "device": self,
+            "name": self.appliance.name + " Door",
+            "device_class": "door",
+        }
+
+
+class Dryer(DeviceWithDoor, DeviceWithPrograms):
+    """Dryer class."""
+
+    _programs = [
+        {"name": "LaundryCare.Dryer.Program.Cotton"},
+        {"name": "LaundryCare.Dryer.Program.Synthetic"},
+        {"name": "LaundryCare.Dryer.Program.Mix"},
+        {"name": "LaundryCare.Dryer.Program.Blankets"},
+        {"name": "LaundryCare.Dryer.Program.BusinessShirts"},
+        {"name": "LaundryCare.Dryer.Program.DownFeathers"},
+        {"name": "LaundryCare.Dryer.Program.Hygiene"},
+        {"name": "LaundryCare.Dryer.Program.Jeans"},
+        {"name": "LaundryCare.Dryer.Program.Outdoor"},
+        {"name": "LaundryCare.Dryer.Program.SyntheticRefresh"},
+        {"name": "LaundryCare.Dryer.Program.Towels"},
+        {"name": "LaundryCare.Dryer.Program.Delicates"},
+        {"name": "LaundryCare.Dryer.Program.Super40"},
+        {"name": "LaundryCare.Dryer.Program.Shirts15"},
+        {"name": "LaundryCare.Dryer.Program.Pillow"},
+        {"name": "LaundryCare.Dryer.Program.AntiShrink"},
+    ]
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        door_entity = self.get_door_entity()
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {
+            "binary_sensor": [door_entity],
+            "switch": program_switches,
+            "sensor": program_sensors,
+        }
+
+
+class Dishwasher(DeviceWithDoor, DeviceWithPrograms):
+    """Dishwasher class."""
+
+    _programs = [
+        {"name": "Dishcare.Dishwasher.Program.Auto1"},
+        {"name": "Dishcare.Dishwasher.Program.Auto2"},
+        {"name": "Dishcare.Dishwasher.Program.Auto3"},
+        {"name": "Dishcare.Dishwasher.Program.Eco50"},
+        {"name": "Dishcare.Dishwasher.Program.Quick45"},
+        {"name": "Dishcare.Dishwasher.Program.Intensiv70"},
+        {"name": "Dishcare.Dishwasher.Program.Normal65"},
+        {"name": "Dishcare.Dishwasher.Program.Glas40"},
+        {"name": "Dishcare.Dishwasher.Program.GlassCare"},
+        {"name": "Dishcare.Dishwasher.Program.NightWash"},
+        {"name": "Dishcare.Dishwasher.Program.Quick65"},
+        {"name": "Dishcare.Dishwasher.Program.Normal45"},
+        {"name": "Dishcare.Dishwasher.Program.Intensiv45"},
+        {"name": "Dishcare.Dishwasher.Program.AutoHalfLoad"},
+        {"name": "Dishcare.Dishwasher.Program.IntensivPower"},
+        {"name": "Dishcare.Dishwasher.Program.MagicDaily"},
+        {"name": "Dishcare.Dishwasher.Program.Super60"},
+        {"name": "Dishcare.Dishwasher.Program.Kurz60"},
+        {"name": "Dishcare.Dishwasher.Program.ExpressSparkle65"},
+        {"name": "Dishcare.Dishwasher.Program.MachineCare"},
+        {"name": "Dishcare.Dishwasher.Program.SteamFresh"},
+        {"name": "Dishcare.Dishwasher.Program.MaximumCleaning"},
+    ]
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        door_entity = self.get_door_entity()
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {
+            "binary_sensor": [door_entity],
+            "switch": program_switches,
+            "sensor": program_sensors,
+        }
+
+
+class Oven(DeviceWithDoor, DeviceWithPrograms):
+    """Oven class."""
+
+    _programs = [
+        {"name": "Cooking.Oven.Program.HeatingMode.PreHeating"},
+        {"name": "Cooking.Oven.Program.HeatingMode.HotAir"},
+        {"name": "Cooking.Oven.Program.HeatingMode.TopBottomHeating"},
+        {"name": "Cooking.Oven.Program.HeatingMode.PizzaSetting"},
+        {"name": "Cooking.Oven.Program.Microwave.600Watt"},
+    ]
+
+    power_off_state = "BSH.Common.EnumType.PowerState.Standby"
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        door_entity = self.get_door_entity()
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {
+            "binary_sensor": [door_entity],
+            "switch": program_switches,
+            "sensor": program_sensors,
+        }
+
+
+class Washer(DeviceWithDoor, DeviceWithPrograms):
+    """Washer class."""
+
+    _programs = [
+        {"name": "LaundryCare.Washer.Program.Cotton"},
+        {"name": "LaundryCare.Washer.Program.Cotton.CottonEco"},
+        {"name": "LaundryCare.Washer.Program.EasyCare"},
+        {"name": "LaundryCare.Washer.Program.Mix"},
+        {"name": "LaundryCare.Washer.Program.DelicatesSilk"},
+        {"name": "LaundryCare.Washer.Program.Wool"},
+        {"name": "LaundryCare.Washer.Program.Sensitive"},
+        {"name": "LaundryCare.Washer.Program.Auto30"},
+        {"name": "LaundryCare.Washer.Program.Auto40"},
+        {"name": "LaundryCare.Washer.Program.Auto60"},
+        {"name": "LaundryCare.Washer.Program.Chiffon"},
+        {"name": "LaundryCare.Washer.Program.Curtains"},
+        {"name": "LaundryCare.Washer.Program.DarkWash"},
+        {"name": "LaundryCare.Washer.Program.Dessous"},
+        {"name": "LaundryCare.Washer.Program.Monsoon"},
+        {"name": "LaundryCare.Washer.Program.Outdoor"},
+        {"name": "LaundryCare.Washer.Program.PlushToy"},
+        {"name": "LaundryCare.Washer.Program.ShirtsBlouses"},
+        {"name": "LaundryCare.Washer.Program.SportFitness"},
+        {"name": "LaundryCare.Washer.Program.Towels"},
+        {"name": "LaundryCare.Washer.Program.WaterProof"},
+    ]
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        door_entity = self.get_door_entity()
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {
+            "binary_sensor": [door_entity],
+            "switch": program_switches,
+            "sensor": program_sensors,
+        }
+
+
+class CoffeeMaker(DeviceWithPrograms):
+    """Coffee maker class."""
+
+    _programs = [
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.Espresso"},
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.EspressoMacchiato"},
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.Coffee"},
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.Cappuccino"},
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.LatteMacchiato"},
+        {"name": "ConsumerProducts.CoffeeMaker.Program.Beverage.CaffeLatte"},
+    ]
+
+    power_off_state = "BSH.Common.EnumType.PowerState.Standby"
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {"switch": program_switches, "sensor": program_sensors}
+
+
+class Hood(DeviceWithPrograms):
+    """Hood class."""
+
+    _programs = [
+        {"name": "Cooking.Common.Program.Hood.Automatic"},
+        {"name": "Cooking.Common.Program.Hood.Venting"},
+        {"name": "Cooking.Common.Program.Hood.DelayedShutOff"},
+    ]
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {"switch": program_switches, "sensor": program_sensors}
+
+
+class FridgeFreezer(DeviceWithDoor):
+    """Fridge/Freezer class."""
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        door_entity = self.get_door_entity()
+        return {"binary_sensor": [door_entity]}
+
+
+class Hob(DeviceWithPrograms):
+    """Hob class."""
+
+    _programs = [{"name": "Cooking.Hob.Program.PowerLevelMode"}]
+
+    def get_entities(self):
+        """Get a dictionary with infos about the associated entities."""
+        program_sensors = self.get_program_sensors()
+        program_switches = self.get_program_switches()
+        return {"switch": program_switches, "sensor": program_sensors}

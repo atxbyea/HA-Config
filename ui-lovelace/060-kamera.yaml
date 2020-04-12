@@ -3,7 +3,7 @@ title: Kamera
 icon: 'mdi:cctv'
 panel: true
 visible:
-  - user: b2d109cb37f0446d8bf837dd59a06e57
+  - user: 1ea5bb36c8254b57845c94867aee1f14
 cards:
   - type: horizontal-stack
     cards:

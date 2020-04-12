@@ -3,7 +3,7 @@ title: Lys
 icon: 'mdi:lightbulb'
 panel: true
 visible: 
-  - user: b2d109cb37f0446d8bf837dd59a06e57
+  - user: 1ea5bb36c8254b57845c94867aee1f14
 cards:
   - type: vertical-stack
     cards:
@@ -18,21 +18,24 @@ cards:
       - type: horizontal-stack
         cards:
           - type: light
-            entity: light.eirik
+            entity: light.eirikgruppe
             name: Kontor
           - type: light
-            entity: light.soverom
+            entity: light.soveromgruppe
             name: Soverom
       - type: horizontal-stack
         cards:
           - type: light
-            entity: light.loft
+            entity: light.loft_lys
             name: Loft
           - type: light
-            entity: light.kjeller
+            entity: light.kjellergruppe
             name: Kjeller
       - type: horizontal-stack
         cards:
           - type: light
             entity: light.nattlys
             name: Nattlys
+          - type: light
+            entity: light.utegruppe
+            name: Utelys

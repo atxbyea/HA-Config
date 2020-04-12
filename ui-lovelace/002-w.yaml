@@ -15,7 +15,7 @@ cards:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.soverom_w
+            entity: light.soverom_lampe_w_light
             name: Soverom
             tap_action:
               action: toggle

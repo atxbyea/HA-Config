@@ -238,16 +238,6 @@
         unit_of_measurement: 'kWh'
 
 
-#  - platform: template
-#    sensors:
-#      eirik_batteri:
-#        friendly_name: 'Eirik Batteri'
-#        value_template: '{{ states.device_tracker.eirik_mobil.attributes.battery_level }} %'
-#      eirik_motion:
-#        friendly_name: 'Eirik i bevegelse'
-#        value_template: '{{ states.device_tracker.eirik_mobil.attributes.motion }}'
-
-
   - platform: template
     sensors:
       stuetv_source:

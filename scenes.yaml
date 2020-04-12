@@ -2,30 +2,12 @@
     entities:
         group.circadian:
           state: on
-        light.kjokken:
-          state: on
-        light.kjokkengruppe:
-          state: on
-        light.stue:
-          state: on
         light.stuegruppe:
           state: on
-#        light.dim:
-#          state: on
-        switch.stue_stalampe:
+          brightness: 1
+        light.kjokkengruppe:
           state: on
-        switch.stue_gangbordlampe:
-          state: on
-        light.stue_bikkjelampe_light:
-          state: on
-        light.kjokken_benke_underlys_light:
-          state: on
-#        light.stue_lite_vitrineskap:
-#          state: on
-#        light.stue_lyst_vitrineskap:
-#          state: on
-#        light.stue_peislys:
-#          state: on
+          brightness: 1
         media_player.stuetv:
           state: on
         media_player.stueforsterker:
@@ -36,30 +18,10 @@
     entities:
         group.circadian:
           state: off
-        light.kjokken:
+        light.stuegruppe:
           state: off
         light.kjokkengruppe:
           state: off
-        light.stue:
-          state: off
-        light.stuegruppe:
-          state: off
-        light.kjokken_benke_underlys_light:
-          state: off
-#        light.dim:
-#          state: off
-        switch.stue_stalampe:
-          state: off
-        switch.stue_gangbordlampe:
-          state: off
-        light.stue_bikkjelampe_light:
-          state: off
-#        light.stue_lite_vitrineskap:
-#          state: off
-#        light.stue_lyst_vitrineskap:
-#          state: off
-#        light.stue_peislys:
-#          state: off
         media_player.stuetv:
           state: off
         media_player.stueforsterker:
@@ -105,104 +67,111 @@
           state: off
 
 
-  - name: Full
-    entities:
-        light.loft:
-            state: on
-            brightness: 254
-
-  - name: Femti
-    entities:
-        light.loft:
-            state: on
-            brightness: 128
-
-  - name: Ti
-    entities:
-        light.loft:
-            state: on
-            brightness: 25
-
-  - name: Av
-    entities:
-        light.loft:
-            state: off
-
-  - name: KjokkenTi
-    entities:
-        light.kjokken:
-            state: on
-            brightness: 25
-        light.kjokken_benke_underlys:
-            state: on
-            xy_color: [0.54, 0.39]
-
-  - name: KjokkenTretti
-    entities:
-        light.kjokken:
-            state: on
-            brightness: 75
-        light.kjokken_benke_underlys:
-            state: on
-            xy_color: [0.54, 0.39]
-
-  - name: KjokkenSeksti
-    entities:
-        light.kjokken:
-            state: on
-            brightness: 150
-        light.kjokken_benke_underlys:
-            state: on
-            xy_color: [0.42, 0.39]
-
-  - name: KjokkenAtti
-    entities:
-        light.kjokken:
-            state: on
-            brightness: 200
-        light.kjokken_benke_underlys:
-            state: on
-#            xy_color: [0.53, 0.41]
-            color_temp: 500
-
-  - name: KjokkenHundre
-    entities:
-        light.kjokken:
-            state: on
-            brightness: 254 
-        light.kjokken_benke_underlys:
-            state: on
-#            xy_color: [0.53, 0.41]
-            color_temp: 500
-
-  - name: KjokkenAv
-    entities:
-        light.kjokken:
-          state: off
-
-
   - name: loftheltav
     entities: 
-        light.gulvlampe_loft_1:
+        light.loft_gulvlampe1_light:
           state: off
-        light.gulvlampe_loft_2:
+        light.loft_gulvlampe2_light:
           state: off
-        light.gulvlampe_loft_3:
+        light.loft_gulvlampe3_light:
           state: off
         light.loft_taklys_1:
           state: off
         light.loft_taklys_2:
           state: off
+
   - name: loftheltpa
     entities:
-        light.gulvlampe_loft_1:
+        light.loft_gulvlampe1_light:
           state: on
-        light.gulvlampe_loft_2:
+        light.loft_gulvlampe2_light:
           state: on
-        light.gulvlampe_loft_3:
+        light.loft_gulvlampe3_light:
           state: on
         light.loft_taklys_1:
           state: on
         light.loft_taklys_2:
           state: on
 
+  - name: W_kontor_helt_av
+    entities:
+        light.w_kontor_liten_lampe1_light:
+          state: off
+        light.w_kontor_liten_lampe2_light:
+          state: off
+        light.w_kontor_taklampe:
+          state: off
+        light.w_kontor_spisslampe:
+          state:off
+
+  - name: W_kontor_helt_pa
+    entities:
+        light.w_kontor_liten_lampe1_light:
+          state: on
+          brightness: 254
+        light.w_kontor_liten_lampe2_light:
+          state: on
+          brightness: 254
+        light.w_kontor_taklampe_light:
+          state: on
+          brightness: 254
+        light.w_kontor_spisslampe_light:
+          state: on
+          brightness: 254
+
+  - name: W_kontor_koselig
+    entities:
+        light.w_kontor_liten_lampe1_light:
+          state: on 
+          brightness: 60
+          color_temp: 454
+        light.w_kontor_liten_lampe2_light:
+          state: on 
+          brightness: 60
+          color_temp: 454
+        light.w_kontor_taklampe_light:
+          state: on 
+          brightness: 60
+          color_temp: 454
+        light.w_kontor_spisslampe_light:
+          state: on
+          brightness: 60
+          color_temp: 454
+
+  - name: W_kontor_litt_mindre_koselig
+    entities:
+        light.w_kontor_liten_lampe1_light:
+          state: on
+          brightness: 60 
+          color_temp: 367
+        light.w_kontor_liten_lampe2_light:
+          state: on
+          brightness: 60 
+          color_temp: 367
+        light.w_kontor_taklampe_light:
+          state: on
+          brightness: 60 
+          color_temp: 367
+        light.w_kontor_spisslampe_light:
+          state: on
+          brightness: 60 
+          color_temp: 367
+
+  - name: W_kontor_passelig_lyst
+    entities:
+        light.w_kontor_liten_lampe1_light:
+          state: on
+          brightness: 254
+          color_temp: 346
+        light.w_kontor_liten_lampe2_light:
+          state: on
+          brightness: 254
+          color_temp: 346
+        light.w_kontor_taklampe_light:
+          state: on
+          brightness: 254
+          color_temp: 346
+        light.w_kontor_spisslampe_light:
+          state: on
+          brightness: 254
+          color_temp: 346

@@ -1,63 +1,63 @@
-resources:
-  - url: /community_plugin/calendar-card/calendar-card.js
-    type: js
-  - url: /local/monster-card.js?v=1
-    type: js
-  - url: /community_plugin/light-entity-row/light-entity-row.js
-    type: 
-  - url: /community_plugin/mini-media-player/mini-media-player-bundle.js
-    type: module
-  - url: /community_plugin/spotify-card/spotify-card.js
-    type: module
-  - url: /community_plugin/seventeen-track-card/seventeen-track-card.js
-    type: js
-  - url: /community_plugin/simple-thermostat/simple-thermostat.js
-    type: module
-  - url: /community_plugin/surveillance-card/surveillance-card.js
-    type: module
-  - url: /community_plugin/travel-time-card/travel-time-card.js
-    type: js
-  - url: /community_plugin/lovelace-card-mod/card-mod.js
-    type: js 
-  - url: /community_plugin/lovelace-auto-entities/auto-entities.js
-    type: module
-  - url: /community_plugin/vertical-stack-in-card/vertical-stack-in-card.js
-    type: js
-  - url: /community_plugin/compact-custom-header/compact-custom-header.js
-    type: module
-  - url: /community_plugin/lovelace-slider-entity-row/slider-entity-row.js
-    type: module
-  - url: /community_plugin/lovelace-card-tools/card-tools.js
-    type: module
-  - url: /community_plugin/zigbee2mqtt-networkmap/zigbee2mqtt-networkmap.js
-    type: module 
-  - url: /community_plugin/upcoming-media-card/upcoming-media-card.js
-    type: js
-cch:
-  menu: clock
-  notifications: hide
-  clock_format: 24
-  swipe: true
+#resources:
+#  - url: /community_plugin/calendar-card/calendar-card.js
+#    type: js
+#  - url: /local/monster-card.js?v=1
+#    type: js
+#  - url: /community_plugin/light-entity-row/light-entity-row.js
+#    type: 
+#  - url: /community_plugin/mini-media-player/mini-media-player-bundle.js
+#    type: module
+#  - url: /community_plugin/spotify-card/spotify-card.js
+#    type: module
+#  - url: /community_plugin/seventeen-track-card/seventeen-track-card.js
+#    type: js
+#  - url: /community_plugin/simple-thermostat/simple-thermostat.js
+#    type: module
+#  - url: /community_plugin/surveillance-card/surveillance-card.js
+#    type: module
+#  - url: /community_plugin/travel-time-card/travel-time-card.js
+#    type: js
+#  - url: /community_plugin/lovelace-card-mod/card-mod.js
+#    type: js 
+#  - url: /community_plugin/lovelace-auto-entities/auto-entities.js
+#    type: module
+#  - url: /community_plugin/vertical-stack-in-card/vertical-stack-in-card.js
+#    type: js
+#  - url: /community_plugin/compact-custom-header/compact-custom-header.js
+#    type: module
+#  - url: /community_plugin/lovelace-slider-entity-row/slider-entity-row.js
+#    type: module
+#  - url: /community_plugin/lovelace-card-tools/card-tools.js
+#    type: module
+#  - url: /community_plugin/zigbee2mqtt-networkmap/zigbee2mqtt-networkmap.js
+#    type: module 
+#  - url: /community_plugin/upcoming-media-card/upcoming-media-card.js
+#    type: js
+#cch:
+ # menu: clock
+ # notifications: hide
+ # clock_format: 24
+ # swipe: true
 
 
 views:
-  - !include /config/ui-lovelace/001-eirik.yaml
-  - !include /config/ui-lovelace/002-w.yaml
-  - !include /config/ui-lovelace/010-temp.yaml
-  - !include /config/ui-lovelace/011-temp.yaml
-  - !include /config/ui-lovelace/020-media.yaml
-  - !include /config/ui-lovelace/030-eirikz.yaml
-  - !include /config/ui-lovelace/031-eirikz.yaml
-  - !include /config/ui-lovelace/040-stovsuger.yaml
-  - !include /config/ui-lovelace/050-lys.yaml
-  - !include /config/ui-lovelace/051-lys.yaml
-  - !include /config/ui-lovelace/060-kamera.yaml
-  - !include /config/ui-lovelace/061-kamera.yaml
-  - !include /config/ui-lovelace/070-kalender.yaml
-  - !include /config/ui-lovelace/080-brytereogautomasjoner.yaml
-  - !include /config/ui-lovelace/090-multimedia.yaml
-  - !include /config/ui-lovelace/100-wakeup.yaml
-  - !include /config/ui-lovelace/110-pakker.yaml
-  - !include /config/ui-lovelace/120-strom.yaml
-  - !include /config/ui-lovelace/121-strom.yaml
-  - !include /config/ui-lovelace/130-drivhus.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/001-eirik.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/002-w.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/010-temp.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/011-temp.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/020-media.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/030-eirikz.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/031-eirikz.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/040-stovsuger.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/050-lys.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/051-lys.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/060-kamera.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/061-kamera.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/070-kalender.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/080-brytereogautomasjoner.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/090-multimedia.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/100-wakeup.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/110-pakker.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/120-strom.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/121-strom.yaml
+  - !include /home/hass/homeassistant/ui-lovelace/130-drivhus.yaml

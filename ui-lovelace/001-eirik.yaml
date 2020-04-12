@@ -15,7 +15,7 @@ cards:
             tap_action:
               action: toggle
           - type: entity-button
-            entity: light.eirik
+            entity: light.kontor_eirik_lys
             name: Kontorlys
             tap_action:
               action: toggle
@@ -24,12 +24,9 @@ cards:
         cards:
           - type: glance
             entities:
-              - entity: binary_sensor.garasjeport_sensor
-                name: Garasje
-                icon: 'mdi:garage'
-              - entity: sensor.drivhusny_temperature
-                name: Drivhus
-                icon: 'mdi:flower'
+              - entity: sensor.norway_coronavirus_confirmed
+                name: Corona
+                icon: 'mdi:syringe'
       - type: horizontal-stack
         cards:
           - type: custom:upcoming-media-card

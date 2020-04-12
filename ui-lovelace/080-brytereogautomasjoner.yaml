@@ -7,7 +7,7 @@ cards:
     cards:
       - type: custom:auto-entities
         card:
-          type: entites
+          type: entities
         filter:
           include:
             - domain: automation

@@ -17,21 +17,24 @@ cards:
             entity: light.stuegruppe
             name: Stue
           - type: light
-            entity: light.eirik
+            entity: light.eirikgruppe
             name: Kontor
       - type: horizontal-stack
         cards:
           - type: light
-            entity: light.soverom
+            entity: light.soveromgruppe
             name: Soverom
           - type: light
-            entity: light.loft
+            entity: light.loft_lys
             name: Loft
           - type: light
-            entity: light.kjeller
+            entity: light.kjellergruppe
             name: Kjeller
       - type: horizontal-stack
         cards:
           - type: light
             entity: light.nattlys
             name: Nattlys
+          - type: light
+            entity: light.utegruppe
+            name: Utelys
