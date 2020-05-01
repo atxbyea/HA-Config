@@ -56,3 +56,9 @@ This is my current configuration for Home Assistant
 * Pair of HPE 5900AF 40G switches in core
 * Aruba 2530 POE and distribution swithces
 * Cheap $20 POE Cameras
+
+
+## Todos
+
+* Actually finishing my daughters lightning lamp, started out as a Arduino project with sound detection and IR, then I discovered HA, wanted to make it smart, and here we are today, current plan is to integrate with WWLN and make it reactive to when lightning is nearby
+* Get my IoT greenhouse operational, started with a wifi relay board that controlled fans and relays last year, that borked, currently building v2 with ESP32, soil moisture sensors and bigger solenoid valves 
