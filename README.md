@@ -41,18 +41,18 @@ This is my current configuration for Home Assistant
 
 ## Hardware
 
-*85 and counting Zigbee devices
-*4 ESPhome self built devices
-*3 Tasmota OTA flashed devices
-*5 433MHz temperature sensors
-*Xiaomi Roborock S5
-*WebOS TV
-*Onkyo Reciever
-*Samsung Smart Exclusive Heat Pump
-*Broadlink RM3 Mini controlling a older Samsung Plasma, Yamaha Reciever, Toshiba Heat Pump
-*DELL R510 running Freenas
-*Mini-ITX server running OpenSuSE Tumbleweed
-*Mini-computer from Aliexpress running OPNSense
-*Pair of HPE 5900AF 40G switches in core
-*Aruba 2530 POE and distribution swithces
-*Cheap $20 POE Cameras
+* 85 and counting Zigbee devices
+* 4 ESPhome self built devices
+* 3 Tasmota OTA flashed devices
+* 5 433MHz temperature sensors
+* Xiaomi Roborock S5
+* WebOS TV
+* Onkyo Reciever
+* Samsung Smart Exclusive Heat Pump
+* Broadlink RM3 Mini controlling a older Samsung Plasma, Yamaha Reciever, Toshiba Heat Pump
+* DELL R510 running Freenas
+* Mini-ITX server running OpenSuSE Tumbleweed
+* Mini-computer from Aliexpress running OPNSense
+* Pair of HPE 5900AF 40G switches in core
+* Aruba 2530 POE and distribution swithces
+* Cheap $20 POE Cameras
