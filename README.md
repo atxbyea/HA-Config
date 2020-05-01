@@ -1,6 +1,8 @@
 # Home Assistant configuration
 This is my current configuration for Home Assistant
 
+![Setup](https://github.com/atxbyea/HA-Config/blob/master/images/Setup-1.png)
+
 ## The key software I run is
 
 * [Home Assistant](https://home-assistant.io/)
