@@ -29,7 +29,7 @@ This is my current network layout, including services used by Home Assistant
 * Got into Windows system administration in 2004
 * Moved on to Enterprise consulting on storage, *nix, networking and more in 2007
 * Trained electronic repairs technician, enjoys building stuff and repairing stuff
-* No higher education
+* No higher education, certified N+, VMWare VCP 5-5.5-6-6.5, SUSE Linux Administrator, ITILv3
 
 ## Does and don'ts
 * Does not want to run Home Assistant Supervised as I find the software limiting, as such I run in venv (and part of the time docker)
