@@ -1,5 +1,5 @@
 # Home Assistant configuration
-This is my current configuration for Home Assistant
+This is my current network layout, including services used by Home Assistant
 
 ![Setup](https://github.com/atxbyea/HA-Config/blob/master/images/Setup.png)
 
