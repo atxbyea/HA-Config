@@ -6,19 +6,18 @@ This is my current network layout, including services used by Home Assistant
 ## The key software I run is
 
 * [Home Assistant](https://home-assistant.io/)
-* [nginx](https://nginx.org/en/) to provide remote access, in conjunction with [Let's Encrypt](https://letsencrypt.org/)
-* [Mosquitto](https://mosquitto.org/) for the MQTT broker
-* MariaDB for the database
-* [Zigbee2MQTT](https://www.zigbee2mqtt.io/) for communicating with my Zigbee Mesh
+* [nginx](https://nginx.org/en/) to provide remote access, in conjunction with [Let's Encrypt](https://letsencrypt.org/) via [Linuxserver/Letsencrypt](https://hub.docker.com/r/linuxserver/letsencrypt/)
+* [Mosquitto](https://hub.docker.com/_/eclipse-mosquitto) for the MQTT broker
+* [MariaDB](https://hub.docker.com/_/mariadb) for the database
+* [Zigbee2MQTT](https://hub.docker.com/r/koenkk/zigbee2mqtt/) for communicating with my Zigbee Mesh
 * [Zigbee2MQTTAssistant](https://github.com/yllibed/Zigbee2MqttAssistant) for initiating updates of Zigbee devices
-* InfluxDB for recording time-series history
-* Grafana for displaying InfluxDB data
-* Letsencrypt container with nginx as a proxy server
-* Node-RED for testing
-* FreeNAS 11.3U2 for my primary storage and jails
-* OpenSUSE Tumbleweed for my docker host
-* Docker-CE for all containers
-* OPNSense for routing and firewalling
+* [InfluxDB](https://hub.docker.com/_/influxdb) for recording time-series history
+* [Grafana](https://hub.docker.com/r/grafana/grafana/) for displaying InfluxDB data
+* [Node-RED](https://hub.docker.com/r/nodered/node-red) for testing
+* [FreeNAS 11.3U2](https://www.freenas.org/) for my primary storage and jails
+* [OpenSUSE Tumbleweed](https://software.opensuse.org/distributions/tumbleweed) for my docker host
+* [Docker-CE](https://docs.docker.com/get-docker/) for all containers
+* [OPNSense](https://opnsense.org/) for routing and firewalling
 
 
 ## My experiences
@@ -42,9 +41,40 @@ This is my current network layout, including services used by Home Assistant
 ## Hardware
 
 * 85 and counting Zigbee devices
+  * 4 Xiaomi Door and Window Sensors
+  * 3 Xiaomi Movement sensors
+  * 2 Xiaomi Double Wireless Switches
+  * 4 Xiaomi Single mini button
+  * 2 Xiaomi Magic Cube
+  * 1 IKEA On Off Switch
+  * 1 IKEA RGB E27 Bulb
+  * 9 IKEA E14 Bulbs
+  * 5 IKEA CT E14 Bulbs
+  * 19 IKEA CT GU10 Bulbs
+  * 8 IKEA CT E27 Bulbs
+  * 1 Gledopto RGBWW Controller
+  * 1 Gledopto RGBCCT Controller
+  * 2 Philips Hue E14 Mingion Bulbs
+  * 3 Philips Hue E27 Bulbs
+  * 1 Philips Hue Filament E27 Bulb
+  * 3 Philips Hue Wireless Dimmer Switches
 * 4 ESPhome self built devices
+  * Garage Door opener
+  * Greenhouse Monitor
+  * Soil Moisture Sensor
+  * Sonoff Bridge with hack implemented
 * 3 Tasmota OTA flashed devices
+  * Tumbledrier power monitor
+  * Greenhouse heating power monitor
+  * Garage rack power monitor
 * 5 433MHz temperature sensors
+  * Deep freezer sensor
+  * Outdoor temp sensor
+  * Indoor Living Room sensor
+  * Greenhouse temperature sensor backup
+  * Secondary outdoor sensor I seem to be picking up from somewhere
+* 2 Yeelight WiFi RGB E27 Bulbs
+* 1 Yeelight WiFi RGB Led Strip
 * Xiaomi Roborock S5
 * WebOS TV
 * Onkyo Reciever
@@ -54,8 +84,8 @@ This is my current network layout, including services used by Home Assistant
 * Mini-ITX server running OpenSuSE Tumbleweed
 * Mini-computer from Aliexpress running OPNSense
 * Pair of HPE 5900AF 40G switches in core
-* Aruba 2530 POE and distribution swithces
-* Cheap $20 POE Cameras
+* Aruba 2530 POE and distribution switch
+* Cheap $20 POE Cameras from Aliexpress
 
 
 ## Todos
