@@ -1,7 +1,7 @@
 # Home Assistant configuration
 This is my current configuration for Home Assistant
 
-![Setup](https://github.com/atxbyea/HA-Config/blob/master/images/Setup.svg)
+![Setup](https://github.com/atxbyea/HA-Config/blob/master/images/Setup.png)
 
 ## The key software I run is
 
