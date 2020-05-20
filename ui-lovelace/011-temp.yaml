@@ -12,15 +12,15 @@ cards:
         entity: weather.dark_sky
       - type: glance
         entities:
-          - entity: sensor.0x00158d0002720f9f_temperature
+          - entity: sensor.alva_temperatur_temperature
             name: Alva
-          - entity: sensor.0x00158d00025efd10_temperature
+          - entity: sensor.soverom_temperatur_temperature
             name: Soverom
-          - entity: sensor.0x00158d00025f040e_temperature
+          - entity: sensor.bod_temperatur_temperature
             name: Bod
-          - entity: sensor.0x00158d0002e94b50_temperature
+          - entity: sensor.garasje_temperatur_temperature
             name: Garasje
-          - entity: sensor.0x00158d0002e91e9a_temperature
+          - entity: sensor.bad_temperatur_temperature
             name: Bad
       - type: custom:simple-thermostat
         entity: climate.varmepumpe_stue

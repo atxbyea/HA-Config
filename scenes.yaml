@@ -12,6 +12,11 @@
           state: on
         media_player.stueforsterker:
           state: on
+        light.stue_peislys_light:
+          state: on
+          brightness: 140
+        light.kjokken_benke_underlys_light:
+          state: on
 
 
   - name: dim nedover kveldstid
@@ -25,6 +30,12 @@
         media_player.stuetv:
           state: off
         media_player.stueforsterker:
+          state: off
+        light.stue_peislys_light:
+          state: on
+          brightness: 1
+          color_temp: 381
+        light.kjokken_benke_underlys_light:
           state: off
 
   - name: Loft kun gulvlampe

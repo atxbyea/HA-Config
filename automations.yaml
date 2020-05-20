@@ -92,7 +92,7 @@
 - alias: 'Skru på dolys'
   trigger:
     platform: state
-    entity_id: binary_sensor.do_dodor_sensoren
+    entity_id: binary_sensor.do_dodor_contact
     from: 'off'
     to: 'on'
   action:
@@ -102,7 +102,7 @@
 - alias: 'Skru på vegglys do dagtid'
   trigger:
     platform: state
-    entity_id: binary_sensor.do_dodor_sensoren
+    entity_id: binary_sensor.do_dodor_contact
     from: 'off'
     to: 'on'
   condition:
@@ -117,7 +117,7 @@
 - alias: 'Skru av dolys'
   trigger:
     platform: state
-    entity_id: binary_sensor.do_dodor_sensoren
+    entity_id: binary_sensor.do_dodor_contact
     from: 'on'
     to: 'off'
     for:
@@ -148,7 +148,7 @@
       to: 'off'
       for: '00:10:00'
     - platform: state
-      entity_id: binary_sensor.kjeller_vaskerom_bevegelse
+      entity_id: binary_sensor.kjeller_vaskerom_bevegelse_occupancy
       from: 'on'
       to: 'off'
       for: '00:05:00'
@@ -158,7 +158,7 @@
       state: 'off'
       for: '00:10:00'
     - condition: state
-      entity_id: binary_sensor.kjeller_vaskerom_bevegelse
+      entity_id: binary_sensor.kjeller_vaskerom_bevegelse_occupancy
       state: 'off'
       for: '00:05:00'
   action:
@@ -194,7 +194,7 @@
 - alias: 'Skru på kjellerbod'
   trigger:
     platform: state
-    entity_id: binary_sensor.kjeller_boddor_sensor
+    entity_id: binary_sensor.kjeller_boddor_contact
     from: 'off'
     to: 'on'
   action:
@@ -204,7 +204,7 @@
 - alias: 'Skru av kjellerbod etter fem minutter'
   trigger:
     platform: state
-    entity_id: binary_sensor.kjeller_boddor_sensor
+    entity_id: binary_sensor.kjeller_boddor_contact
     from: 'on'
     to: 'off'
   action:
@@ -922,13 +922,13 @@
 
 ### Automatic generation of Z2M maps ###
 
-- alias: 'Zigbee Map aktualisieren'  
-  trigger:
-    platform: time_pattern
-    minutes: '/60'
-    seconds: 00
-  action:
-    service: zigbee2mqtt_networkmap.update
+#- alias: 'Zigbee Map aktualisieren'  
+# trigger:
+#   platform: time_pattern
+#   minutes: '/60'
+#   seconds: 00
+# action:
+#   service: zigbee2mqtt_networkmap.update
 
 
 ### Bedroom bedside lights ###
@@ -978,6 +978,13 @@
       entity_id: light.soverom_lampe_eirik_light
 
 
-
-
-
+- alias: Dryer Finished Notification
+  trigger:
+    platform: state
+    entity_id: binary_sensor.torketrommel_kjorer
+    to: 'off'
+  action:
+   - service: notify.we_telegram
+     data:
+       title: Tørketrommel
+       message: "Tørketrommel er ferdig"

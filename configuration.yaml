@@ -61,6 +61,12 @@ input_boolean:
     icon: mdi:sticker-emoji
     initial: on
 
+  dummy_bak:
+    name: "Dummy Bak Input Boolean"
+    icon: mdi:sticker-emoji
+    initial: on
+
+
 ### Input Selects ###
 
 input_select:
@@ -122,15 +128,15 @@ logger:
   logs:
    homeassistant.components.ps4.media_player: error 
    hacs: debug
-
+   homeassistant.components.mqtt: warn
 ### Xiaomi Gateway ###
 
-xiaomi_aqara:
-  discovery_retry: 5
-  gateways:
-    - mac: !secret xiaomimac
-      key: !secret xiaomigw
-      host: !secret xiaomiip
+#xiaomi_aqara:
+#  discovery_retry: 5
+#  gateways:
+#    - mac: !secret xiaomimac
+#      key: !secret xiaomigw
+#      host: !secret xiaomiip
  
 ### Telldus Live ###
 
@@ -139,13 +145,13 @@ tellduslive:
 
 ### Device Trackers ###
 
-device_tracker:
-
-  - platform: ping
-    consider_home: 180
-    hosts:
-      werofon: !secret werofon
-      eirikfon: !secret eirikfon
+#device_tracker:
+#
+#  - platform: ping
+#    consider_home: 180
+#    hosts:
+#      werofon: !secret werofon
+#      eirikfon: !secret eirikfon
 
 
 ### Lights ###
@@ -296,9 +302,9 @@ light:
   - platform: group
     name: Kontor_eirik_lys
     entities:
-      - light.eirik_kontor_light1
-      - light.eirik_kontor_light2
-      - light.eirik_kontor_light3
+      - light.eirik_kontor1_light
+      - light.eirik_kontor2_light
+      - light.eirik_kontor3_light
 
 
   - platform: group
@@ -397,14 +403,14 @@ switch:
   - platform: circadian_lighting
     name: kjeller
     lights_brightness:
-      - light.kjeller_ganglys_light
-      - light.kjeller_vaskerom1_light
-      - light.kjeller_vaskerom2_light
-      - light.kjeller_vaskerom3_light
-      - light.kjeller_trappelys_light
-      - light.kjeller_fryserom_light
-      - light.kjeller_bod_light
-#      - light.kjeller
+#      - light.kjeller_ganglys_light
+#      - light.kjeller_vaskerom1_light
+#      - light.kjeller_vaskerom2_light
+#      - light.kjeller_vaskerom3_light
+#      - light.kjeller_trappelys_light
+#      - light.kjeller_fryserom_light
+#      - light.kjeller_bod_light
+      - light.kjellergruppe
     max_brightness: 75
     min_brightness: 1
 
@@ -462,8 +468,8 @@ media_player:
 
 ### Roku ###
 
-  - platform: roku
-    scan_interval: 10
+#  - platform: roku
+#    scan_interval: 10
 
 ### Onkyo ###
 
@@ -500,39 +506,37 @@ circadian_lighting:
 lovelace:
   mode: yaml
   resources:
-    - url: /community_plugin/calendar-card/calendar-card.js
+    - url: /hacsfiles/calendar-card/calendar-card.js
       type: js
     - url: /local/monster-card.js?v=1
       type: js
-    - url: /community_plugin/light-entity-row/light-entity-row.js
+    - url: /hacsfiles/light-entity-row/light-entity-row.js
       type: js
-    - url: /community_plugin/mini-media-player/mini-media-player-bundle.js
+    - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
       type: module
-    - url: /community_plugin/spotify-card/spotify-card.js
+    - url: /hacsfiles/spotify-card/spotify-card.js
       type: module
-    - url: /community_plugin/seventeen-track-card/seventeen-track-card.js
+    - url: /hacsfiles/seventeen-track-card/seventeen-track-card.js
       type: js
-    - url: /community_plugin/simple-thermostat/simple-thermostat.js
+    - url: /hacsfiles/simple-thermostat/simple-thermostat.js
       type: module
-    - url: /community_plugin/surveillance-card/surveillance-card.js
+    - url: /hacsfiles/surveillance-card/surveillance-card.js
       type: module
-    - url: /community_plugin/travel-time-card/travel-time-card.js
+    - url: /hacsfiles/travel-time-card/travel-time-card.js
       type: js
-    - url: /community_plugin/lovelace-card-mod/card-mod.js
+    - url: /hacsfiles/lovelace-card-mod/card-mod.js
       type: js 
-    - url: /community_plugin/lovelace-auto-entities/auto-entities.js
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
       type: module
-    - url: /community_plugin/vertical-stack-in-card/vertical-stack-in-card.js
+    - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
       type: js
-    - url: /community_plugin/compact-custom-header/compact-custom-header.js
+    - url: /hacsfiles/lovelace-slider-entity-row/slider-entity-row.js
       type: module
-    - url: /community_plugin/lovelace-slider-entity-row/slider-entity-row.js
+    - url: /hacsfiles/lovelace-card-tools/card-tools.js
       type: module
-    - url: /community_plugin/lovelace-card-tools/card-tools.js
-      type: module
-    - url: /community_plugin/zigbee2mqtt-networkmap/zigbee2mqtt-networkmap.js
+    - url: /hacsfiles/zigbee2mqtt-networkmap/zigbee2mqtt-networkmap.js
       type: module 
-    - url: /community_plugin/upcoming-media-card/upcoming-media-card.js
+    - url: /hacsfiles/upcoming-media-card/upcoming-media-card.js
       type: js
 
 
@@ -559,6 +563,20 @@ binary_sensor:
     name: "bak"
     state_topic: "cameras/bak/motion"
 
+  - platform: template
+    sensors:
+      torketrommel_kjorer:
+        friendly_name: "Tørketrommel Kjører"
+        delay_on:
+          minutes: 10
+        delay_off:
+          minutes: 3
+        value_template: >-
+          {{ states('sensor.torketrommel_energy_power')|float > 10 }}
+        
+        
+            
+
 
 
 ### Template for both basement doors open \ close will trigger lights in basement ###
@@ -569,8 +587,8 @@ binary_sensor:
         friendly_name: "Kjellerdører åpne"
         device_class: door
         value_template: >-
-          {{ is_state('binary_sensor.kjeller_trapp', 'on') or
-             is_state('binary_sensor.kjeller_garasjedor', 'on') }}
+          {{ is_state('binary_sensor.kjeller_trappedor', 'on') or
+             is_state('binary_sensor.kjeller_garasjedor_contact', 'on') }}
 
 
 ### Notify ###
@@ -594,8 +612,8 @@ notify:
 ### MariaDB instead of SQLite ###
 
 recorder:
-  db_url: !secret mariadb
-
+#  db_url: !secret mariadb
+#  db_url: postgresql://postgres:password@192.168.1.40/hass
 ### Persons ###
 
 person:
@@ -625,19 +643,19 @@ climate:
     unique_id: loftpumpe
     device_code: 1260
     controller_data: 192.168.1.70
-    temperature_sensor: sensor.0x00158d000272cf43_temperature
-    humidity_sensor: sensor.0x00158d000272cf43_humidity
+    temperature_sensor: sensor.loft_temperatur_temperature
+    humidity_sensor: sensor.loft_fuktighet_humidity
 
 
 ### InfluxDB ###
 
-influxdb:
-  host: 192.168.1.40
-  port: 8086
-  username: !secret influxdbuser
-  password: !secret influxdbpass
-  ssl: false
-  verify_ssl: false
+#influxdb:
+#  host: 192.168.1.40
+#  port: 8086
+#  username: !secret influxdbuser
+#  password: !secret influxdbpass
+#  ssl: false
+#  verify_ssl: false
 
 
 ### Image Processing ###
@@ -645,19 +663,45 @@ influxdb:
 image_processing:
   - platform: doods
     scan_interval: 10000
-    url: "http://192.168.1.40:8011"
+    url: "http://192.168.1.59:8011"
     detector: tensorflow
     source:
       - entity_id: camera.fremme
+#      - entity_id: camera.bak
+    file_out:
+      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
+      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    confidence: 40
+    labels:
+      - person
+      - car
+      - cat
+      - dog
+      - bottle
+      - cup
+      - bowl
+      - chair
+      - couch
+#      - potted plant
+#      - dining table
+
+  - platform: doods
+    scan_interval: 10000
+    url: "http://192.168.1.59:8011"
+    detector: default
+    source:
+#      - entity_id: camera.fremme
       - entity_id: camera.bak
     file_out:
       - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
       - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     confidence: 20
-    labels:
-      - person
-      - car
-      - cat
+#    labels:
+#      - person
+#      - car
+#      - cat
+
+
 
 ### ffmpeg ###
 
@@ -687,21 +731,21 @@ life360:
 
 ### WWLLN ###
 
-wwlln:
-  radius: 50
+#wwlln:
+#  radius: 50
 
 
 ### MQTT ###
 
-mqtt:
-  discovery: true
-  broker: 192.168.1.40
-  birth_message:
-    topic: 'hass/status'
-    payload: 'online'
-  will_message:
-    topic: 'hass/status'
-    payload: 'offline'
+#mqtt:
+#  discovery: true
+#  broker: 192.168.1.59
+#  birth_message:
+#    topic: 'hass/status'
+#    payload: 'online'
+#  will_message:
+#    topic: 'hass/status'
+#    payload: 'offline'
 
 
 ### Zigbee2mqtt network map ###
@@ -724,7 +768,8 @@ cast:
   media_player:
     - host: !secret kjokkenhubip
     - host: !secret wkontorip
-
+#    - host: !secret garasjemini
+    - host: !secret sonoskontorip
 
 ### MJPEG camera from Motion ###
 
@@ -740,7 +785,7 @@ camera:
   - platform: generic
     name: Bak
     stream_source: rtsp://192.168.1.62/stream1
-    still_image_url: http://192.168.1.40:20100/picture/2/current/
+    still_image_url: http://192.168.1.40:20101/picture/2/current/
     username: admin
     password: admin
 
@@ -757,3 +802,7 @@ smartir:
 ### Mobile App ###
 
 mobile_app:
+
+### Tibber power company ###
+tibber:
+  access_token: !secret tibberat
