@@ -911,7 +911,7 @@
 - alias: 'Automatisk Støvsuging av kjøkken'
   trigger:
     platform: time
-    at: '05:30:00'
+    at: '03:00:00'
   action:
   - service: xiaomi_miio.vacuum_clean_zone
     data:
@@ -988,3 +988,20 @@
      data:
        title: Tørketrommel
        message: "Tørketrommel er ferdig"
+
+### Automatic watering of greenhouse ###
+
+- alias: 'Drivhusvanning på sommer'
+  trigger:
+    platform: time_pattern
+    hours: /3
+  condition:
+    condition: time
+    after: '05:59:00'
+    before: '18:01:00'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.drivhuspumpe
+    - delay: '00:02:00'
+    - service: switch.turn_off
+      entity_id: switch.drivhuspumpe

@@ -129,6 +129,7 @@ logger:
    homeassistant.components.ps4.media_player: error 
    hacs: debug
    homeassistant.components.mqtt: warn
+   zeep: debug
 ### Xiaomi Gateway ###
 
 #xiaomi_aqara:
@@ -477,6 +478,19 @@ media_player:
     host: !secret onkyoip
     name: Stueforsterker
 
+  - platform: smartir
+    name: LoftTV
+    unique_id: lofttv
+    device_code: 1060
+    controller_data: 192.168.1.70
+
+  - platform: smartir
+    name: LoftForsterker
+    unique_id: loftforsterker
+    device_code: 1121
+    controller_data: 192.168.1.70
+
+
 ### WoL ###
 
 wake_on_lan:
@@ -508,7 +522,7 @@ lovelace:
   resources:
     - url: /hacsfiles/calendar-card/calendar-card.js
       type: js
-    - url: /local/monster-card.js?v=1
+    - url: /hacsfiles/monster-card.js?v=1
       type: js
     - url: /hacsfiles/light-entity-row/light-entity-row.js
       type: js
@@ -612,7 +626,7 @@ notify:
 ### MariaDB instead of SQLite ###
 
 recorder:
-#  db_url: !secret mariadb
+  db_url: !secret mariadb
 #  db_url: postgresql://postgres:password@192.168.1.40/hass
 ### Persons ###
 
@@ -649,13 +663,13 @@ climate:
 
 ### InfluxDB ###
 
-#influxdb:
-#  host: 192.168.1.40
-#  port: 8086
+influxdb:
+  host: 192.168.1.47
+  port: 8086
 #  username: !secret influxdbuser
 #  password: !secret influxdbpass
-#  ssl: false
-#  verify_ssl: false
+  ssl: false
+  verify_ssl: false
 
 
 ### Image Processing ###
@@ -737,15 +751,15 @@ life360:
 
 ### MQTT ###
 
-#mqtt:
+mqtt:
 #  discovery: true
 #  broker: 192.168.1.59
-#  birth_message:
-#    topic: 'hass/status'
-#    payload: 'online'
-#  will_message:
-#    topic: 'hass/status'
-#    payload: 'offline'
+  birth_message:
+    topic: 'hass/status'
+    payload: 'online'
+  will_message:
+    topic: 'hass/status'
+    payload: 'offline'
 
 
 ### Zigbee2mqtt network map ###
@@ -791,7 +805,7 @@ camera:
 
 ### Siemens HomeConnect ###
 
-homeconnect:
+home_connect:
   client_id: !secret HC_clientID
   client_secret: !secret HC_clientS
 

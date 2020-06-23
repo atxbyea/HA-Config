@@ -17,7 +17,25 @@ cards:
           icon: true
           power: true
 
-      - entity: media_player.w_kontor_mini
+      - entity: media_player.w_kontor
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.eirik_kontor
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.kontor_mini_hoyttaler
         type: custom:mini-media-player
         info: short
         artwork: cover
@@ -44,7 +62,16 @@ cards:
           icon: true
           power_state: false
 
-      - entity: media_player.sasuke_2
+      - entity: media_player.sasuke
+        type: custom:mini-media-player
+        info: short
+        artwork: cover
+        hide:
+          mute: true
+          icon: true
+          power_state: false
+
+      - entity: media_player.stuetv
         type: custom:mini-media-player
         info: short
         artwork: cover
