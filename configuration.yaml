@@ -16,6 +16,11 @@ homeassistant:
 #  customize: !include customize.yaml
   packages: !include_dir_named packages
 
+##Define External\Internal URI##
+  external_url: !secret baseurl
+  internal_url: !secret baseurl
+
+
 ##Eirikz added MFA###
   auth_mfa_modules:
     - type: totp
@@ -33,10 +38,10 @@ config:
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
  http:
-    base_url: !secret baseurl
-    ssl_certificate: /config/certificate.pem
-    ssl_key: /config/privkey.pem
-    api_password: !secret apipassword
+#    base_url: !secret baseurl
+#    ssl_certificate: /config/certificate.pem
+#    ssl_key: /config/privkey.pem
+#    api_password: !secret apipassword
 
 updater:
   include_used_components: true
@@ -67,7 +72,7 @@ input_boolean:
     initial: on
 
 
-### Input Selects ###
+### Input Selects ####
 
 input_select:
    loftlys:
@@ -115,7 +120,7 @@ tts:
     language: 'no'
 
 
-cloud:
+#cloud:
 
 group: !include groups.yaml
 automation: !include automations.yaml
@@ -127,9 +132,15 @@ logger:
   default: warn
   logs:
    homeassistant.components.ps4.media_player: error 
-   hacs: debug
+#   hacs: debug
    homeassistant.components.mqtt: warn
+#   pyatv: debug
    zeep: debug
+   homeassistant.components.roku: fatal
+   homeassistant.config_entries: error
+   homeassistant.components.switch: error
+   pytautulli: fatal
+
 ### Xiaomi Gateway ###
 
 #xiaomi_aqara:
@@ -159,6 +170,10 @@ tellduslive:
 
 light:
 
+### Wiz Lights ###
+  - platform: wiz_light
+    name: Eirik Soverom
+    host: 192.168.1.159
 
 ### Zigbee2mqtt groups ###
 
@@ -251,6 +266,21 @@ light:
 ### Light Groups ###
 
   - platform: group
+    name: Alvakjokken
+    entities:
+      - light.alva_mikro
+      - light.alva_komfyr
+      - light.alva_benkelys
+
+  - platform: group
+    name: Soverom_lys
+    entities:
+      - light.soverom_hodegavel
+      - light.soverom_lampe_w_light
+      - light.soverom_w_light
+      - light.eirik_soverom
+
+  - platform: group
     name: Stue_lys
     entities:
       - light.stue_stuebord_light
@@ -268,6 +298,7 @@ light:
       - light.stue_peislys
       - light.stue_mellomgang_light
       - light.stue_yttergang_tak_light
+      - light.stue_yttergang_tak_2_light
 
   - platform: group
     name: Kjokken_lys
@@ -296,9 +327,9 @@ light:
     entities:
       - light.loft_taklys_1
       - light.loft_taklys_2
-      - light.gulvlampe_loft_1
-      - light.gulvlampe_loft_2
-      - light.gulvlampe_loft_3
+      - light.loft_gulvlampe1_light
+      - light.loft_gulvlampe2_light
+      - light.loft_gulvlampe3_light
 
   - platform: group
     name: Kontor_eirik_lys
@@ -312,7 +343,7 @@ light:
     name: Do_lys
     entities:
       - light.do_hyllelampe_light
-      - light.do_vegglampe_light
+      - light.do_taklys_light
 
   - platform: group
     name: halloween
@@ -338,10 +369,10 @@ yeelight:
 
 switch:
 
-  - platform: broadlink
-    host: 192.168.1.70
-    mac: 'c8:f7:42:75:0a:28'
-    type: rm_mini
+#  - platform: broadlink
+#    host: 192.168.1.70
+#    mac: 'c8:f7:42:75:0a:28'
+#    type: rm_mini
 
 ### Switch Templates ###
 
@@ -390,13 +421,13 @@ switch:
   - platform: circadian_lighting
     name: do
     lights_brightness:
-      - light.do_vegglampe_light
+      - light.do_taklys_light
       - light.do_hyllelampe_light
-    max_brightness: 35
-    min_brightness: 1
+    max_brightness: 75
+    min_brightness: 15
 
     lights_ct:
-      - light.do_vegglampe_light
+      - light.do_taklys_light
       - light.do_hyllelampe_light
 
 
@@ -462,7 +493,7 @@ webostv:
     data:
       mac: "14-C9-13-15-1F-BD"
       broadcast_address: 192.168.1.255
-
+      broadcast_port: 9
 ### Media Player Platform ###
 
 media_player:
@@ -482,13 +513,13 @@ media_player:
     name: LoftTV
     unique_id: lofttv
     device_code: 1060
-    controller_data: 192.168.1.70
+    controller_data: remote.broadlink_loft_remote
 
   - platform: smartir
     name: LoftForsterker
     unique_id: loftforsterker
     device_code: 1121
-    controller_data: 192.168.1.70
+    controller_data: remote.broadlink_loft_remote
 
 
 ### WoL ###
@@ -522,8 +553,8 @@ lovelace:
   resources:
     - url: /hacsfiles/calendar-card/calendar-card.js
       type: js
-    - url: /hacsfiles/monster-card.js?v=1
-      type: js
+#    - url: /hacsfiles/monster-card.js?v=1
+#      type: js
     - url: /hacsfiles/light-entity-row/light-entity-row.js
       type: js
     - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
@@ -552,6 +583,11 @@ lovelace:
       type: module 
     - url: /hacsfiles/upcoming-media-card/upcoming-media-card.js
       type: js
+    - url: /hacsfiles/lovelace-card-templater/lovelace-card-templater.js
+      type: js
+
+    - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
+      type: module
 
 
 ### Binary sensors ###
@@ -568,6 +604,12 @@ binary_sensor:
     name: Kakuzu
     count: 3
     scan_interval: 30
+
+  - platform: ping
+    host: www.google.com
+    name: googleping
+    count: 3
+    scan_interval: 60
 
   - platform: mqtt
     name: "fremme"
@@ -587,7 +629,13 @@ binary_sensor:
           minutes: 3
         value_template: >-
           {{ states('sensor.torketrommel_energy_power')|float > 10 }}
-        
+
+  - platform: template
+    sensors:
+      lys_timer:
+        friendly_name: "Det har gått 30 minutter fra vekking av hus"
+        value_template: >-
+          {{ as_timestamp(now()) - as_timestamp(states.automation.vekk_huset.attributes.last_triggered) | int > 1800 }}        
         
             
 
@@ -645,7 +693,7 @@ telegram_bot:
 
 climate:
   - platform: climate_ip
-    config_file: '/home/hass/homeassistant/custom_components/climate_ip/samsung_2878.yaml'
+    config_file: '/home/homeassistant/homeassistant/custom_components/climate_ip/samsung_2878.yaml'
     ip_address: !secret climateip
     token: !secret climatetoken
     mac: !secret climatemac
@@ -656,7 +704,7 @@ climate:
     name: 'Varmepumpe Loft'
     unique_id: loftpumpe
     device_code: 1260
-    controller_data: 192.168.1.70
+    controller_data: remote.broadlink_loft_remote
     temperature_sensor: sensor.loft_temperatur_temperature
     humidity_sensor: sensor.loft_fuktighet_humidity
 
@@ -664,10 +712,10 @@ climate:
 ### InfluxDB ###
 
 influxdb:
-  host: 192.168.1.47
+  host: kakuzu.eirikzlab.local
   port: 8086
-#  username: !secret influxdbuser
-#  password: !secret influxdbpass
+  username: !secret influxdbuser
+  password: !secret influxdbpass
   ssl: false
   verify_ssl: false
 
@@ -677,11 +725,11 @@ influxdb:
 image_processing:
   - platform: doods
     scan_interval: 10000
-    url: "http://192.168.1.59:8011"
+    url: "http://kakuzu.eirikzlab.local:8011"
     detector: tensorflow
     source:
       - entity_id: camera.fremme
-#      - entity_id: camera.bak
+##      - entity_id: camera.bak
     file_out:
       - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
       - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
@@ -697,14 +745,14 @@ image_processing:
       - chair
       - couch
 #      - potted plant
-#      - dining table
+##      - dining table
 
   - platform: doods
     scan_interval: 10000
-    url: "http://192.168.1.59:8011"
+    url: "http://kakuzu.eirikzlab.local:8011"
     detector: default
     source:
-#      - entity_id: camera.fremme
+##      - entity_id: camera.fremme
       - entity_id: camera.bak
     file_out:
       - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
@@ -712,8 +760,8 @@ image_processing:
     confidence: 20
 #    labels:
 #      - person
-#      - car
-#      - cat
+##      - car
+##      - cat
 
 
 
@@ -741,12 +789,6 @@ life360:
     - moving
   warning_threshold: 2
   error_threshold: 3
-
-
-### WWLLN ###
-
-#wwlln:
-#  radius: 50
 
 
 ### MQTT ###
@@ -779,29 +821,31 @@ sonos:
 ### Google Cast ###
 
 cast:
-  media_player:
-    - host: !secret kjokkenhubip
-    - host: !secret wkontorip
+#  media_player:
+#    - host: !secret kjokkenhubip
+#    - host: !secret wkontorip
 #    - host: !secret garasjemini
-    - host: !secret sonoskontorip
+#    - host: !secret sonoskontorip
 
 ### MJPEG camera from Motion ###
 
 camera:
   - platform: generic
     name: Fremme
-    stream_source: rtsp://192.168.1.63/stream1
-    still_image_url: http://192.168.1.40:20100/picture/1/current/
-    username: admin
-    password: admin
+    stream_source: !secret fremmekamerastream
+    still_image_url: !secret fremmekamerastill
 
 
   - platform: generic
     name: Bak
-    stream_source: rtsp://192.168.1.62/stream1
-    still_image_url: http://192.168.1.40:20101/picture/2/current/
-    username: admin
-    password: admin
+    stream_source: !secret bakkamerastream
+    still_image_url: !secret bakkamerastill
+
+  - platform: mjpeg
+    name: Print
+    mjpeg_url: !secret printkamerastill
+    still_image_url: !secret printkamerastill
+
 
 ### Siemens HomeConnect ###
 
@@ -820,3 +864,152 @@ mobile_app:
 ### Tibber power company ###
 tibber:
   access_token: !secret tibberat
+
+
+### Octoprint ###
+
+octoprint:
+  host: kakuzu.eirikzlab.local
+  port: 5000
+  api_key: !secret octoapi
+  bed: true
+  number_of_tools: 1
+
+
+### Google Assistant Integration because Frenck is a cunt ###
+
+google_assistant:
+  project_id: !secret projectidga
+  service_account: !include service.json
+  report_state: true
+  expose_by_default: true
+  exposed_domains:
+    - switch
+    - light
+    - fan
+    - cover
+    - media_player
+    - climate
+    - vacuum
+    - sensor
+  entity_config:
+    light.alva:
+      expose: false
+    light.do_lys:
+      expose: false
+    light.eirikgruppe:
+      expose: false
+    light.ezkontor:
+      expose: false
+    light.kjeller_lys:
+      expose: false
+    light.kjellergruppe:
+      expose: false
+    light.kjokkengruppe:
+      expose: false
+    light.kjokken_lys:
+      expose: false
+    light.kjokken:
+      expose: false
+    light.loft:
+      expose: false
+    light.loft_lys:
+      expose: false
+    light.soverom_lys:
+      expose: false
+    light.soveromgruppe:
+      expose: false
+    light.stue:
+      expose: false
+    light.stue_lys:
+      expose: false
+    light.ute:
+      expose: false
+    light.utegruppe:
+      expose: false
+    switch.circadian_lighting_do:
+      expose: false
+    switch.circadian_lighting_kjeller:
+      expose: false
+    switch.circadian_lighting_kjokken:
+      expose: false
+    switch.circadian_lighting_kontor: 
+      expose: false
+    switch.circadian_lighting_loft:
+      expose: false
+    switch.circadian_lighting_peis:
+      expose: false
+    switch.circadian_lighting_stue:
+      expose: false
+    switch.vaskemaskin_program_auto30:
+      expose: false
+    switch.vaskemaskin_program_auto40:
+      expose: false
+    switch.vaskemaskin_program_auto60:
+      expose: false
+    switch.vaskemaskin_program_chiffon:
+      expose: false
+    switch.vaskemaskin_program_cotton:
+      expose: false
+    switch.vaskemaskin_program_cottoneco:
+      expose: false
+    switch.vaskemaskin_program_curtains:
+      expose: false
+    switch.vaskemaskin_program_darkwash:
+      expose: false
+    switch.vaskemaskin_program_delicatessilk:
+      expose: false
+    switch.vaskemaskin_program_dessous:
+      expose: false
+    switch.vaskemaskin_program_easycare:
+      expose: false
+    switch.vaskemaskin_program_mix:
+      expose: false
+    switch.vaskemaskin_program_monsoon:
+      expose: false
+    switch.vaskemaskin_program_outdoor:
+      expose: false
+    switch.vaskemaskin_program_plushtoy:
+      expose: false
+    switch.vaskemaskin_program_sensitive:
+      expose: false
+    switch.vaskemaskin_program_shirtsblouses:
+      expose: false
+    switch.vaskemaskin_program_sportfitness:
+      expose: false
+    switch.vaskemaskin_program_towels:
+      expose: false
+    switch.vaskemaskin_program_waterproof:
+      expose: false
+    switch.vaskemaskin_program_wool:
+      expose: false
+
+### Garbage Collection Custom Component ###
+
+garbage_collection:
+  sensors:
+  - name: "Restavfall"
+    frequency: "odd-weeks"
+    collection_days:
+    - mon
+    expire_after: '12:00'
+
+  - name: "Plast og papir" 
+    frequency: "annual"
+    date: '01/01'
+    include_dates:
+    - '2020-11-27'
+    - '2020-12-28'
+
+
+### TPLink Smart plug
+tplink:
+  discovery: false
+  switch:
+    - host: 192.168.1.89
+
+### Speedtest ###
+speedtestdotnet:
+  server_id: 12919
+  scan_interval:
+    hours: 12

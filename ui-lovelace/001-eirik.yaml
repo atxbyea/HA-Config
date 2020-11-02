@@ -1,6 +1,6 @@
 path: eirikz
 title: Eirikz
-icon: 'mdi:cowboy'
+icon: 'mdi:account-cowboy-hat'
 panel: true
 visible:
   - user: eb7d260c8fd54c08b2451ca5dfc15e61
@@ -10,10 +10,15 @@ cards:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.garasjedor
-            name: Garasjeport
+            entity: scene.ps4
+            name: PS4
+            icon: "mdi:sony-playstation"
             tap_action:
-              action: toggle
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: scene.ps4
+
           - type: entity-button
             entity: light.eirikgruppe
             name: Kontorlys
@@ -22,11 +27,11 @@ cards:
 
       - type: horizontal-stack
         cards:
-          - type: glance
-            entities:
-              - entity: sensor.norway_coronavirus_confirmed
-                name: Corona
-                icon: 'mdi:syringe'
+          - type: entity-button
+            entity: switch.garasjedor
+            name: Garasjeport
+            tap_action:
+              action: toggle
       - type: horizontal-stack
         cards:
           - type: custom:upcoming-media-card

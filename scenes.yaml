@@ -1,28 +1,22 @@
   - name: dim oppover dagtid
     entities:
-        group.circadian:
-          state: on
         light.stuegruppe:
           state: on
-          brightness: 1
         light.kjokkengruppe:
           state: on
-          brightness: 1
         media_player.stuetv:
           state: on
         media_player.stueforsterker:
           state: on
-#        light.stue_peislys_light:
-#          state: on
-#          brightness: 140
         light.kjokken_benke_underlys_light:
+          state: on
+          brightness: 140
+        light.alvakjokken:
           state: on
 
 
   - name: dim nedover kveldstid
     entities:
-        group.circadian:
-          state: off
         light.stuegruppe:
           state: off
         light.kjokkengruppe:
@@ -31,20 +25,24 @@
           state: off
         media_player.stueforsterker:
           state: off
-#        light.stue_peislys_light:
-#          state: on
-#          brightness: 1
-#          color_temp: 381
         light.kjokken_benke_underlys_light:
+          state: off
+        light.loft_lys:
+          state: off
+        light.eirikgruppe:
+          state: off
+        light.kjellergruppe:
+          state: off
+        light.alvakjokken:
           state: off
 
   - name: Loft kun gulvlampe
     entities:
-        light.gulvlampe_loft_1:
+        light.loft_gulvlampe1_light:
           state: on
-        light.gulvlampe_loft_2:
+        light.loft_gulvlampe2_light:
           state: on
-        light.gulvlampe_loft_3:
+        light.loft_gulvlampe3_light:
           state: on
         light.loft_taklys_1:
           state: off
@@ -53,11 +51,11 @@
 
   - name: Loft kun taklamper
     entities:
-        light.gulvlampe_loft_1:
+        light.loft_gulvlampe1_light:
           state: off
-        light.gulvlampe_loft_2:
+        light.loft_gulvlampe2_light:
           state: off
-        light.gulvlampe_loft_3:
+        light.loft_gulvlampe3_light:
           state: off
         light.loft_taklys_1:
           state: on
@@ -66,11 +64,11 @@
 
   - name: Loft alle av
     entities:
-        light.gulvlampe_loft_1:
+        light.loft_gulvlampe1_light:
           state: off
-        light.gulvlampe_loft_2:
+        light.loft_gulvlampe2_light:
           state: off
-        light.gulvlampe_loft_3:
+        light.loft_gulvlampe3_light:
           state: off
         light.loft_taklys_1:
           state: off
@@ -186,3 +184,21 @@
           state: on
           brightness: 254
           color_temp: 346
+
+  - name: Xbox
+    entities:
+        media_player.stuetv:
+          state: on
+          source: Set-top Box
+        media_player.stueforsterker:
+          state: on
+          source: strm-box
+
+  - name: PS4
+    entities: 
+        media_player.stuetv:
+          state: on
+          source: Set-top Box
+        media_player.stueforsterker:
+          state: on
+          source: Bluray

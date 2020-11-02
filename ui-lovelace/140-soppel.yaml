@@ -1,0 +1,34 @@
+path: soppel
+title: Søppel
+icon: 'mdi:trash-can'
+cards:
+  - type: 'custom:card-templater'
+    card:
+      type: picture-entity
+      name_template: >-
+        {{ states.sensor.restavfall.attributes.days }} days
+      show_name: True
+      show_state: False
+      entity: sensor.restavfall
+      state_image:
+        "0": "/local/containers/general_today.png"
+        "1": "/local/containers/general_tomorrow.png"
+        "2": "/local/containers/general_off.png"
+    entities:
+      - sensor.restavfall
+
+  - type: 'custom:card-templater'
+    card:
+      type: picture-entity
+      name_template: >-
+        {{ states.sensor.plast_og_papir.attributes.days }} days
+      show_name: True
+      show_state: False
+      entity: sensor.plast_og_papir
+      state_image:
+        "0": "/local/containers/paper_today.png"
+        "1": "/local/containers/paper_tomorrow.png"
+        "2": "/local/containers/paper_off.png"
+    entities:
+      - sensor.plast_og_papir
+

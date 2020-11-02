@@ -1,0 +1,10 @@
+circadian:
+  name: circadian
+  entities:
+    - switch.circadian_lighting_do
+    - switch.circadian_lighting_kjeller
+    - switch.circadian_lighting_kjokken
+    - switch.circadian_lighting_kontor
+    - switch.circadian_lighting_loft
+    - switch.circadian_lighting_peis
+    - switch.circadian_lighting_stue

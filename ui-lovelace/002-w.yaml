@@ -10,8 +10,18 @@ cards:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: switch.garasjedor
-            name: Garasjeport
+            name: XBOX
+            icon: "mdi:microsoft-xbox"
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: scene.xbox
+      - type: horizontal-stack
+        cards:
+          - type: entity-button
+            entity: light.w_kontor
+            name: Kontor
             tap_action:
               action: toggle
           - type: entity-button
@@ -23,8 +33,8 @@ cards:
       - type: horizontal-stack
         cards:
           - type: entity-button
-            entity: light.w_kontor
-            name: Kontor
+            entity: switch.garasjedor
+            name: Garasjeport
             tap_action:
               action: toggle
 

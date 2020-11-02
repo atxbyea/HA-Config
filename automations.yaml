@@ -10,8 +10,37 @@
   action:
     - service: scene.turn_on
       entity_id: scene.dim_oppover_dagtid
+#    - delay: 
+#        seconds: 5
+#    - service: light.turn_on
+#      entity_id: light.stue_lys
+#      data:
+#        brightness: 102
+#        transition: 1800
+#    - service: light.turn_on
+#      entity_id: light.kjokken_lys
+#      data:
+#        brightness: 102
+#        transition: 1800
 
-- alias: 'Vekk Huset'
+- alias: 'Skru på circadian etterklokken 8'
+  trigger:
+    platform: time
+    at: "08:00:00"
+  action:
+    - service: homeassistant.turn_on
+      entity_id: group.circadian
+
+- alias: 'Skru av circadian etter klokken 22'
+  trigger:
+    platform: time
+    at: "22:00:00"
+  action: 
+    - service: homeassistant.turn_off
+      entity_id: group.circadian
+
+
+- alias: 'Legg Huset'
   trigger:
     platform: mqtt
     topic: 'zigbee2mqtt/Stue Veggbryteren'
@@ -19,15 +48,20 @@
     condition: template
     value_template: '{{ "off" == trigger.payload_json.click }}'
   action:
+    - service: light.turn_on
+      entity_id: light.stue_lys
+      data:
+        brightness: 1
+    - delay:
+        seconds: 5
+    - service: light.turn_on
+      entity_id: light.kjokken_lys
+      data:
+        brightness: 8
+    - delay:
+        seconds: 5
     - service: scene.turn_on
       entity_id: scene.dim_nedover_kveldstid
-    - service: light.turn_on
-      entity_id: light.do_hyllelampe_light
-      data:
-        brightness: 2
-        color_temp: 454
-    - service: light.turn_off
-      entity_id: light.do_hyllelampe_light
 
 ### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
 
@@ -40,6 +74,9 @@
   action:
     - service: light.turn_on
       entity_id: light.kontor_eirik_lys
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_kontor
+
 
 - alias: Skru av kontorlys etter fem minutter
   trigger:
@@ -52,6 +89,8 @@
   action:
     - service: light.turn_off
       entity_id: light.kontor_eirik_lys
+    - service: switch.turn_off
+      entity_id: switch.circadian_lighting_kontor
 
 ### Always load dark theme ###
 
@@ -98,6 +137,9 @@
   action:
     - service: light.turn_on
       entity_id: light.do_hyllelampe_light
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_do
+
 
 - alias: 'Skru på vegglys do dagtid'
   trigger:
@@ -111,7 +153,9 @@
     before: '23:00:00'
   action:
     - service: light.turn_on
-      entity_id: light.do_vegglampe_light
+      entity_id: light.do_taklys_light
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_do
 
 
 - alias: 'Skru av dolys'
@@ -124,9 +168,11 @@
       minutes: 10
   action:
     - service: light.turn_off
-      entity_id: light.do_vegglampe_light
+      entity_id: light.do_taklys_light
     - service: light.turn_off
       entity_id: light.do_hyllelampe_light
+    - service: switch.turn_off
+      entity_id: switch.circadian_lighting_do
 
 ### Automatic lighting in basement ###
 
@@ -139,6 +185,8 @@
   action:
     - service: light.turn_on
       entity_id: light.kjellergruppe
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_kjeller
 
 - alias: 'Skru av kjellerlys'
   trigger:
@@ -164,6 +212,8 @@
   action:
     - service: light.turn_off
       entity_id: light.kjellergruppe
+    - service: switch.turn_off
+      entity_id: switch.circadian_lighting_kjeller
 
 
 ### Scrolling through different scenes for upstairs living room ###
@@ -486,29 +536,29 @@
 
 ### Automatically raise the lights when making dinner, and dim when done ###
 
-- alias: 'Matlaging'
-  trigger:
-    platform: state
-    entity_id: light.kjokken_ventilator_light
-    to: "on"
-  action:
-    - service: switch.turn_off
-      entity_id: switch.circadian_lighting_kjokken
-    - service: light.turn_on
-      data:
-        entity_id:
-          - light.kjokken_lys
-          - light.kjokkengruppe
-        brightness: 254
+#- alias: 'Matlaging'
+#  trigger:
+#    platform: state
+#    entity_id: light.kjokken_ventilator_light
+#    to: "on"
+#  action:
+#    - service: switch.turn_off
+#      entity_id: switch.circadian_lighting_kjokken
+#    - service: light.turn_on
+#      data:
+#        entity_id:
+#          - light.kjokken_lys
+#          - light.kjokkengruppe
+#        brightness: 254
 
-- alias: 'Matlaging ferdig'
-  trigger:
-    platform: state
-    entity_id: light.kjokken_ventilator_light
-    to: "unavailable"
-  action:
-    - service: switch.turn_on
-      entity_id: switch.circadian_lighting_kjokken
+#- alias: 'Matlaging ferdig'
+#  trigger:
+#    platform: state
+#    entity_id: light.kjokken_ventilator_light
+#    to: "unavailable"
+#  action:
+#    - service: switch.turn_on
+#      entity_id: switch.circadian_lighting_kjokken
 
 
 ### Playing with xiaomi cube ###
@@ -942,7 +992,7 @@
     value_template: '{{ "left" == trigger.payload_json.click }}'
   action:
     - service: light.toggle
-      entity_id: light.soverom_lampe_w_light
+      entity_id: light.soverom_w_light
 
 - alias: 'W skru på soverom Eirik'
   trigger:
@@ -953,7 +1003,7 @@
     value_template: '{{ "right" == trigger.payload_json.click }}'
   action:
     - service: light.toggle 
-      entity_id: light.soverom_lampe_eirik_light  
+      entity_id: light.eirik_soverom  
 
 - alias: 'Eirik skru på soverom W'
   trigger:
@@ -964,7 +1014,7 @@
     value_template: '{{ "left" == trigger.payload_json.click }}'
   action:
     - service: light.toggle 
-      entity_id: light.soverom_lampe_w_light
+      entity_id: light.soverom_w_light
 
 - alias: 'Eirik skru på soverom Eirik'
   trigger:
@@ -975,19 +1025,19 @@
     value_template: '{{ "right" == trigger.payload_json.click }}'
   action:
     - service: light.toggle
-      entity_id: light.soverom_lampe_eirik_light
+      entity_id: light.eirik_soverom
 
 
-- alias: Dryer Finished Notification
-  trigger:
-    platform: state
-    entity_id: binary_sensor.torketrommel_kjorer
-    to: 'off'
-  action:
-   - service: notify.we_telegram
-     data:
-       title: Tørketrommel
-       message: "Tørketrommel er ferdig"
+#- alias: Dryer Finished Notification
+#  trigger:
+##    platform: state
+#    entity_id: binary_sensor.torketrommel_kjorer
+#    to: 'off'
+#  action:
+#   - service: notify.we_telegram
+#     data:
+#       title: Tørketrommel
+#       message: "Tørketrommel er ferdig"
 
 ### Automatic watering of greenhouse ###
 
@@ -1005,3 +1055,198 @@
     - delay: '00:02:00'
     - service: switch.turn_off
       entity_id: switch.drivhuspumpe
+
+
+### Notify me when either UPS loses mains power ###
+
+- alias: 'Melding når strøm feiler på LoftUPS'
+  trigger:
+    platform: state
+    entity_id: sensor.loftups_status_data
+    from: 'OL'
+  action:
+    - service: notify.eirikz_telegram
+      data_template:
+        title: "LoftUPS har mistet strøm"
+        message: "LoftUPS har mistet strøm"
+
+- alias: 'Melding når strøm feiler på KjellerUPS'
+  trigger:
+    platform: state
+    entity_id: sensor.ups_status_data
+    from: 'OL'
+  action:
+    - service: notify.eirikz_telegram
+      data_template:
+        title: "KjellerUPS har mistet strøm"
+        message: "KjellerUPS har mistet strøm"
+
+
+### Notify me when either UPS gets mains power back ###
+
+- alias: 'Melding når strøm er ok på LoftUPS'
+  trigger:
+    platform: state
+    entity_id: sensor.loftups_status_data
+    to: 'OL'
+  action:
+    - service: notify.eirikz_telegram
+      data_template:
+        title: "LoftUPS har fått strømmen tilbake"
+        message: "LoftUPS har fått strømmen tilbake"
+             
+- alias: 'Melding når strøm er ok på KjellerUPS'
+  trigger:
+    platform: state
+    entity_id: sensor.ups_status_data    
+    to: 'OL'
+  action:
+    - service: notify.eirikz_telegram
+      data_template:
+        title: "KjellerUPS har fått strømmen tilbake"
+        message: "KjellerUPS har fått strømmen tilbake"
+
+
+- alias: 'Drivhusstatusbilde'
+
+  trigger:
+    platform: time_pattern
+    hours: /3
+  condition:
+    condition: time
+    after: '06:59:00'
+    before: '18:01:00'
+  action:
+    - service: camera.snapshot
+      data:
+        entity_id: camera.drivhuskamera
+        filename: '/tmp/drivhus.jpg'
+    - service: notify.eirikz_telegram
+      data:
+        title: Drivhus
+        message: "Drivhuskamera"
+        data:
+          photo:
+            - file: /tmp/drivhus.jpg
+              caption: Drivhus
+
+
+- alias: '3D Print er ferdig'
+
+  trigger:
+    platform: state
+    entity_id: sensor.octoprint_current_state
+    from: 'Printing'
+  action:
+    - service: notify.eirikz_telegram
+      data_template:
+        message: "Printen din er _kanskje_ ferdig?"
+    - service: camera.snapshot
+      data:
+        entity_id: camera.print
+        filename: '/tmp/print.jpg'
+    - service: notify.eirikz_telegram
+      data:
+        title: Print
+        message: "Print"
+        data:
+          photo:
+            - file: /tmp/print.jpg
+              caption: print
+
+
+- alias: 'Kjøkkenbryter'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Kjokken Lyskontroll'
+  condition:
+    condition: template
+    value_template: '{{ "single" == trigger.payload_json.click }}'
+  action:
+    service: tts.google_say
+    entity_id: media_player.kjokken
+    data_template:
+      message: 'Hei Alva, no har du trykka på knappen, mamma og pappa e veldi gla i deg, husk å pusse tennen og se på brannmann sam, hilser fra mommo og moffa i harstad'
+      language: '{{ ["fi", "de", "no", "fr", "en"] | random }}'
+      cache: false
+
+
+- alias: 'Teams ledig'
+  trigger:
+    platform: webhook
+    webhook_id: ohrlymotherfucker
+
+  action: 
+    service: light.turn_on
+    data:
+      entity_id: light.blink
+      rgb_color: [0,255,0]
+
+- alias: 'Teams opptatt'
+  trigger:
+    platform: webhook
+    webhook_id: bitchface
+
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.blink
+      rgb_color: [255,0,0]
+
+
+- alias: 'Teams Offline'
+  trigger:
+    platform: webhook
+    webhook_id: gone
+
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.blink
+      rgb_color: [0,0,255]
+
+- alias: 'Teams away'
+  trigger:
+    platform: webhook
+    webhook_id: hadoken
+
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.blink
+      rgb_color: [255,255,0]
+
+
+
+
+#- alias: 'Transition lights in the morning'
+#  trigger:
+
+
+- alias: 'Styre alle lys soverom oppover'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Soverom Fjernkontroll'
+  condition:
+    condition: template
+    value_template: '{{ "up-press" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: light.soverom_lys
+        brightness_step_pct: "10"
+
+- alias: 'Styre alle lys soverom nedover'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Soverom Fjernkontroll'
+  condition:
+    condition: template
+    value_template: '{{ "down-press" == trigger.payload_json.action }}'
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: light.soverom_lys
+        brightness_step_pct: "-10"
+
+    
