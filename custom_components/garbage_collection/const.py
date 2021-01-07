@@ -21,6 +21,7 @@ ATTR_NEXT_DATE = "next_date"
 ATTR_DAYS = "days"
 ATTR_LAST_COLLECTION = "last_collection"
 ATTR_LAST_UPDATED = "last_updated"
+ATTR_HOLIDAYS = "holidays"
 
 # Device classes
 BINARY_SENSOR_DEVICE_CLASS = "connectivity"
@@ -174,6 +175,11 @@ COUNTRY_CODES = [
     "UK",
     "US",
     "ZA",
+    "England",
+    "Wales",
+    "Scotland",
+    "IsleOfMan",
+    "NorthernIreland",
 ]
 
 
@@ -290,6 +296,18 @@ class configuration(config_singularity):
             "type": str,
             "validator": cv.string,
         },
+        CONF_INCLUDE_DATES: {
+            "step": 1,
+            "method": vol.Optional,
+            "type": str,
+            "validator": vol.All(cv.ensure_list, [date_text]),
+        },
+        CONF_EXCLUDE_DATES: {
+            "step": 1,
+            "method": vol.Optional,
+            "type": str,
+            "validator": vol.All(cv.ensure_list, [date_text]),
+        },
         CONF_DATE: {
             "step": 2,
             "valid_for": lambda f: f in ANNUAL_FREQUENCY,
@@ -349,7 +367,7 @@ class configuration(config_singularity):
             "method": vol.Optional,
             "default": DEFAULT_PERIOD,
             "type": int,
-            "validator": vol.All(vol.Coerce(int), vol.Range(min=1, max=52)),
+            "validator": vol.All(vol.Coerce(int), vol.Range(min=1, max=365)),
         },
         CONF_FIRST_WEEK: {
             "step": 4,
@@ -365,20 +383,6 @@ class configuration(config_singularity):
             "method": vol.Optional,
             "type": str,
             "validator": date_text,
-        },
-        CONF_INCLUDE_DATES: {
-            "step": 4,
-            "valid_for": lambda f: f in EXCEPT_ANNUAL_GROUP,
-            "method": vol.Optional,
-            "type": str,
-            "validator": vol.All(cv.ensure_list, [date_text]),
-        },
-        CONF_EXCLUDE_DATES: {
-            "step": 4,
-            "valid_for": lambda f: f in EXCEPT_ANNUAL_GROUP,
-            "method": vol.Optional,
-            "type": str,
-            "validator": vol.All(cv.ensure_list, [date_text]),
         },
         CONF_MOVE_COUNTRY_HOLIDAYS: {
             "step": 4,

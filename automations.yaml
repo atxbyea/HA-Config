@@ -8,20 +8,18 @@
     condition: template
     value_template: '{{ "on" == trigger.payload_json.click }}'
   action:
-    - service: scene.turn_on
-      entity_id: scene.dim_oppover_dagtid
-#    - delay: 
-#        seconds: 5
-#    - service: light.turn_on
-#      entity_id: light.stue_lys
-#      data:
-#        brightness: 102
-#        transition: 1800
-#    - service: light.turn_on
-#      entity_id: light.kjokken_lys
-#      data:
-#        brightness: 102
-#        transition: 1800
+    - service: light.turn_on
+      entity_id: light.stuegruppe
+    - service: light.turn_on
+      entity_id: light.kjokkengruppe
+    - service: light.turn_on
+      entity_id: light.kjokken_benke_underlys_light
+    - service: light.turn_on
+      entity_id: light.alvakjokken
+    - service: homeassistant.turn_on
+      entity_id: media_player.stueforsterker
+    - service: homeassistant.turn_on
+      entity_id: media_player.stuetv
 
 - alias: 'Skru på circadian etterklokken 8'
   trigger:
@@ -51,17 +49,25 @@
     - service: light.turn_on
       entity_id: light.stue_lys
       data:
-        brightness: 1
-    - delay:
-        seconds: 5
+        brightness: 10
     - service: light.turn_on
       entity_id: light.kjokken_lys
       data:
-        brightness: 8
+        brightness: 10
     - delay:
         seconds: 5
-    - service: scene.turn_on
-      entity_id: scene.dim_nedover_kveldstid
+    - service: light.turn_off
+      entity_id: light.stuegruppe
+    - service: light.turn_off
+      entity_id: light.kjokkengruppe
+    - service: light.turn_off
+      entity_id: light.kjokken_benke_underlys_light
+    - service: light.turn_off
+      entity_id: light.alvakjokken
+    - service: homeassistant.turn_off
+      entity_id: media_player.stueforsterker
+    - service: homeassistant.turn_off
+      entity_id: media_player.stuetv
 
 ### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
 
@@ -103,28 +109,6 @@
     - service: frontend.set_theme
       data:
         name: slate
-
-### Wakeup light (non functioning atm) ###
-
-#- alias: 'Wakeup-light soverom'
-#  initial_state: 'on'
-#  trigger:
-#    - platform: state
-#      entity_id: binary_sensor.alarm_time
-#      from: 'off'
-#      to: 'on'
-#  condition:
-#    - condition: state
-#      entity_id: 'input_boolean.wakeup'
-#      state: 'on'
-#  action:
-#    - service: python_script.fade_in_light
-#      data:
-#        entity_id: light.soveromled
-#        delay_in_sec: 18
-#        start_level_pct: 5
-#        end_level_pct: 100
-#        step_in_level_pct: 1
 
 ### Automatic turn on and off lights in the W.C and only turn on small light at night ###
 
@@ -216,9 +200,6 @@
       entity_id: switch.circadian_lighting_kjeller
 
 
-### Scrolling through different scenes for upstairs living room ###
-
-
 ### Added office morning annonuncements ###
 
 - alias: 'Morgenhilsen på kontoret Eirik'
@@ -261,39 +242,6 @@
     - service: light.turn_off
       entity_id: light.kjeller_bod_light
 
-### Experimenting with keyboard commands telegram bot ###
-
-- alias: 'Keyboard Travel'
-  trigger:
-    platform: event
-    event_type: telegram_command
-    event_data:
-      command: '/travel'
-  action:
-    - service: telegram_bot.send_message
-      data_template:
-        target: '{{trigger.event.data.user_id}}'
-        message: 'commands'
-        keyboard:
-          - "/drive, /train"
-          - "/menu"
-
-
-- alias: 'Keyboard Train'
-  trigger:
-    platform: event
-    event_type: telegram_command
-    event_data:
-      command: '/train'
-  action:
-    - service: telegram_bot.send_message
-      data_template:
-        target: '{{trigger.event.data.user_id}}'
-        message: 'commands'
-        keyboard:
-          - "/trainhome, /trainbushome"
-          - "/trainhaupthome, /trainhf, /trainfh"
-          - "/menu"
 
 ### Added telegram notifications ### 
 
@@ -536,30 +484,29 @@
 
 ### Automatically raise the lights when making dinner, and dim when done ###
 
-#- alias: 'Matlaging'
-#  trigger:
-#    platform: state
-#    entity_id: light.kjokken_ventilator_light
-#    to: "on"
-#  action:
-#    - service: switch.turn_off
-#      entity_id: switch.circadian_lighting_kjokken
-#    - service: light.turn_on
-#      data:
-#        entity_id:
-#          - light.kjokken_lys
-#          - light.kjokkengruppe
-#        brightness: 254
+- alias: 'Matlaging'
+  trigger:
+    platform: state
+    entity_id: light.kjokken_ventilator_light
+    to: "on"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.circadian_lighting_kjokken
+    - service: light.turn_on
+      data:
+        entity_id:
+          - light.kjokken_lys
+          - light.kjokkengruppe
+        brightness: 254
 
-#- alias: 'Matlaging ferdig'
-#  trigger:
-#    platform: state
-#    entity_id: light.kjokken_ventilator_light
-#    to: "unavailable"
-#  action:
-#    - service: switch.turn_on
-#      entity_id: switch.circadian_lighting_kjokken
-
+- alias: 'Matlaging ferdig'
+  trigger:
+    platform: state
+    entity_id: light.kjokken_ventilator_light
+    to: "unavailable"
+  action:
+    - service: switch.turn_on
+      entity_id: switch.circadian_lighting_kjokken
 
 ### Playing with xiaomi cube ###
 
@@ -1173,25 +1120,29 @@
 
 - alias: 'Teams ledig'
   trigger:
-    platform: webhook
-    webhook_id: ohrlymotherfucker
+    platform: state
+    entity_id: sensor.microsoft_teams_availability
+    to: Available
 
   action: 
     service: light.turn_on
     data:
-      entity_id: light.blink
+      entity_id: light.teamskube
       rgb_color: [0,255,0]
+      brightness_pct: 40
 
 - alias: 'Teams opptatt'
   trigger:
-    platform: webhook
-    webhook_id: bitchface
+    platform: state
+    entity_id: sensor.microsoft_teams_availability
+    to: Busy
 
   action:
     service: light.turn_on
     data:
-      entity_id: light.blink
+      entity_id: light.teamskube
       rgb_color: [255,0,0]
+      brightness_pct: 40
 
 
 - alias: 'Teams Offline'
@@ -1202,19 +1153,22 @@
   action:
     service: light.turn_on
     data:
-      entity_id: light.blink
+      entity_id: light.teamskube
       rgb_color: [0,0,255]
+      brightness_pct: 40
 
 - alias: 'Teams away'
   trigger:
-    platform: webhook
-    webhook_id: hadoken
+    platform: state
+    entity_id: sensor.microsoft_teams_availability
+    to: Away
 
   action:
     service: light.turn_on
     data:
-      entity_id: light.blink
+      entity_id: light.teamskube
       rgb_color: [255,255,0]
+      brightness_pct: 40
 
 
 

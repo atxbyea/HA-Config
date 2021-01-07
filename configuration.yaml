@@ -38,10 +38,6 @@ config:
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
  http:
-#    base_url: !secret baseurl
-#    ssl_certificate: /config/certificate.pem
-#    ssl_key: /config/privkey.pem
-#    api_password: !secret apipassword
 
 updater:
   include_used_components: true
@@ -105,9 +101,6 @@ input_select:
 ### Weather ###
 
 weather:
-  - platform: darksky
-    api_key: !secret darksky_api
-    mode: daily
 
 ### TTS ###
 
@@ -119,8 +112,7 @@ tts:
     base_url: !secret baseurl_ga
     language: 'no'
 
-
-#cloud:
+### Includes
 
 group: !include groups.yaml
 automation: !include automations.yaml
@@ -131,40 +123,13 @@ sensor: !include sensors.yaml
 logger:
   default: warn
   logs:
-   homeassistant.components.ps4.media_player: error 
-#   hacs: debug
-   homeassistant.components.mqtt: warn
-#   pyatv: debug
-   zeep: debug
-   homeassistant.components.roku: fatal
-   homeassistant.config_entries: error
-   homeassistant.components.switch: error
-   pytautulli: fatal
+   homeassistant.components.google_assistant.http: critical
 
-### Xiaomi Gateway ###
-
-#xiaomi_aqara:
-#  discovery_retry: 5
-#  gateways:
-#    - mac: !secret xiaomimac
-#      key: !secret xiaomigw
-#      host: !secret xiaomiip
  
 ### Telldus Live ###
 
 tellduslive:
   host: !secret telldusip
-
-### Device Trackers ###
-
-#device_tracker:
-#
-#  - platform: ping
-#    consider_home: 180
-#    hosts:
-#      werofon: !secret werofon
-#      eirikfon: !secret eirikfon
-
 
 ### Lights ###
 
@@ -240,15 +205,6 @@ light:
     rgb: false
 
 
-### Mi-Light ###
-
-  - platform: limitlessled
-    bridges:
-      - host: !secret limitlessip
-        groups:
-        - number: 1
-          name: Bokhylle
-
 ### Light Switches ###
 
   - platform: switch
@@ -284,7 +240,7 @@ light:
     name: Stue_lys
     entities:
       - light.stue_stuebord_light
-      - light.stue_yttergang_vegglys
+      - light.stue_ganglys_light
       - light.stue_vinduslampe1_light
       - light.stue_vinduslampe2_light
       - light.stue_gulvlampe1_light
@@ -369,11 +325,6 @@ yeelight:
 
 switch:
 
-#  - platform: broadlink
-#    host: 192.168.1.70
-#    mac: 'c8:f7:42:75:0a:28'
-#    type: rm_mini
-
 ### Switch Templates ###
 
   - platform: template
@@ -401,12 +352,12 @@ switch:
   - platform: circadian_lighting
     name: stue
     lights_brightness:
-      - light.stuegruppe
+      - light.stue_lys
     max_brightness: 75
     min_brightness: 1
 
     lights_ct:
-      - light.stuegruppe
+      - light.stue_lys
 
   - platform: circadian_lighting
     name: peis
@@ -460,7 +411,7 @@ switch:
   - platform: circadian_lighting
     name: kjokken   
     lights_brightness:
-      - light.kjokkengruppe
+      - light.kjokken_lys
     max_brightness: 75
     min_brightness: 1
 
@@ -498,17 +449,13 @@ webostv:
 
 media_player:
 
-### Roku ###
-
-#  - platform: roku
-#    scan_interval: 10
-
 ### Onkyo ###
 
   - platform: onkyo
     host: !secret onkyoip
     name: Stueforsterker
 
+### Broadlink devices ###
   - platform: smartir
     name: LoftTV
     unique_id: lofttv
@@ -553,8 +500,6 @@ lovelace:
   resources:
     - url: /hacsfiles/calendar-card/calendar-card.js
       type: js
-#    - url: /hacsfiles/monster-card.js?v=1
-#      type: js
     - url: /hacsfiles/light-entity-row/light-entity-row.js
       type: js
     - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
@@ -593,12 +538,6 @@ lovelace:
 ### Binary sensors ###
 
 binary_sensor:
-  - platform: ping
-    host: 192.168.1.36
-    name: Temari
-    count: 3
-    scan_interval: 30
-
   - platform: ping
     host: 192.168.1.40
     name: Kakuzu
@@ -675,7 +614,6 @@ notify:
 
 recorder:
   db_url: !secret mariadb
-#  db_url: postgresql://postgres:password@192.168.1.40/hass
 ### Persons ###
 
 person:
@@ -693,7 +631,7 @@ telegram_bot:
 
 climate:
   - platform: climate_ip
-    config_file: '/home/homeassistant/homeassistant/custom_components/climate_ip/samsung_2878.yaml'
+    config_file: '/config/custom_components/climate_ip/samsung_2878.yaml'
     ip_address: !secret climateip
     token: !secret climatetoken
     mac: !secret climatemac
@@ -729,7 +667,6 @@ image_processing:
     detector: tensorflow
     source:
       - entity_id: camera.fremme
-##      - entity_id: camera.bak
     file_out:
       - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
       - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
@@ -744,26 +681,22 @@ image_processing:
       - bowl
       - chair
       - couch
-#      - potted plant
-##      - dining table
 
   - platform: doods
     scan_interval: 10000
     url: "http://kakuzu.eirikzlab.local:8011"
     detector: default
     source:
-##      - entity_id: camera.fremme
       - entity_id: camera.bak
     file_out:
       - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
       - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     confidence: 20
-#    labels:
-#      - person
-##      - car
-##      - cat
 
-
+  - platform: openalpr_local
+    region: eu
+    source:
+    - entity_id: camera.fremme
 
 ### ffmpeg ###
 
@@ -794,8 +727,6 @@ life360:
 ### MQTT ###
 
 mqtt:
-#  discovery: true
-#  broker: 192.168.1.59
   birth_message:
     topic: 'hass/status'
     payload: 'online'
@@ -821,11 +752,6 @@ sonos:
 ### Google Cast ###
 
 cast:
-#  media_player:
-#    - host: !secret kjokkenhubip
-#    - host: !secret wkontorip
-#    - host: !secret garasjemini
-#    - host: !secret sonoskontorip
 
 ### MJPEG camera from Motion ###
 
@@ -876,7 +802,7 @@ octoprint:
   number_of_tools: 1
 
 
-### Google Assistant Integration because Frenck is a cunt ###
+### Google Assistant Integration because Nabu Casa sucks###
 
 google_assistant:
   project_id: !secret projectidga
@@ -1006,10 +932,16 @@ garbage_collection:
 tplink:
   discovery: false
   switch:
-    - host: 192.168.1.89
+    - host: !secret tplinkvvb 
 
 ### Speedtest ###
 speedtestdotnet:
   server_id: 12919
   scan_interval:
     hours: 12
+
+
+### Microsoft Graph ###
+microsoft_graph:
+  client_id: !secret mgclientid 
+  client_secret: !secret mgclientsecret 
