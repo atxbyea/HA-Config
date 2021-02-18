@@ -1,12 +1,11 @@
 tomme:
       alias: "Tømme støvsuger"
       sequence:
-        - service: vacuum.xiaomi_remote_control_move_step
+        - service: vacuum.send_command
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
-            velocity: 0.29
-            rotation: 0
-            duration: 4000
+            command: app_goto_target
+            params: [22800,26750]
 
 stovsug_kjokken:
       alias: "Støvsug kjøkkenet"
@@ -15,25 +14,33 @@ stovsug_kjokken:
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
             command: app_zoned_clean
-            params: [[24912,22900,32312,26300,1]]
+            params: [[19005,24888,26105,28438,1]]
 
-stovsug_tvstue:
-      alias: "Støvsug TV-stue"
+stovsug_stue:
+      alias: "Støvsug stue"
       sequence:
         - service: vacuum.send_command
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
             command: app_zoned_clean
-            params: [[24989,18613,29339,23113,1]]
+            params: [[15643,28221,26293,33471,1]]
 
-stovsug_spisestue:
-      alias: "Støvsug spisestue"
+ga_til_dock:
+      alias: "Gå til dock"
       sequence:
-        - service: vacuum.send_command
+        - service: vacuum.return_to_base
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_zoned_clean
-            params: [[28668,17932,37568,22932,1]]
+
+
+#stovsug_spisestue:
+#      alias: "Støvsug spisestue"
+#      sequence:
+#        - service: vacuum.send_command
+#          data:
+#            entity_id: vacuum.xiaomi_vacuum_cleaner
+#            command: app_zoned_clean
+#            params: [[28668,17932,37568,22932,1]]
 
 stovsug_huset:
       alias: "Støvsug huset"
@@ -41,8 +48,7 @@ stovsug_huset:
         - service: vacuum.send_command
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_zoned_clean
-            params: [[24890,17638,39590,26288,1]]
+            command: start
 
 stovsug_barnerom:
       alias: "Støvsug barnerom"
@@ -51,7 +57,7 @@ stovsug_barnerom:
           data:
             entity_id: vacuum.xiaomi_vacuum_cleaner
             command: app_zoned_clean
-            params: [[36507,22525,39607,25325,1]]
+            params: [[11540,25960,16940,29660,1]]
 
 
 flash_ute_fire:

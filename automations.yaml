@@ -15,28 +15,51 @@
     - service: light.turn_on
       entity_id: light.kjokken_benke_underlys_light
     - service: light.turn_on
+      data:
+        entity_id: light.stue_peislys_light
+        brightness: 80
+    - service: light.turn_on
       entity_id: light.alvakjokken
     - service: homeassistant.turn_on
       entity_id: media_player.stueforsterker
     - service: homeassistant.turn_on
       entity_id: media_player.stuetv
 
-- alias: 'Skru på circadian etterklokken 8'
+#- alias: 'Skru på circadian etterklokken 8'
+#  trigger:
+#    platform: time
+#    at: "08:00:00"
+#  action:
+#    - service: homeassistant.turn_on
+#      entity_id: group.circadian
+
+#- alias: 'Skru av circadian etter klokken 22'
+#  trigger:
+#    platform: time
+#    at: "22:00:00"
+#  action: 
+#    - service: homeassistant.turn_off
+#      entity_id: group.circadian
+
+
+- alias: "Adaptive lighting: toggle 'sleep mode'"
   trigger:
-    platform: time
-    at: "08:00:00"
+    platform: mqtt
+    topic: 'zigbee2mqtt/Stue Veggbryteren'
+  condition:
+    condition: template
+    value_template: '{{ "off" == trigger.payload_json.click }}'
   action:
-    - service: homeassistant.turn_on
-      entity_id: group.circadian
-
-- alias: 'Skru av circadian etter klokken 22'
-  trigger:
-    platform: time
-    at: "22:00:00"
-  action: 
-    - service: homeassistant.turn_off
-      entity_id: group.circadian
-
+    service: "switch.turn_{{ sleep_mode }}"
+    entity_id:
+      - switch.adaptive_lighting_sleep_mode_stue
+      - switch.adaptive_lighting_sleep_mode_do
+      - switch.adaptive_lighting_sleep_mode_kjokken       
+      - switch.adaptive_lighting_sleep_mode_eirikkontor
+      - switch.adaptive_lighting_sleep_mode_kjeller       
+      - switch.adaptive_lighting_sleep_mode_loft
+      - switch.adaptive_lighting_sleep_mode_peis
+      - switch.adaptive_lighting_sleep_mode_kjokkenbenkelys
 
 - alias: 'Legg Huset'
   trigger:
@@ -47,13 +70,13 @@
     value_template: '{{ "off" == trigger.payload_json.click }}'
   action:
     - service: light.turn_on
-      entity_id: light.stue_lys
+      entity_id: light.stuegruppe
       data:
-        brightness: 10
+        brightness: 1
     - service: light.turn_on
-      entity_id: light.kjokken_lys
+      entity_id: light.kjokkengruppe
       data:
-        brightness: 10
+        brightness: 1
     - delay:
         seconds: 5
     - service: light.turn_off
@@ -62,6 +85,10 @@
       entity_id: light.kjokkengruppe
     - service: light.turn_off
       entity_id: light.kjokken_benke_underlys_light
+    - service: light.turn_on
+      data:
+        entity_id: light.stue_peislys_light
+        brightness: 10
     - service: light.turn_off
       entity_id: light.alvakjokken
     - service: homeassistant.turn_off
@@ -79,9 +106,9 @@
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.kontor_eirik_lys
-    - service: switch.turn_on
-      entity_id: switch.circadian_lighting_kontor
+      entity_id: light.eirikgruppe
+#    - service: switch.turn_on
+#      entity_id: switch.circadian_lighting_kontor
 
 
 - alias: Skru av kontorlys etter fem minutter
@@ -94,9 +121,9 @@
       minutes: 5
   action:
     - service: light.turn_off
-      entity_id: light.kontor_eirik_lys
-    - service: switch.turn_off
-      entity_id: switch.circadian_lighting_kontor
+      entity_id: light.eirikgruppe
+#    - service: switch.turn_off
+#      entity_id: switch.circadian_lighting_kontor
 
 ### Always load dark theme ###
 
@@ -121,8 +148,8 @@
   action:
     - service: light.turn_on
       entity_id: light.do_hyllelampe_light
-    - service: switch.turn_on
-      entity_id: switch.circadian_lighting_do
+#    - service: switch.turn_on
+#      entity_id: switch.circadian_lighting_do
 
 
 - alias: 'Skru på vegglys do dagtid'
@@ -138,8 +165,8 @@
   action:
     - service: light.turn_on
       entity_id: light.do_taklys_light
-    - service: switch.turn_on
-      entity_id: switch.circadian_lighting_do
+#    - service: switch.turn_on
+#      entity_id: switch.circadian_lighting_do
 
 
 - alias: 'Skru av dolys'
@@ -155,8 +182,8 @@
       entity_id: light.do_taklys_light
     - service: light.turn_off
       entity_id: light.do_hyllelampe_light
-    - service: switch.turn_off
-      entity_id: switch.circadian_lighting_do
+#    - service: switch.turn_off
+#      entity_id: switch.circadian_lighting_do
 
 ### Automatic lighting in basement ###
 
@@ -169,8 +196,8 @@
   action:
     - service: light.turn_on
       entity_id: light.kjellergruppe
-    - service: switch.turn_on
-      entity_id: switch.circadian_lighting_kjeller
+#    - service: switch.turn_on
+#      entity_id: switch.circadian_lighting_kjeller
 
 - alias: 'Skru av kjellerlys'
   trigger:
@@ -196,8 +223,8 @@
   action:
     - service: light.turn_off
       entity_id: light.kjellergruppe
-    - service: switch.turn_off
-      entity_id: switch.circadian_lighting_kjeller
+#    - service: switch.turn_off
+#      entity_id: switch.circadian_lighting_kjeller
 
 
 ### Added office morning annonuncements ###
@@ -214,7 +241,7 @@
   action:
     service: tts.google_say
     entity_id: media_player.eirik_kontor
-    data_template:
+    data:
       message: >-
         God morgen Eirik, temperaturen ute er {{states('sensor.ute_dobbelsensor_temperature')|string|replace('.','komma')}} grader og været er {{states('weather.dark_sky')|replace('partly', 'delvis')|replace('cloudy', 'overskyet')|replace('sunny', 'solfylt')|replace('rain', 'regner')}}, temperaturen i drivhuset er {{states('sensor.drivhusny_temperature')|string|replace('.', 'komma')}} grader, det tar {{states('sensor.hjemmefra_til_jobb')}} minutter å kjøre til kontoret, akkurat nå strømmer {{states('sensor.tautulli')}} brukere fra plex serveren din, solen er {{states('sun.sun')|replace('_', ' ')|replace('above', 'over')|replace('below', 'under')|replace('horizon', 'horisonten')}}  
       language: 'no'
@@ -407,7 +434,7 @@
         hours: 24
   action:
     - service: input_select.select_option
-      data_template:
+      data:
         entity_id: input_select.eirik_status_dropdown
         option: 'Bortreist'
 
@@ -477,7 +504,7 @@
         hours: 24
   action:
     - service: input_select.select_option
-      data_template:
+      data:
         entity_id: input_select.w_status_dropdown
         option: 'Bortreist'
 
@@ -665,7 +692,7 @@
        from: 'off'
   action:
     - service: image_processing.scan
-      data_template:
+      data:
         entity_id: "image_processing.doods_bak"
 
 
@@ -680,14 +707,14 @@
     - service: input_boolean.toggle
       entity_id: input_boolean.dummy_fremme
     - service: camera.record
-      data_template:
+      data:
         entity_id: camera.fremme
         filename: "/tmp/{{- trigger.entity_id.split('.')[1].split('_')[1] -}}_{{- states.input_boolean.dummy_fremme.last_updated.strftime('%Y%m%d-%H%M%S') -}}.mp4"
         duration: 20
         lookback: 10
     - delay: "00:00:30"
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         title: "Doods"
         message: "fremme"
         data:
@@ -778,7 +805,7 @@
     - service: input_select.select_next
       entity_id: input_select.loftlys
     - service: scene.turn_on
-      data_template:
+      data:
         entity_id: 'scene.{{ states.input_select.loftlys.state }}'
 
 - alias: Lys loft følger fysisk bryter av
@@ -810,12 +837,12 @@
   action:
     - service: light.turn_on
       entity_id: light.halloween
-      data_template:
+      data:
         effect: '{{ (["Lightning", "Rainbow", "Flash", "Blink", "Fire Flicker", "Solid", "Chase", "Breathe"] | random) }}'
         rgb_color: ["{{range(256)|random}}","{{range(256)|random}}","{{range(256)|random}}"]
     - service: light.turn_on 
       entity_id: light.ute
-      data_template:
+      data:
         brightness: 100
 
 
@@ -914,7 +941,7 @@
     data:
       entity_id: vacuum.xiaomi_vacuum_cleaner
       repeats: 2
-      zone: [[19036,24821,26336,28271]]
+      zone: [[19005,24888,26105,28438]]
 
 
 ### Automatic generation of Z2M maps ###
@@ -1013,7 +1040,7 @@
     from: 'OL'
   action:
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         title: "LoftUPS har mistet strøm"
         message: "LoftUPS har mistet strøm"
 
@@ -1024,7 +1051,7 @@
     from: 'OL'
   action:
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         title: "KjellerUPS har mistet strøm"
         message: "KjellerUPS har mistet strøm"
 
@@ -1038,7 +1065,7 @@
     to: 'OL'
   action:
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         title: "LoftUPS har fått strømmen tilbake"
         message: "LoftUPS har fått strømmen tilbake"
              
@@ -1049,7 +1076,7 @@
     to: 'OL'
   action:
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         title: "KjellerUPS har fått strømmen tilbake"
         message: "KjellerUPS har fått strømmen tilbake"
 
@@ -1086,7 +1113,7 @@
     from: 'Printing'
   action:
     - service: notify.eirikz_telegram
-      data_template:
+      data:
         message: "Printen din er _kanskje_ ferdig?"
     - service: camera.snapshot
       data:
@@ -1112,7 +1139,7 @@
   action:
     service: tts.google_say
     entity_id: media_player.kjokken
-    data_template:
+    data:
       message: 'Hei Alva, no har du trykka på knappen, mamma og pappa e veldi gla i deg, husk å pusse tennen og se på brannmann sam, hilser fra mommo og moffa i harstad'
       language: '{{ ["fi", "de", "no", "fr", "en"] | random }}'
       cache: false
@@ -1188,7 +1215,7 @@
     - service: light.turn_on
       data:
         entity_id: light.soverom_lys
-        brightness_step_pct: "10"
+        brightness_pct: 100
 
 - alias: 'Styre alle lys soverom nedover'
   trigger:
@@ -1201,6 +1228,69 @@
     - service: light.turn_on
       data:
         entity_id: light.soverom_lys
-        brightness_step_pct: "-10"
+        brightness_pct: 3
 
     
+
+
+- alias: "Adaptive lighting: reset manual_control after 30 minutes"
+  mode: parallel
+  trigger:
+    platform: event
+    event_type: adaptive_lighting.manual_control
+  variables:
+    light: "{{ trigger.event.data.entity_id }}"
+    switch: "{{ trigger.event.data.switch }}"
+  action:
+    - delay: "00:30:00"
+    - condition: template
+      value_template: "{{ light in state_attr(switch, 'manual_control') }}"
+    - service: adaptive_lighting.set_manual_control
+      data:
+        entity_id: "{{ switch }}"
+        lights: "{{ light }}"
+        manual_control: false
+
+
+
+### Tell me about temperature sensors that are broken ###
+
+- alias: "Temperatursensoren er trolig død"
+  trigger:
+    platform: state
+    entity_id: 
+      - sensor.alva_temperatur_temperature
+      - sensor.bad_temperatur_temperature
+      - sensor.bod_temperatur_temperature
+      - sensor.garasje_temperatur_temperature
+      - sensor.loft_temperatur_temperature
+      - sensor.soverom_temperatur_temperature
+      - sensor.vaskerom_temperatur_temperature
+    for: '03:00:00'
+  action:
+    - service: notify.eirikz_telegram
+      data:
+        message: "Temperatursensor {{ trigger.to_state.name }} har problemer"
+
+
+- alias: Skru på trappelys
+  trigger:
+    platform: state
+    entity_id: binary_sensor.loft_trappesensor_occupancy
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.loft_trappelys_light
+
+- alias: Skru av trappelyslys etter fem minutter
+  trigger:
+    platform: state
+    entity_id: binary_sensor.loft_trappesensor_occupancy
+    from: 'on'
+    to: 'off'
+    for:
+      minutes: 5
+  action:
+    - service: light.turn_off
+      entity_id: light.loft_trappelys_light

@@ -1,6 +1,6 @@
   - platform: waze_travel_time
     name: Eirik til Hjem
-    origin: device_tracker.life360_eirik_zakariassen
+    origin: device_tracker.eirik_mobil
     destination: zone.home
     realtime: true
     region: 'EU'
@@ -138,25 +138,25 @@
     sensors:
       eirik_batteri:
         friendly_name: "Eirik Batteri"
-        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'battery') }}"
+        value_template: "{{ state_attr('device_tracker.eirik_mobil', 'battery_level') }}"
 
   - platform: template
     sensors:
       eirik_lader:
         friendly_name: "Eirik Lader"
-        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'battery_charging') }}"
+        value_template: "{{ state_attr('device_tracker.eirik_mobil', 'battery_charging') }}"
 
   - platform: template
     sensors:
       eirik_kjorer:
         friendly_name: "Eirik Kjører"
-        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'driving') }}"
+        value_template: "{{ state_attr('device_tracker.eirik_mobil', 'activity') }}"
 
   - platform: template
     sensors:
       eirik_hastighet:
         friendly_name: "Eirik hastighet"
-        value_template: "{{ state_attr('device_tracker.life360_eirik_zakariassen', 'speed') }}"
+        value_template: "{{ state_attr('device_tracker.eirik_mobil', 'speed') }}"
 
   - platform: plex_recently_added
     token: !secret plextokenrecently
@@ -189,32 +189,32 @@
       - battery.runtime
 
 
-  - platform: rest
-    name: Opnsense WAN
-    resource: http://192.168.1.1:3000/lua/rest/get/interface/data.lua?ifid=1
-    json_attributes:
-      - upload
-      - download
-    username: !secret opnsenseuser
-    password: !secret opnsensepass
-    authentication: basic
-    value_template: '{{ value_json.throughput }}'
+#  - platform: rest
+#    name: Opnsense WAN
+#    resource: http://192.168.1.1:3000/lua/rest/get/interface/data.lua?ifid=1
+#    json_attributes:
+#      - upload
+#      - download
+#    username: !secret opnsenseuser
+#    password: !secret opnsensepass
+#    authentication: basic
+#    value_template: '{{ value_json.throughput }}'
 
 
 
-  - platform: rest
-    name: Opnsense Upload
-    resource: http://192.168.1.1:19999/api/v1/data?chart=net.re0
-    value_template: '{{ (value_json.data[0][2] / 1024 ) | float | round(2) | abs }}'
-    unit_of_measurement: Mbit\s
-    force_update: true
+#  - platform: rest
+#    name: Opnsense Upload
+#    resource: http://192.168.1.1:19999/api/v1/data?chart=net.re0
+#    value_template: '{{ (value_json.data[0][2] / 1024 ) | float | round(2) | abs }}'
+#    unit_of_measurement: Mbit\s
+#    force_update: true
 
-  - platform: rest
-    name: Opnsense Download
-    resource: http://192.168.1.1:19999/api/v1/data?chart=net.re0
-    value_template: '{{ (value_json.data[0][1] / 1024 ) | float | round(2) }}'
-    unit_of_measurement: Mbit\s
-    force_update: true
+#  - platform: rest
+#    name: Opnsense Download
+#    resource: http://192.168.1.1:19999/api/v1/data?chart=net.re0
+#    value_template: '{{ (value_json.data[0][1] / 1024 ) | float | round(2) }}'
+#    unit_of_measurement: Mbit\s
+#    force_update: true
 
   - platform: template
     sensors:
@@ -309,3 +309,41 @@
       disk12:
         unit_of_measurement: 'C°'
         value_template: '{{ states.sensor.freenas_disk_temp.attributes["da12"] }}'
+
+
+#  - platform : command_line
+#    name: "Mirai power"
+#    command: 'ipmitool -H 192.168.1.253 -U root -P password -I lanplus sdr elist full | grep "System Level" | cut -c 39-41'
+#    unit_of_measurement: "W"
+
+
+  - platform: statistics
+    name: "Mirai power per minute"
+    entity_id: sensor.mirai_power
+    sampling_size: 60
+
+  - platform: template
+    sensors:
+      mirai_realtime_power:
+        friendly_name: "Mirai Realtime Power"
+        value_template: "{{state_attr('sensor.mirai_power_per_minute', 'total') / (1000 * 60) }}"
+        unit_of_measurement: 'kwH'
+
+  - platform: template
+    sensors:
+      varmepumpe_stue_realtime_power:
+        friendly_name: "Varmepumpe stue kwh realtime"
+        value_template: "{{state_attr('sensor.varmepumpe_stue_plugg_energy_power', 'total') / (1000 * 60) }}"
+        unit_of_measurement: 'kwH'
+
+  - platform: mqtt
+    state_topic: "idracpower"
+    name: "Mirai Power"
+    unit_of_measurement: "W"
+
+  - platform: mqtt
+    name: Zigbee2mqtt Networkmap
+    state_topic: zigbee2mqtt/bridge/networkmap/raw
+    value_template: >-
+      {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
+    json_attributes_topic: zigbee2mqtt/bridge/networkmap/raw

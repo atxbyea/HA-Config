@@ -17,7 +17,7 @@ cards:
                 tap_action:
                   action: toggle
               - type: entity-button
-                entity: script.stovsug_tvstue
+                entity: script.stovsug_stue
                 icon: mdi:sofa
                 color: auto
                 name: Stue
@@ -33,17 +33,17 @@ cards:
           - type: horizontal-stack
             cards:
               - type: entity-button
-                entity: script.stovsug_spisestue
-                icon: mdi:silverware-fork-knife
-                color: auto
-                name: Spisestue
-                tap_action:
-                  action: toggle
-              - type: entity-button
                 entity: script.stovsug_huset
                 icon: mdi:home-circle
                 color: auto
                 name: Hele huset
+                tap_action:
+                  action: toggle
+              - type: entity-button
+                entity: script.ga_til_dock
+                icon: mdi:robot-vacuum
+                color: auto
+                name: Dock
                 tap_action:
                   action: toggle
               - type: entity-button

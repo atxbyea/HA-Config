@@ -62,3 +62,4 @@ views:
   - !include /config/ui-lovelace/121-strom.yaml
   - !include /config/ui-lovelace/130-drivhus.yaml
   - !include /config/ui-lovelace/140-soppel.yaml
+  - !include /config/ui-lovelace/150-z2m.yaml

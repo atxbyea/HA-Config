@@ -286,6 +286,7 @@ light:
       - light.loft_gulvlampe1_light
       - light.loft_gulvlampe2_light
       - light.loft_gulvlampe3_light
+      - light.loft_trappelys_light
 
   - platform: group
     name: Kontor_eirik_lys
@@ -349,43 +350,43 @@ switch:
 
 ### Circadian Lighting ###
 
-  - platform: circadian_lighting
-    name: stue
-    lights_brightness:
-      - light.stue_lys
-    max_brightness: 75
-    min_brightness: 1
+#  - platform: circadian_lighting
+#    name: stue
+#    lights_brightness:
+#      - light.stue_lys
+#    max_brightness: 75
+#    min_brightness: 1
 
-    lights_ct:
-      - light.stue_lys
+#    lights_ct:
+#      - light.stue_lys
 
-  - platform: circadian_lighting
-    name: peis
-    lights_brightness:
-      - light.stue_peislys
-    max_brightness: 75
-    min_brightness: 12
+#  - platform: circadian_lighting
+#    name: peis
+#    lights_brightness:
+#      - light.stue_peislys
+#    max_brightness: 75
+#    min_brightness: 12
 
-    lights_ct:
-      - light.stue_peislys 
+#    lights_ct:
+#      - light.stue_peislys 
 
-  - platform: circadian_lighting
-    name: do
-    lights_brightness:
-      - light.do_taklys_light
-      - light.do_hyllelampe_light
-    max_brightness: 75
-    min_brightness: 15
+#  - platform: circadian_lighting
+#    name: do
+#    lights_brightness:
+#      - light.do_taklys_light
+#      - light.do_hyllelampe_light
+#    max_brightness: 75
+#    min_brightness: 15
 
-    lights_ct:
-      - light.do_taklys_light
-      - light.do_hyllelampe_light
+#    lights_ct:
+#      - light.do_taklys_light
+#      - light.do_hyllelampe_light
 
 
 
-  - platform: circadian_lighting
-    name: kjeller
-    lights_brightness:
+#  - platform: circadian_lighting
+#    name: kjeller
+#    lights_brightness:
 #      - light.kjeller_ganglys_light
 #      - light.kjeller_vaskerom1_light
 #      - light.kjeller_vaskerom2_light
@@ -393,35 +394,35 @@ switch:
 #      - light.kjeller_trappelys_light
 #      - light.kjeller_fryserom_light
 #      - light.kjeller_bod_light
-      - light.kjellergruppe
-    max_brightness: 75
-    min_brightness: 1
+#      - light.kjellergruppe
+#    max_brightness: 75
+#    min_brightness: 1
 
-  - platform: circadian_lighting
-    name: loft
-    lights_brightness:
-      - light.loft
-    max_brightness: 75
-    min_brightness: 1
+#  - platform: circadian_lighting
+#    name: loft
+#    lights_brightness:
+#      - light.loft
+#    max_brightness: 75
+#    min_brightness: 1
 
-    lights_ct:
-      - light.loft_taklys_1
-      - light.loft_taklys_2
+#    lights_ct:
+#      - light.loft_taklys_1
+#      - light.loft_taklys_2
 
-  - platform: circadian_lighting
-    name: kjokken   
-    lights_brightness:
-      - light.kjokken_lys
-    max_brightness: 75
-    min_brightness: 1
+#  - platform: circadian_lighting
+#    name: kjokken   
+#    lights_brightness:
+#      - light.kjokken_lys
+#    max_brightness: 75
+#    min_brightness: 1
 
 
-  - platform: circadian_lighting
-    name: kontor
-    lights_brightness:
-      - light.kontor_eirik_lys
-    max_brightness: 75
-    min_brightness: 1
+#  - platform: circadian_lighting
+#    name: kontor
+#    lights_brightness:
+#      - light.kontor_eirik_lys
+#    max_brightness: 75
+#    min_brightness: 1
 
 
 zone: !include zones.yaml 
@@ -482,16 +483,16 @@ vacuum:
 
 ### Google Calendar ###
 
-google:
-  client_id: !secret google_clientid
-  client_secret: !secret google_clientsecret
+#google:
+#  client_id: !secret google_clientid
+#  client_secret: !secret google_clientsecret
 
 ### Circadian Lighting ###
 
-circadian_lighting:
-  interval: 600
-  transition: 60
-  min_colortemp: 2200
+#circadian_lighting:
+#  interval: 600
+#  transition: 60
+#  min_colortemp: 2200
 
 ### YAML mode for Lovelace ###
 
@@ -532,6 +533,8 @@ lovelace:
       type: js
 
     - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
+      type: module
+    - url: /local/zigbee2mqtt-networkmap.js?v=0.6.0
       type: module
 
 
@@ -693,10 +696,10 @@ image_processing:
       - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     confidence: 20
 
-  - platform: openalpr_local
-    region: eu
-    source:
-    - entity_id: camera.fremme
+#  - platform: openalpr_local
+#    region: eu
+#    source:
+#    - entity_id: camera.fremme
 
 ### ffmpeg ###
 
@@ -945,3 +948,147 @@ speedtestdotnet:
 microsoft_graph:
   client_id: !secret mgclientid 
   client_secret: !secret mgclientsecret 
+
+
+adaptive_lighting:
+- name: "stue"
+  lights:
+    - light.stuegruppe
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+- name: "peis"
+  lights:
+    - light.stue_peislys_light
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 20
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+- name: "do"
+  lights:
+    - light.do_taklys_light
+    - light.do_hyllelampe_light
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 15
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+
+- name: "kjeller"
+  lights:
+    - light.kjellergruppe
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+- name: "loft"
+  lights:
+    - light.loft_lys
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+- name: "kjokken"
+  lights:
+    - light.kjokkengruppe
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+
+- name: "kjokkenbenkelys"
+  lights:
+    - light.kjokken_benke_underlys_light
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+- name: "eirikkontor"
+  lights:
+    - light.eirikgruppe
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 75
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
+
+
+
+utility_meter:
+  varmepumpe_stue_manedlig:
+    source: sensor.varmepumpe_stue_energy_current
+    cycle: monthly
+
+  vvb_manedlig:
+    source: sensor.vvb_navarende_forbruk
+    cycle: monthly
+
+  varmepumpe_loft_manedlig:
+    source: sensor.varmepumpe_loft_energy_current
+    cycle: monthly
+
+  mirai_manedlig:
+    source: sensor.mirai_realtime_power
+    cycle: monthly

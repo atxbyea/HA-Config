@@ -10,6 +10,7 @@ cards:
       - type: horizontal-stack
         cards:
           - type: entity-button
+            entity: scene.ps4
             name: XBOX
             icon: "mdi:microsoft-xbox"
             tap_action:
@@ -45,15 +46,9 @@ cards:
               - entity: sensor.eirik_batteri
                 name: Batteri
                 icon: 'mdi:battery'
-              - entity: sensor.eirik_lader
-                name: Lader
-                icon: 'mdi:flash'
-              - entity: sensor.eirik_kjorer
-                name: Kjører
-                icon: 'mdi:car'
               - entity: sensor.eirik_hastighet
                 name: Hastighet
                 icon: 'mdi:speedometer'
-              - entity: device_tracker.life360_eirik_zakariassen
+              - entity: device_tracker.eirik_mobil
                 name: Hjemme
                 icon: 'mdi:home'

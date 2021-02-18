@@ -64,6 +64,62 @@ cards:
                   background-color: '#3090C7'
                   border-radius: 6px
 
+      - type: picture-elements
+        title: Varmepumpe Stue
+        image: '/local/varmepumpestue.png'
+        style:
+          width: 50%
+          height: 50%
+        elements:
+          - type: state-label
+            entity: sensor.varmepumpe_stue_plugg_energy_current
+            prefix: "Nåværende Forbruk"
+            style:
+              top: 20%
+              right: 1%
+              color: rgb(0, 0, 0)
+              transform: translate(0%,-50%)
+              pointer-events: none
+              font-family: Trebuchet MS
+              font-size: 90%
+              font-weight: bold
+              border-color: rgb(34, 154, 210)
+              background-color: '#3090C7'
+              border-radius: 6px
+
+          - type: state-label
+            entity: sensor.varmepumpe_stue_plugg_energy_today
+            prefix: "Daglig Forbruk"
+            style:
+              top: 48%
+              right: 1%
+              color: rgb(0, 0, 0)
+              transform: translate(0%,-50%)
+              pointer-events: none
+              font-family: Trebuchet MS
+              font-size: 90%
+              font-weight: bold
+              border-color: rgb(34, 154, 210)
+              background-color: '#3090C7'
+              border-radius: 6px
+
+          - type: state-label
+            entity: sensor.varmepumpe_stue_manedlig_forbruk
+            prefix: "Månedlig Forbruk: "
+            style:
+              top: 74%
+              right: 1%
+              color: rgb(0, 0, 0)
+              transform: translate(0%,-50%)
+              pointer-events: none
+              font-family: Trebuchet MS
+              font-size: 90%
+              font-weight: bold
+              border-color: rgb(34, 154, 210)
+              background-color: '#3090C7'
+              border-radius: 6px
+
+
           - type: picture-elements
             title: Tørketrommel
             image: '/local/torketrommel.webp'
