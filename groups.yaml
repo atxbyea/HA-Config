@@ -8,3 +8,24 @@ circadian:
     - switch.circadian_lighting_loft
     - switch.circadian_lighting_peis
     - switch.circadian_lighting_stue
+
+
+adaptive:
+  name: adaptive lighting group 
+  entities: 
+      - switch.adaptive_lighting_adapt_brightness_do
+      - switch.adaptive_lighting_adapt_brightness_eirikkontor
+      - switch.adaptive_lighting_adapt_brightness_kjeller
+      - switch.adaptive_lighting_adapt_brightness_kjokken
+      - switch.adaptive_lighting_adapt_brightness_kjokkenbenkelys 
+      - switch.adaptive_lighting_adapt_brightness_loft
+      - switch.adaptive_lighting_adapt_brightness_peis
+      - switch.adaptive_lighting_adapt_brightness_stue    
+      - switch.adaptive_lighting_adapt_color_do
+      - switch.adaptive_lighting_adapt_color_eirikkontor
+      - switch.adaptive_lighting_adapt_color_kjeller
+      - switch.adaptive_lighting_adapt_color_kjokken
+      - switch.adaptive_lighting_adapt_color_kjokkenbenkelys 
+      - switch.adaptive_lighting_adapt_color_loft
+      - switch.adaptive_lighting_adapt_color_peis
+      - switch.adaptive_lighting_adapt_color_stue

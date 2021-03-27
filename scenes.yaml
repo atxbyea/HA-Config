@@ -202,3 +202,115 @@
         media_player.stueforsterker:
           state: on
           source: Bluray
+
+  - name: "w kontor 1"
+    entities:
+        light.w_kontor_spiss:
+          brightness: 60
+          color_temp: 454
+          state: 'on'
+        light.w_kontor_liten2:
+          brightness: 60
+          color_temp: 454
+          state: 'on'
+        light.w_kontor_liten1:
+          brightness: 60
+          color_temp: 454
+          state: 'on'
+        light.w_kontor_tak:
+          brightness: 60
+          rgb_color:
+          - 255
+          - 180
+          - 70
+          state: 'on'
+
+  - name: "w kontor 2"
+    entities:
+        light.w_kontor_spiss:
+          brightness: 60
+          color_temp: 367
+          state: 'on'
+        light.w_kontor_liten1:
+          brightness: 255
+          color_temp: 367
+          state: 'on'
+        light.w_kontor_liten2:
+          brightness: 255
+          color_temp: 367
+          state: 'on'
+        light.w_kontor_tak:
+          brightness: 255
+          rgb_color:
+          - 255
+          - 207
+          - 120
+          state: 'on'
+ 
+  - name: "w kontor 3"
+    entities:
+        light.w_kontor_spiss:
+          brightness: 145
+          color_temp: 447
+          state: 'on'
+        light.w_kontor_liten1:
+          brightness: 60
+          color_temp: 447
+          state: 'on'
+        light.w_kontor_liten2:
+          brightness: 60
+          color_temp: 447
+          state: 'on'
+        light.w_kontor_tak:
+          brightness: 145
+          rgb_color:
+          - 255
+          - 188
+          - 85
+          state: 'on'
+
+  - name: "w kontor 4"
+    entities:
+        light.w_kontor_tak:
+          brightness: 255
+          rgb_color:
+          - 255
+          - 210
+          - 129
+          state: 'on'
+        light.w_kontor_liten1:
+          brightness: 255
+          color_temp: 346
+          state: 'on'
+        light.w_kontor_liten2:
+          brightness: 255
+          color_temp: 346
+          state: 'on'
+        light.w_kontor_spiss:
+          brightness: 60
+          color_temp: 346
+          state: 'on'
+
+  - name: "w kontor 5"
+    entities:
+        light.w_kontor_tak:
+          brightness: 255
+          rgb_color:
+          - 246
+          - 255
+          - 254
+          state: 'on'
+        light.w_kontor_spiss:
+          brightness: 60
+          color_temp: 156
+          state: 'on'
+        light.w_kontor_liten1:
+          brightness: 255
+          color_temp: 156
+          state: 'on'
+        light.w_kontor_liten2:
+          brightness: 60
+          color_temp: 250
+          state: 'on'
+
+

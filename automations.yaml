@@ -13,53 +13,35 @@
     - service: light.turn_on
       entity_id: light.kjokkengruppe
     - service: light.turn_on
-      entity_id: light.kjokken_benke_underlys_light
+      entity_id: light.kjokken_benkelys_under
     - service: light.turn_on
-      data:
-        entity_id: light.stue_peislys_light
-        brightness: 80
+      entity_id: light.stue_peislys
     - service: light.turn_on
       entity_id: light.alvakjokken
     - service: homeassistant.turn_on
       entity_id: media_player.stueforsterker
     - service: homeassistant.turn_on
       entity_id: media_player.stuetv
-
-#- alias: 'Skru på circadian etterklokken 8'
-#  trigger:
-#    platform: time
-#    at: "08:00:00"
-#  action:
-#    - service: homeassistant.turn_on
-#      entity_id: group.circadian
-
-#- alias: 'Skru av circadian etter klokken 22'
-#  trigger:
-#    platform: time
-#    at: "22:00:00"
-#  action: 
-#    - service: homeassistant.turn_off
-#      entity_id: group.circadian
+    - service: switch.turn_on
+      entity_id: switch.vindu
 
 
-- alias: "Adaptive lighting: toggle 'sleep mode'"
+- alias: "Adaptive lighting: toggle off in the evening"
   trigger:
-    platform: mqtt
-    topic: 'zigbee2mqtt/Stue Veggbryteren'
-  condition:
-    condition: template
-    value_template: '{{ "off" == trigger.payload_json.click }}'
+    platform: time
+    at: "22:00:00"
   action:
-    service: "switch.turn_{{ sleep_mode }}"
-    entity_id:
-      - switch.adaptive_lighting_sleep_mode_stue
-      - switch.adaptive_lighting_sleep_mode_do
-      - switch.adaptive_lighting_sleep_mode_kjokken       
-      - switch.adaptive_lighting_sleep_mode_eirikkontor
-      - switch.adaptive_lighting_sleep_mode_kjeller       
-      - switch.adaptive_lighting_sleep_mode_loft
-      - switch.adaptive_lighting_sleep_mode_peis
-      - switch.adaptive_lighting_sleep_mode_kjokkenbenkelys
+    service: homeassistant.turn_off
+    entity_id: group.adaptive
+
+- alias: "Adaptive lighting: toggle on in the morning"
+  trigger: 
+    platform: time
+    at: "08:00:00"
+  action:
+    service: homeassistant.turn_on
+    entity_id: group.adaptive
+
 
 - alias: 'Legg Huset'
   trigger:
@@ -69,52 +51,50 @@
     condition: template
     value_template: '{{ "off" == trigger.payload_json.click }}'
   action:
-    - service: light.turn_on
-      entity_id: light.stuegruppe
-      data:
-        brightness: 1
-    - service: light.turn_on
-      entity_id: light.kjokkengruppe
-      data:
-        brightness: 1
-    - delay:
-        seconds: 5
+#    - service: light.turn_on
+#      entity_id: light.stuegruppe
+#      data:
+#        brightness: 1
+#    - service: light.turn_on
+#      entity_id: light.kjokkengruppe
+#      data:
+#        brightness: 1
+#    - delay:
+#        seconds: 10
     - service: light.turn_off
       entity_id: light.stuegruppe
     - service: light.turn_off
       entity_id: light.kjokkengruppe
     - service: light.turn_off
-      entity_id: light.kjokken_benke_underlys_light
-    - service: light.turn_on
-      data:
-        entity_id: light.stue_peislys_light
-        brightness: 10
+      entity_id: light.kjokken_benkelys_under
+    - service: light.turn_off
+      entity_id: light.stue_peislys
     - service: light.turn_off
       entity_id: light.alvakjokken
     - service: homeassistant.turn_off
       entity_id: media_player.stueforsterker
     - service: homeassistant.turn_off
       entity_id: media_player.stuetv
+    - service: switch.turn_off
+      entity_id: switch.vindu
 
 ### Automatically turn on office lights when movement is detected and off after 5 minutes of inactivity ###
 
 - alias: Skru på kontorlys
   trigger:
     platform: state
-    entity_id: binary_sensor.0x00158d0002b8fdf9_occupancy
+    entity_id: binary_sensor.eirik_kontor_bevegelse_occupancy
     from: 'off'
     to: 'on'
   action:
     - service: light.turn_on
       entity_id: light.eirikgruppe
-#    - service: switch.turn_on
-#      entity_id: switch.circadian_lighting_kontor
 
 
 - alias: Skru av kontorlys etter fem minutter
   trigger:
     platform: state
-    entity_id: binary_sensor.0x00158d0002b8fdf9_occupancy
+    entity_id: binary_sensor.eirik_kontor_bevegelse_occupancy
     from: 'on'
     to: 'off'
     for:
@@ -122,8 +102,6 @@
   action:
     - service: light.turn_off
       entity_id: light.eirikgruppe
-#    - service: switch.turn_off
-#      entity_id: switch.circadian_lighting_kontor
 
 ### Always load dark theme ###
 
@@ -148,8 +126,6 @@
   action:
     - service: light.turn_on
       entity_id: light.do_hyllelampe_light
-#    - service: switch.turn_on
-#      entity_id: switch.circadian_lighting_do
 
 
 - alias: 'Skru på vegglys do dagtid'
@@ -165,8 +141,7 @@
   action:
     - service: light.turn_on
       entity_id: light.do_taklys_light
-#    - service: switch.turn_on
-#      entity_id: switch.circadian_lighting_do
+
 
 
 - alias: 'Skru av dolys'
@@ -182,8 +157,7 @@
       entity_id: light.do_taklys_light
     - service: light.turn_off
       entity_id: light.do_hyllelampe_light
-#    - service: switch.turn_off
-#      entity_id: switch.circadian_lighting_do
+
 
 ### Automatic lighting in basement ###
 
@@ -196,8 +170,6 @@
   action:
     - service: light.turn_on
       entity_id: light.kjellergruppe
-#    - service: switch.turn_on
-#      entity_id: switch.circadian_lighting_kjeller
 
 - alias: 'Skru av kjellerlys'
   trigger:
@@ -223,8 +195,6 @@
   action:
     - service: light.turn_off
       entity_id: light.kjellergruppe
-#    - service: switch.turn_off
-#      entity_id: switch.circadian_lighting_kjeller
 
 
 ### Added office morning annonuncements ###
@@ -886,19 +856,19 @@
     - service: media_player.play_media
       data:
         entity_id: media_player.kjokken
-        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_id: http://kakuzu.eirikzlab.local:8123/local/ringeklokke.mp3
         media_content_type: audio/mp3
 
     - service: media_player.play_media
       data:
         entity_id: media_player.w_kontor_mini    
-        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_id: http://kakuzu.eirikzlab.local:8123/local/ringeklokke.mp3
         media_content_type: audio/mp3
 
     - service: media_player.play_media
       data:
         entity_id: media_player.eirik_kontor    
-        media_content_id: https://hass.eirikz.com/local/ringeklokke.mp3
+        media_content_id: http://kakuzu.eirikzlab.local/local/ringeklokke.mp3
         media_content_type: audio/mp3
 
 
@@ -1129,20 +1099,22 @@
               caption: print
 
 
-- alias: 'Kjøkkenbryter'
+- alias: 'Mikrobryter'
   trigger:
     platform: mqtt
-    topic: 'zigbee2mqtt/Kjokken Lyskontroll'
+    topic: 'zigbee2mqtt/Kjokken Mikrobryter'
   condition:
     condition: template
     value_template: '{{ "single" == trigger.payload_json.click }}'
   action:
-    service: tts.google_say
-    entity_id: media_player.kjokken
-    data:
-      message: 'Hei Alva, no har du trykka på knappen, mamma og pappa e veldi gla i deg, husk å pusse tennen og se på brannmann sam, hilser fra mommo og moffa i harstad'
-      language: '{{ ["fi", "de", "no", "fr", "en"] | random }}'
-      cache: false
+    service: switch.toggle
+    entity_id: switch.mikro
+#    service: tts.google_say
+#    entity_id: media_player.kjokken
+#    data:
+#      message: 'Hei Alva, no har du trykka på knappen, mamma og pappa e veldi gla i deg, husk å pusse tennen og se på brannmann sam, hilser fra mommo og moffa i harstad'
+#      language: '{{ ["fi", "de", "no", "fr", "en"] | random }}'
+#      cache: false
 
 
 - alias: 'Teams ledig'
@@ -1273,7 +1245,7 @@
         message: "Temperatursensor {{ trigger.to_state.name }} har problemer"
 
 
-- alias: Skru på trappelys
+- alias: Skru på loftlys
   trigger:
     platform: state
     entity_id: binary_sensor.loft_trappesensor_occupancy
@@ -1281,7 +1253,7 @@
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.loft_trappelys_light
+      entity_id: light.loft_lys
 
 - alias: Skru av trappelyslys etter fem minutter
   trigger:
@@ -1294,3 +1266,114 @@
   action:
     - service: light.turn_off
       entity_id: light.loft_trappelys_light
+
+
+
+
+
+- alias: 'Skru pa loftlys tvstue'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Loft tvstue'
+  condition:
+    condition: template
+    value_template: '{{ "toggle" == trigger.payload_json.action }}'
+  action:
+    - service: light.toggle
+      entity_id: light.loft_lys
+
+
+- alias: 'Vaskemaskinen er ferdig'
+  trigger:
+    entity_id: sensor.vaskemaskin_program_progress
+    platform: state
+#    from: '99'
+    to: '100'
+  action: 
+    - service: notify.eirikz_telegram
+      data:
+        title: "vaskemaskin"
+        message: "ferdig"
+
+#- alias: "Skru av loftlys når det ikke har vært noen oppe på lenge"
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.loft_trappesensor_occupancy
+#    to: 'off'
+#  condition:
+#    condition: and
+#    conditions:
+#      - condition: state
+#        entity_id: light.w_kontor
+#        state: 'off'
+#      - condition: state
+#        entity_id: binary_sensor.loft_bevegelse_occupancy
+#        state: 'off'
+#  action:
+#    - service: light.turn_off
+#      entity_id: light.loft_lys
+
+
+#- alias: "Skru på loftlys ved bevegelse"
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.loft_bevegelse_occupancy
+#    to: 'on'
+#  action:
+#    - service: light.turn_on
+#      entity_id: light.loft_lys
+
+
+
+
+- alias: Lys W Kontor
+  trigger:
+    platform: state
+    entity_id: sensor.w_kontor_bryter_action
+    to: 'on-press'
+  action:
+    - service: input_select.select_next
+      entity_id: input_select.w_kontor
+    - service: scene.turn_on
+      data:
+#      target:
+        entity_id: 'scene.{{ states.input_select.w_kontor.state }}'
+#      data:
+        transition: 2
+
+- alias: Lys W Kontor av
+  trigger:
+    platform: state
+    entity_id: sensor.w_kontor_bryter_action
+    to: 'off-press'
+  action:
+    - service: light.turn_off
+      entity_id: light.w_kontor_lys_gruppe
+
+
+- alias: 'Skru på loftlys'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.loft_aktivitet
+    from: 'off'
+    to: 'on'
+  action:
+    - service: light.turn_on
+      entity_id: light.loft_lys
+
+- alias: 'Skru av loftlys'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.loft_aktivitet
+      from: 'on'
+      to: 'off'
+      for: '00:12:00'
+  condition:
+    - condition: state
+      entity_id: binary_sensor.e_og_w_lys
+      state: 'off'
+      for: '00:06:00'
+  action:
+    - service: light.turn_off
+      entity_id: light.loft_lys
+

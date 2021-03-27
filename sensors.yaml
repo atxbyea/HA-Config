@@ -94,15 +94,15 @@
     username: !secret seventeenuser
     password: !secret seventeenpass
 
-  - platform: rest
-    name: Mirai_Versjon
-    json_attributes:
-      - version
-    resource: !secret mirai_rest_version
-    value_template: '{{ value_json.version }}'
-    headers:
-      Authorization: !secret freenas_api_token
-      Content-Type: application/json
+#  - platform: rest
+#    name: Mirai_Versjon
+#    json_attributes:
+#      - version
+#    resource: !secret mirai_rest_version
+#    value_template: '{{ value_json.version }}'
+#    headers:
+#      Authorization: !secret freenas_api_token
+#      Content-Type: application/json
 
   - platform: template
     sensors:
@@ -158,23 +158,23 @@
         friendly_name: "Eirik hastighet"
         value_template: "{{ state_attr('device_tracker.eirik_mobil', 'speed') }}"
 
-  - platform: plex_recently_added
-    token: !secret plextokenrecently
-    host: 192.168.1.36
-    port: 32400
+#  - platform: plex_recently_added
+#    token: !secret plextokenrecently
+#    host: 192.168.1.36
+#    port: 32400
 
 
-  - platform: nut
-    host: 192.168.1.11
-    name: NUT Garasje
-    alias: garasjeups
-    username: !secret nutuser
-    password: !secret nutpass
-    resources:
-      - ups.status
-      - input.voltage
-      - ups.load
-      - battery.runtime
+#  - platform: nut
+#    host: 192.168.1.11
+#    name: NUT Garasje
+#    alias: garasjeups
+#    username: !secret nutuser
+#    password: !secret nutpass
+#    resources:
+#      - ups.status
+#      - input.voltage
+#      - ups.load
+#      - battery.runtime
 
   - platform: nut
     host: 192.168.1.254
@@ -249,66 +249,66 @@
       - type: processor_use
       - type: processor_temperature
 
-  - platform: rest
-    method: POST
-    resource: http://192.168.1.11/api/v2.0/disk/temperatures
-    payload: '{"names":["da1", "da2", "da3", "da4", "da5", "da6", "da7", "da8", "da9", "da10", "da11", "da12"],"powermode":"NEVER"}'
-    username: !secret fnuser
-    password: !secret fnpass
-    authentication: basic
-    name: freenas disk temp
-    json_attributes:
-      - da1
-      - da2
-      - da3
-      - da4
-      - da5
-      - da6
-      - da7
-      - da8
-      - da9
-      - da10
-      - da11
-      - da12
+#  - platform: rest
+#    method: POST
+#    resource: http://192.168.1.11/api/v2.0/disk/temperatures
+#    payload: '{"names":["da1", "da2", "da3", "da4", "da5", "da6", "da7", "da8", "da9", "da10", "da11", "da12"],"powermode":"NEVER"}'
+#    username: !secret fnuser
+#    password: !secret fnpass
+#    authentication: basic
+#    name: freenas disk temp
+#    json_attributes:
+#      - da1
+#      - da2
+#      - da3
+#      - da4
+#      - da5
+#      - da6
+#      - da7
+#      - da8
+#      - da9
+#      - da10
+#      - da11
+#      - da12
   
-  - platform: template
-    sensors:
-      disk1:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da1"] }}'
-      disk2:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da2"] }}'
-      disk3:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da3"] }}'
-      disk4:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da4"] }}'
-      disk5:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da5"] }}'
-      disk6:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da6"] }}'
-      disk7:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da7"] }}'
-      disk8:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da8"] }}'
-      disk9:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da9"] }}'
-      disk10:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da10"] }}'
-      disk11:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da11"] }}'
-      disk12:
-        unit_of_measurement: 'C°'
-        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da12"] }}'
+#  - platform: template
+#    sensors:
+#      disk1:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da1"] }}'
+#      disk2:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da2"] }}'
+#      disk3:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da3"] }}'
+#      disk4:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da4"] }}'
+#      disk5:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da5"] }}'
+#      disk6:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da6"] }}'
+#      disk7:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da7"] }}'
+#      disk8:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da8"] }}'
+#      disk9:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da9"] }}'
+#      disk10:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da10"] }}'
+#      disk11:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da11"] }}'
+#      disk12:
+#        unit_of_measurement: 'C°'
+#        value_template: '{{ states.sensor.freenas_disk_temp.attributes["da12"] }}'
 
 
 #  - platform : command_line
