@@ -37,10 +37,12 @@ frontend:
 config:
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
- http:
-
-updater:
-  include_used_components: true
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.11 
+#updater:
+#  include_used_components: true
 
 python_script:
 
@@ -266,7 +268,7 @@ light:
       - light.stue_gulvlampe2_light
       - light.stue_gulvlampe3_light
       - light.stue_bikkjelampe_light
-      - light.stue_lys_bak_tv_light
+      - light.stue_lys_bak_tv
       - light.stue_stort_vitrineskap_light
       - light.stue_lite_vitrineskap
       - light.stue_lyst_vitrineskap
@@ -303,10 +305,10 @@ light:
     entities:
       - light.loft_taklys_1
       - light.loft_taklys_2
-      - light.loft_gulvlampe1_light
-      - light.loft_gulvlampe2_light
-      - light.loft_gulvlampe3_light
-      - light.loft_trappelys_light
+      - light.loft_gulvlampe1
+      - light.loft_gulvlampe2
+      - light.loft_gulvlampe3
+      - light.loft_trappelys
 
   - platform: group
     name: Kontor_eirik_lys
@@ -319,8 +321,8 @@ light:
   - platform: group
     name: Do_lys
     entities:
-      - light.do_hyllelampe_light
-      - light.do_taklys_light
+      - light.do_hyllelampe
+      - light.do_taklys
 
   - platform: group
     name: halloween
@@ -496,10 +498,10 @@ wake_on_lan:
 
 ### Roborock ###
 
-vacuum:
-  - platform: xiaomi_miio
-    host: !secret roborockip
-    token: !secret vacuum
+#vacuum:
+#  - platform: xiaomi_miio
+#    host: !secret roborockip
+#    token: !secret vacuum
 
 ### Google Calendar ###
 
@@ -551,6 +553,8 @@ lovelace:
       type: js
     - url: /hacsfiles/lovelace-card-templater/lovelace-card-templater.js
       type: js
+    - type: js
+      url: /hacsfiles/lovelace-valetudo-map-card/valetudo-map-card.js
 
     - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
       type: module
@@ -581,23 +585,23 @@ binary_sensor:
     name: "bak"
     state_topic: "cameras/bak/motion"
 
-  - platform: template
-    sensors:
-      torketrommel_kjorer:
-        friendly_name: "Tørketrommel Kjører"
-        delay_on:
-          minutes: 10
-        delay_off:
-          minutes: 3
-        value_template: >-
-          {{ states('sensor.torketrommel_energy_power')|float > 10 }}
+#  - platform: template
+#    sensors:
+#      torketrommel_kjorer:
+#        friendly_name: "Tørketrommel Kjører"
+#        delay_on:
+#          minutes: 10
+#        delay_off:
+#          minutes: 3
+#        value_template: >-
+#          {{ states('sensor.torketrommel_energy_power')|float > 10 }}
 
-  - platform: template
-    sensors:
-      lys_timer:
-        friendly_name: "Det har gått 30 minutter fra vekking av hus"
-        value_template: >-
-          {{ as_timestamp(now()) - as_timestamp(states.automation.vekk_huset.attributes.last_triggered) | int > 1800 }}        
+#  - platform: template
+#    sensors:
+#      lys_timer:
+#        friendly_name: "Det har gått 30 minutter fra vekking av hus"
+#        value_template: >-
+#          {{ as_timestamp(now()) - as_timestamp(states.automation.vekk_huset.attributes.last_triggered) | int > 1800 }}        
         
             
 
@@ -611,7 +615,7 @@ binary_sensor:
         friendly_name: "Kjellerdører åpne"
         device_class: door
         value_template: >-
-          {{ is_state('binary_sensor.kjeller_trappedor', 'on') or
+          {{ is_state('binary_sensor.kjeller_trappedor_contact', 'on') or
              is_state('binary_sensor.kjeller_garasjedor_contact', 'on') }}
 
   - platform: template
@@ -691,10 +695,14 @@ climate:
 ### InfluxDB ###
 
 influxdb:
+  api_version: 2
   host: kakuzu.eirikzlab.local
   port: 8086
-  username: !secret influxdbuser
-  password: !secret influxdbpass
+#  username: !secret influxdbuser
+#  password: !secret influxdbpass
+  organization: !secret influxorg
+  token: !secret influxtoken
+  bucket: !secret influxbucket
   ssl: false
   verify_ssl: false
 
@@ -702,37 +710,37 @@ influxdb:
 ### Image Processing ###
 
 image_processing:
-  - platform: doods
-    scan_interval: 10000
-    url: "http://kakuzu.eirikzlab.local:8011"
-    detector: tensorflow
-    source:
-      - entity_id: camera.fremme
-    file_out:
-      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
-    confidence: 40
-    labels:
-      - person
-      - car
-      - cat
-      - dog
-      - bottle
-      - cup
-      - bowl
-      - chair
-      - couch
+#  - platform: doods
+#    scan_interval: 10000
+#    url: "http://kakuzu.eirikzlab.local:8011"
+#    detector: tensorflow
+#    source:
+#      - entity_id: camera.fremme
+#    file_out:
+#      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
+#      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+#    confidence: 40
+#    labels:
+#      - person
+#      - car
+#      - cat
+#      - dog
+#      - bottle
+#      - cup
+#      - bowl
+#      - chair
+#      - couch
 
-  - platform: doods
-    scan_interval: 10000
-    url: "http://kakuzu.eirikzlab.local:8011"
-    detector: default
-    source:
-      - entity_id: camera.bak
-    file_out:
-      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
-      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
-    confidence: 20
+#  - platform: doods
+#    scan_interval: 10000
+#    url: "http://kakuzu.eirikzlab.local:8011"
+#    detector: default
+#    source:
+#      - entity_id: camera.bak
+#    file_out:
+#      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
+#      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+#    confidence: 20
 
 #  - platform: openalpr_local
 #    region: eu
@@ -792,26 +800,26 @@ sonos:
 
 ### Google Cast ###
 
-cast:
+#cast:
 
 ### MJPEG camera from Motion ###
 
 camera:
-  - platform: generic
-    name: Fremme
-    stream_source: !secret fremmekamerastream
-    still_image_url: !secret fremmekamerastill
+#  - platform: generic
+#    name: Fremme
+#    stream_source: !secret fremmekamerastream
+#    still_image_url: !secret fremmekamerastill
 
 
-  - platform: generic
-    name: Bak
-    stream_source: !secret bakkamerastream
-    still_image_url: !secret bakkamerastill
+#  - platform: generic
+#    name: Bak
+#    stream_source: !secret bakkamerastream
+#    still_image_url: !secret bakkamerastill
 
-  - platform: mjpeg
-    name: Print
-    mjpeg_url: !secret printkamerastill
-    still_image_url: !secret printkamerastill
+#  - platform: mjpeg
+#    name: Print
+#    mjpeg_url: !secret printkamerastill
+#    still_image_url: !secret printkamerastill
 
 
 ### Siemens HomeConnect ###
@@ -829,8 +837,8 @@ smartir:
 mobile_app:
 
 ### Tibber power company ###
-tibber:
-  access_token: !secret tibberat
+#tibber:
+#  access_token: !secret tibberat
 
 
 ### Octoprint ###
@@ -976,10 +984,10 @@ tplink:
     - host: !secret tplinkvvb 
 
 ### Speedtest ###
-speedtestdotnet:
-  server_id: 12919
-  scan_interval:
-    hours: 12
+#speedtestdotnet:
+#  server_id: 12919
+#  scan_interval:
+#    hours: 12
 
 
 ### Microsoft Graph ###
@@ -1021,8 +1029,8 @@ adaptive_lighting:
 
 - name: "do"
   lights:
-    - light.do_taklys_light
-    - light.do_hyllelampe_light
+    - light.do_taklys
+    - light.do_hyllelampe
   prefer_rgb_color: false
   transition: 45
   initial_transition: 1
@@ -1116,18 +1124,25 @@ adaptive_lighting:
 
 
 utility_meter:
-  varmepumpe_stue_manedlig:
-    source: sensor.varmepumpe_stue_energy_current
-    cycle: monthly
+#  varmepumpe_stue_manedlig:
+#    source: sensor.varmepumpe_stue_energy_current
+#    cycle: monthly
 
-  vvb_manedlig:
-    source: sensor.vvb_navarende_forbruk
-    cycle: monthly
+#  vvb_manedlig:
+#    source: sensor.vvb_navarende_forbruk
+#    cycle: monthly
 
-  varmepumpe_loft_manedlig:
-    source: sensor.varmepumpe_loft_energy_current
-    cycle: monthly
+#  varmepumpe_loft_manedlig:
+#    source: sensor.varmepumpe_loft_energy_current
+#    cycle: monthly
 
-  mirai_manedlig:
-    source: sensor.mirai_realtime_power
-    cycle: monthly
+#  mirai_manedlig:
+#    source: sensor.mirai_realtime_power
+#    cycle: monthly
+
+### Nextcloud Integration ###
+
+nextcloud:
+  url: !secret nextcloudurl
+  username: !secret nextclouduser
+  password: !secret nextcloudpass

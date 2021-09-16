@@ -22,3 +22,4 @@ known_devices.yaml
 *.pem
 tellduslive.conf
 plex.conf
+service.json

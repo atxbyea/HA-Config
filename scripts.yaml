@@ -1,63 +1,60 @@
 tomme:
       alias: "Tømme støvsuger"
       sequence:
-        - service: vacuum.send_command
+        - service: mqtt.publish
           data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_goto_target
-            params: [22800,26750]
+            topic: valetudo/akino/GoToLocationCapabilities/go/set
+            payload: 'fc58069e-e502-41e2-9c53-3ecb93d2cefa'
 
 stovsug_kjokken:
       alias: "Støvsug kjøkkenet"
       sequence:
-        - service: vacuum.send_command
+        - service: mqtt.publish
           data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_zoned_clean
-            params: [[19005,24888,26105,28438,1]]
+            topic: valetudo/akino/MapSegmentationCapability/clean/set
+            payload: '16'
 
 stovsug_stue:
       alias: "Støvsug stue"
       sequence:
-        - service: vacuum.send_command
+        - service: mqtt.publish       
           data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_zoned_clean
-            params: [[15643,28221,26293,33471,1]]
+            topic: valetudo/akino/MapSegmentationCapability/clean/set
+            payload: '17'
+
 
 ga_til_dock:
       alias: "Gå til dock"
       sequence:
         - service: vacuum.return_to_base
           data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
+            entity_id: vacuum.akino
 
 
-#stovsug_spisestue:
-#      alias: "Støvsug spisestue"
-#      sequence:
-#        - service: vacuum.send_command
-#          data:
-#            entity_id: vacuum.xiaomi_vacuum_cleaner
-#            command: app_zoned_clean
-#            params: [[28668,17932,37568,22932,1]]
+stovsug_spisestue:
+      alias: "Støvsug spisestue"
+      sequence:
+        - service: mqtt.publish       
+          data:
+            topic: valetudo/akino/MapSegmentationCapability/clean/set
+            payload: '19'
+
 
 stovsug_huset:
       alias: "Støvsug huset"
       sequence:
-        - service: vacuum.send_command
-          data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: start
+        - service: vacuum.start
+          target:
+            entity_id: vacuum.akino
 
 stovsug_barnerom:
       alias: "Støvsug barnerom"
       sequence:
-        - service: vacuum.send_command
+        - service: mqtt.publish       
           data:
-            entity_id: vacuum.xiaomi_vacuum_cleaner
-            command: app_zoned_clean
-            params: [[11540,25960,16940,29660,1]]
+            topic: valetudo/akino/MapSegmentationCapability/clean/set
+            payload: '21'
+
 
 
 flash_ute_fire:

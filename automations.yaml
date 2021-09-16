@@ -6,7 +6,7 @@
     topic: 'zigbee2mqtt/Stue Veggbryteren'
   condition:
     condition: template
-    value_template: '{{ "on" == trigger.payload_json.click }}'
+    value_template: '{{ "on" == trigger.payload_json.action }}'
   action:
     - service: light.turn_on
       entity_id: light.stuegruppe
@@ -29,7 +29,7 @@
 - alias: "Adaptive lighting: toggle off in the evening"
   trigger:
     platform: time
-    at: "22:00:00"
+    at: "23:59:00"
   action:
     service: homeassistant.turn_off
     entity_id: group.adaptive
@@ -49,18 +49,8 @@
     topic: 'zigbee2mqtt/Stue Veggbryteren'
   condition:
     condition: template
-    value_template: '{{ "off" == trigger.payload_json.click }}'
+    value_template: '{{ "off" == trigger.payload_json.action }}'
   action:
-#    - service: light.turn_on
-#      entity_id: light.stuegruppe
-#      data:
-#        brightness: 1
-#    - service: light.turn_on
-#      entity_id: light.kjokkengruppe
-#      data:
-#        brightness: 1
-#    - delay:
-#        seconds: 10
     - service: light.turn_off
       entity_id: light.stuegruppe
     - service: light.turn_off
@@ -125,7 +115,7 @@
     to: 'on'
   action:
     - service: light.turn_on
-      entity_id: light.do_hyllelampe_light
+      entity_id: light.do_hyllelampe
 
 
 - alias: 'Skru på vegglys do dagtid'
@@ -140,7 +130,7 @@
     before: '23:00:00'
   action:
     - service: light.turn_on
-      entity_id: light.do_taklys_light
+      entity_id: light.do_taklys
 
 
 
@@ -154,9 +144,9 @@
       minutes: 10
   action:
     - service: light.turn_off
-      entity_id: light.do_taklys_light
+      entity_id: light.do_taklys
     - service: light.turn_off
-      entity_id: light.do_hyllelampe_light
+      entity_id: light.do_hyllelampe
 
 
 ### Automatic lighting in basement ###
@@ -242,100 +232,6 @@
 
 ### Added telegram notifications ### 
 
-#- alias: 'Eirik drar hjemmefra'
-#  trigger:
-#    platform: zone
-#    event: leave
-#    zone: zone.home
-#    entity_id: device_tracker.life360_eirik_zakariassen
-#  condition:
-#    conditions:
-#      - condition: state
-#        entity_id: device_tracker.life360_weronica
-#        state: 'not_home'
-#  action:
-#    service: notify.w_telegram
-#    data:
-#      message: "Eirik drar hjemmefra"
-
-#- alias: 'Drivhus er over 30 grader'
-#  trigger:
-#    platform: numeric_state
-#    entity_id: sensor.temperature_drivhus
-#    above: '30'
-#    for:
-#      minutes: 3
-#  condition:
-#    conditions:
-#      - condition: state
-#        entity_id: device_tracker.life360_eirik_zakariassen
-#        state: 'not_home'
-#  action:
-#    service: notify.w_telegram       
-#    data_template:
-#      message: >-
-#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
-
-#- alias: 'Drivhus er over 35 grader'
-#  trigger:
-#    platform: numeric_state
-#    entity_id: sensor.temperature_drivhus
-#    above: '35'
-#    for:
-#      minutes: 3
-#  condition:
-#    conditions:
-#      - condition: state
-#        entity_id: device_tracker.life360_eirik_zakariassen
-#        state: 'not_home'
-#  action:
-#    service: notify.w_telegram
-#    data_template:
-#      message: >- 
-#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
-
-#- alias: 'Drivhus er under 18 grader'
-#  trigger:
-#    platform: numeric_state
-#    entity_id: sensor.temperature_drivhus
-#    below: '19'
-#    for:
-#      minutes: 3
-#  condition:
-#    conditions:
-#      - condition: state
-#        entity_id: device_tracker.life360_eirik_zakariassen
-#        state: 'not_home'
-#  action:
-#    service: notify.w_telegram       
-#    data_template:
-#      message: >-
-#        Drivhus er {{ states('sensor.temperature_drivhus') | int }} grader
-
-
-#- alias: 'Eirik ankommer FBU'
-#  trigger:
-#    platform: state
-#    entity_id: device_tracker.life360_eirik_zakariassen
-#    state: FBU
-#    for:
-#      minutes: 5
-#  action:
-#    service: notify.we_telegram       
-#    data:
-#      message: "Eirik er på FBU"
-#
-#- alias: 'Eirik ankommer Gardermoen'
-#  trigger:
-#    platform: state
-#    entity_id: device_tracker.life360_eirik_zakariassen
-#    state: Gardermoen
-#    for:
-#      minutes: 5
-#  action:
-#    service: notify.we_telegram       
-#    data:
-#      message: "Eirik er på gardermoen"
 
 ### Eirikz playing with Phil Hawthorns advanced person state ###
 
@@ -362,7 +258,6 @@
       entity_id: input_select.eirik_status_dropdown
       from: 'Dro akkurat ut'
       to: 'Kom akkurat hjem'
-  condition:
   action:
     - service: input_select.select_option
       data:
@@ -432,7 +327,6 @@
       entity_id: input_select.w_status_dropdown
       from: 'Dro akkurat ut'
       to: 'Kom akkurat hjem'
-  condition:
   action:
     - service: input_select.select_option
       data:
@@ -612,84 +506,10 @@
 
 ### Playing with streams ###
 
-#- alias: 'Front stream with motion'
-#  trigger:
-#  - platform: state
-#    entity_id: camera.fremme
-#    from: 'idle'
-#  action:
-#  - service: camera.play_stream
-#    data:
-#      entity_id: camera.fremme
-#      media_player: media_player.kjokken
-#  - service: camera.play_stream
-#    data: 
-#      entity_id: camera.fremme
-#      media_player: media_player.stuetv
-#  - service: camera.snapshot
-#    data:
-#      entity_id: camera.fremme
-#      filename: '/tmp/front.jpg'
-#  - service: notify.eirikz_telegram
-#    data:
-#      title: Ringeklokke
-#      message: "Noen ringer på døren"
-#      data:
-#        photo:
-#          - file: /tmp/front.jpg
-#            caption: Ringeklokke
-
-
 ### Doods scan on motion ###
-
-- alias: Doods Skanning Fremme
-  trigger:
-     - platform: state
-       entity_id: binary_sensor.fremme
-       to: 'on'
-  condition:
-    - condition: template
-      value_template: "{{ as_timestamp(now()) - as_timestamp(states.automation.doods_skanning_fremme.attributes.last_triggered) | int > 60 }}"
-  action:
-    - service: image_processing.scan
-      entity_id: "image_processing.doods_fremme"
-
-- alias: Doods Skanning Bak
-  trigger:
-     - platform: state
-       entity_id:
-         - binary_sensor.bak
-       from: 'off'
-  action:
-    - service: image_processing.scan
-      data:
-        entity_id: "image_processing.doods_bak"
-
 
 
 ### Telegram send video of triggered motion ###
-
-- alias: "doods fremme video"
-  trigger:
-    platform: state
-    entity_id: image_processing.doods_fremme
-  action:
-    - service: input_boolean.toggle
-      entity_id: input_boolean.dummy_fremme
-    - service: camera.record
-      data:
-        entity_id: camera.fremme
-        filename: "/tmp/{{- trigger.entity_id.split('.')[1].split('_')[1] -}}_{{- states.input_boolean.dummy_fremme.last_updated.strftime('%Y%m%d-%H%M%S') -}}.mp4"
-        duration: 20
-        lookback: 10
-    - delay: "00:00:30"
-    - service: notify.eirikz_telegram
-      data:
-        title: "Doods"
-        message: "fremme"
-        data:
-          video:
-            file: "/tmp/{{- trigger.entity_id.split('.')[1].split('_')[1] -}}_{{- states.input_boolean.dummy_fremme.last_updated.strftime('%Y%m%d-%H%M%S') -}}.mp4"
 
 
 ### Dimming of lights while watching a movie ###
@@ -770,7 +590,7 @@
     topic: 'zigbee2mqtt/Loft Veggbryter'
   condition:
     condition: template
-    value_template: '{{ "single" == trigger.payload_json.click }}'
+    value_template: '{{ "single" == trigger.payload_json.action }}'
   action:
     - service: input_select.select_next
       entity_id: input_select.loftlys
@@ -846,7 +666,7 @@
     topic: 'zigbee2mqtt/Ringeklokke'
   condition: 
     condition: template
-    value_template: '{{ "single" == trigger.payload_json.click }}'
+    value_template: '{{ "single" == trigger.payload_json.action }}'
 
   action:
     - service: notify.stuetv
@@ -856,19 +676,26 @@
     - service: media_player.play_media
       data:
         entity_id: media_player.kjokken
-        media_content_id: http://kakuzu.eirikzlab.local:8123/local/ringeklokke.mp3
+        media_content_id: http://192.168.1.40:8123/local/ringeklokke.mp3
         media_content_type: audio/mp3
 
     - service: media_player.play_media
       data:
-        entity_id: media_player.w_kontor_mini    
-        media_content_id: http://kakuzu.eirikzlab.local:8123/local/ringeklokke.mp3
+        entity_id: media_player.w_kontor
+        media_content_id: http://192.168.1.40:8123/local/ringeklokke.mp3
         media_content_type: audio/mp3
+
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.garasjemini
+        media_content_id: http://192.168.1.40:8123/local/ringeklokke.mp3
+        media_content_type: audio/mp3
+
 
     - service: media_player.play_media
       data:
         entity_id: media_player.eirik_kontor    
-        media_content_id: http://kakuzu.eirikzlab.local/local/ringeklokke.mp3
+        media_content_id: http://192.168.1.40:8123/local/ringeklokke.mp3
         media_content_type: audio/mp3
 
 
@@ -894,7 +721,7 @@
     topic: 'zigbee2mqtt/0x00158d0002130e2c'
   condition:
     condition: template
-    value_template: '{{ "single" == trigger.payload_json.click }}'
+    value_template: '{{ "single" == trigger.payload_json.action }}'
   action:
     - service: switch.toggle
       entity_id: switch.garasjedor
@@ -907,22 +734,10 @@
     platform: time
     at: '03:00:00'
   action:
-  - service: xiaomi_miio.vacuum_clean_zone
-    data:
-      entity_id: vacuum.xiaomi_vacuum_cleaner
-      repeats: 2
-      zone: [[19005,24888,26105,28438]]
-
-
-### Automatic generation of Z2M maps ###
-
-#- alias: 'Zigbee Map aktualisieren'  
-# trigger:
-#   platform: time_pattern
-#   minutes: '/60'
-#   seconds: 00
-# action:
-#   service: zigbee2mqtt_networkmap.update
+    - service: mqtt.publish
+      data:
+        topic: valetudo/akino/MapSegmentationCapability/clean/set
+        payload: '16'
 
 
 ### Bedroom bedside lights ###
@@ -933,10 +748,10 @@
     topic: 'zigbee2mqtt/Soverom Bryter W'
   condition:
     condition: template
-    value_template: '{{ "left" == trigger.payload_json.click }}'
+    value_template: '{{ "single_left" == trigger.payload_json.action }}'
   action:
     - service: light.toggle
-      entity_id: light.soverom_w_light
+      entity_id: light.soverom_lampe_w
 
 - alias: 'W skru på soverom Eirik'
   trigger:
@@ -944,10 +759,10 @@
     topic: 'zigbee2mqtt/Soverom Bryter W'
   condition:
     condition: template
-    value_template: '{{ "right" == trigger.payload_json.click }}'
+    value_template: '{{ "single_right" == trigger.payload_json.action }}'
   action:
     - service: light.toggle 
-      entity_id: light.eirik_soverom  
+      entity_id: light.eirik_soverom_2
 
 - alias: 'Eirik skru på soverom W'
   trigger:
@@ -955,10 +770,10 @@
     topic: 'zigbee2mqtt/Soverom Bryter Eirik'
   condition:
     condition: template
-    value_template: '{{ "left" == trigger.payload_json.click }}'
+    value_template: '{{ "single_left" == trigger.payload_json.action }}'
   action:
     - service: light.toggle 
-      entity_id: light.soverom_w_light
+      entity_id: light.soverom_lampe_w
 
 - alias: 'Eirik skru på soverom Eirik'
   trigger:
@@ -966,22 +781,11 @@
     topic: 'zigbee2mqtt/Soverom Bryter Eirik'
   condition:
     condition: template
-    value_template: '{{ "right" == trigger.payload_json.click }}'
+    value_template: '{{ "single_right" == trigger.payload_json.action }}'
   action:
     - service: light.toggle
-      entity_id: light.eirik_soverom
+      entity_id: light.eirik_soverom_2
 
-
-#- alias: Dryer Finished Notification
-#  trigger:
-##    platform: state
-#    entity_id: binary_sensor.torketrommel_kjorer
-#    to: 'off'
-#  action:
-#   - service: notify.we_telegram
-#     data:
-#       title: Tørketrommel
-#       message: "Tørketrommel er ferdig"
 
 ### Automatic watering of greenhouse ###
 
@@ -995,10 +799,10 @@
     before: '18:01:00'
   action:
     - service: switch.turn_on
-      entity_id: switch.drivhuspumpe
+      entity_id: switch.drivhus_vanning_ny
     - delay: '00:02:00'
     - service: switch.turn_off
-      entity_id: switch.drivhuspumpe
+      entity_id: switch.drivhus_vanning_ny
 
 
 ### Notify me when either UPS loses mains power ###
@@ -1105,16 +909,10 @@
     topic: 'zigbee2mqtt/Kjokken Mikrobryter'
   condition:
     condition: template
-    value_template: '{{ "single" == trigger.payload_json.click }}'
+    value_template: '{{ "single" == trigger.payload_json.action }}'
   action:
     service: switch.toggle
     entity_id: switch.mikro
-#    service: tts.google_say
-#    entity_id: media_player.kjokken
-#    data:
-#      message: 'Hei Alva, no har du trykka på knappen, mamma og pappa e veldi gla i deg, husk å pusse tennen og se på brannmann sam, hilser fra mommo og moffa i harstad'
-#      language: '{{ ["fi", "de", "no", "fr", "en"] | random }}'
-#      cache: false
 
 
 - alias: 'Teams ledig'
@@ -1171,9 +969,6 @@
 
 
 
-
-#- alias: 'Transition lights in the morning'
-#  trigger:
 
 
 - alias: 'Styre alle lys soverom oppover'
@@ -1265,7 +1060,7 @@
       minutes: 5
   action:
     - service: light.turn_off
-      entity_id: light.loft_trappelys_light
+      entity_id: light.loft_trappelys
 
 
 
@@ -1287,43 +1082,12 @@
   trigger:
     entity_id: sensor.vaskemaskin_program_progress
     platform: state
-#    from: '99'
     to: '100'
   action: 
     - service: notify.eirikz_telegram
       data:
         title: "vaskemaskin"
         message: "ferdig"
-
-#- alias: "Skru av loftlys når det ikke har vært noen oppe på lenge"
-#  trigger:
-#    platform: state
-#    entity_id: binary_sensor.loft_trappesensor_occupancy
-#    to: 'off'
-#  condition:
-#    condition: and
-#    conditions:
-#      - condition: state
-#        entity_id: light.w_kontor
-#        state: 'off'
-#      - condition: state
-#        entity_id: binary_sensor.loft_bevegelse_occupancy
-#        state: 'off'
-#  action:
-#    - service: light.turn_off
-#      entity_id: light.loft_lys
-
-
-#- alias: "Skru på loftlys ved bevegelse"
-#  trigger:
-#    platform: state
-#    entity_id: binary_sensor.loft_bevegelse_occupancy
-#    to: 'on'
-#  action:
-#    - service: light.turn_on
-#      entity_id: light.loft_lys
-
-
 
 
 - alias: Lys W Kontor
@@ -1377,3 +1141,190 @@
     - service: light.turn_off
       entity_id: light.loft_lys
 
+
+- alias: Notify of events
+  trigger:
+    platform: mqtt
+    topic: frigate/events
+  action:
+    - service: notify.eirikz_telegram
+      data:
+        title: Kamera
+        message: 'A {{trigger.payload_json["after"]["label"]}} was detected.'
+        data:
+          photo: 
+            - url: !secret pictureurlevent
+
+
+- alias: 'Alva nattlys'
+  trigger:
+    platform: mqtt
+    topic: 'zigbee2mqtt/Alva Nattlys Bryter'
+  condition:
+    condition: template
+    value_template: '{{ "single" == trigger.payload_json.action }}'
+  action:
+    service: switch.toggle
+    entity_id: switch.alva_nattlys_stopsel
+
+- alias: 'Alva dor apnet'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.alva_dorsensor_contact
+    to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: media_player.stueforsterker
+        state: 'on'
+      - condition: time
+        after: '19:00:00'
+        before: '23:00:00'
+  action:
+    service: media_player.volume_mute
+    entity_id: media_player.stueforsterker
+    data:
+      is_volume_muted: true
+
+- alias: 'Alva dor lukket'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.alva_dorsensor_contact
+    to: 'off' 
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: media_player.stueforsterker
+        state: 'on'
+      - condition: time
+        after: '19:00:00'
+        before: '23:00:00'
+  action:
+    service: media_player.volume_mute
+    entity_id: media_player.stueforsterker
+    data:
+      is_volume_muted: false
+
+
+- alias: 'Alva er ute av sengen'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.alva_dorsensor_contact
+    to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: light.stue_lys
+        state: 'off'
+      - condition: time
+        after: '23:00:00'
+        before: '06:00:00'
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.soverom_hodegavel
+    data:
+      brightness: 15
+      rgb_color: [0,255,0]
+
+- alias: 'Alva er tilbake i sengen'
+  trigger:
+    platform: state
+    entity_id: binary_sensor.alva_dorsensor_contact
+    to: 'off'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: light.stue_lys
+        state: 'off'
+      - condition: time
+        after: '23:00:00'
+        before: '06:00:00'
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.soverom_hodegavel
+    data:
+      brightness: 8
+      rgb_color: [255,63,0]
+
+- alias: 'Alva legg deg ned'
+  trigger:
+    platform: time
+    at: '19:00:00'
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.alva_sengelys
+    data:
+      brightness: 110
+      rgb_color: [255,0,0]
+
+- alias: 'Alva du kan stå opp'
+  trigger:
+    platform: time
+    at: '07:00:00'
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.alva_sengelys
+    data:
+      brightness: 110
+      rgb_color: [0,255,0]
+
+- alias: 'Alva sengelys av'
+  trigger:
+    platform: time
+    at: '08:00:00'
+  action:
+    service: light.turn_off
+    target:
+      entity_id: light.alva_sengelys
+
+
+
+### Utelys ###
+
+- alias: 'Skru pa utelys nar det er morkt ute'
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ute_lysensor_illuminance_lux
+    below: 6
+    for: '00:10:00'
+  - platform: time
+    at: '23:59:00'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.ute_lysensor_illuminance_lux
+    below: 6
+  - condition: time
+    before: '23:58:00'
+    after: '16:00:00'
+  action:
+    service: light.turn_on
+    target:
+      entity_id: light.utegruppe
+
+- alias: 'Skru av utelys nar det er lyst ute'
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ute_lysensor_illuminance_lux
+    above: 6
+    for: '00:10:00'
+  - platform: time
+    at: '09:00:01'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.ute_lysensor_illuminance_lux
+    above: 6
+  - condition: time
+    before: '09:00:00'
+    after: '04:00:00'
+  action:
+    service: light.turn_off
+    target:
+      entity_id: light.utegruppe
