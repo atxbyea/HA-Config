@@ -1,6 +1,5 @@
 """Microsoft Graph sensors."""
 from functools import partial
-from typing import Dict, List
 
 from homeassistant.core import callback
 from homeassistant.helpers.entity_registry import (
@@ -58,7 +57,7 @@ class TeamsPresenceSensorEntity(GraphBaseSensorEntity):
 @callback
 def async_update_teams_presence(
     coordinator: GraphUpdateCoordinator,
-    current: Dict[str, List[TeamsPresenceSensorEntity]],
+    current: dict[str, list[TeamsPresenceSensorEntity]],
     async_add_entities,
 ) -> None:
     """Update teams_presence."""
@@ -87,7 +86,7 @@ def async_update_teams_presence(
 async def async_remove_entities(
     uuid: str,
     coordinator: GraphUpdateCoordinator,
-    current: Dict[str, TeamsPresenceSensorEntity],
+    current: dict[str, TeamsPresenceSensorEntity],
 ) -> None:
     """Remove sensors from Home Assistant."""
     registry = await async_get_entity_registry(coordinator.hass)

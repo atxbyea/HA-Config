@@ -34,11 +34,7 @@ from homeassistant.components.climate import (
 from homeassistant.components.climate.const import (
     ATTR_MAX_TEMP,
     ATTR_MIN_TEMP,
-    SUPPORT_FAN_MODE,
-    SUPPORT_PRESET_MODE,
-    SUPPORT_SWING_MODE,
-    SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_TARGET_TEMPERATURE_RANGE,
+    ClimateEntityFeature,
 )
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -65,6 +61,7 @@ from .yaml_const import (
     CONF_CONFIG_FILE,
     CONF_CONTROLLER,
     CONF_DEBUG,
+    CONF_DEVICE_ID,
     CONFIG_DEVICE_NAME,
     CONFIG_DEVICE_POLL,
     CONFIG_DEVICE_UPDATE_DELAY,
@@ -72,12 +69,12 @@ from .yaml_const import (
 )
 
 SUPPORTED_FEATURES_MAP = {
-    ATTR_TEMPERATURE: SUPPORT_TARGET_TEMPERATURE,
-    ATTR_TARGET_TEMP_HIGH: SUPPORT_TARGET_TEMPERATURE_RANGE,
-    ATTR_TARGET_TEMP_LOW: SUPPORT_TARGET_TEMPERATURE_RANGE,
-    ATTR_FAN_MODE: SUPPORT_FAN_MODE,
-    ATTR_SWING_MODE: SUPPORT_SWING_MODE,
-    ATTR_PRESET_MODE: SUPPORT_PRESET_MODE,
+    ATTR_TEMPERATURE: ClimateEntityFeature.TARGET_TEMPERATURE,
+    ATTR_TARGET_TEMP_HIGH: ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
+    ATTR_TARGET_TEMP_LOW: ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
+    ATTR_FAN_MODE: ClimateEntityFeature.FAN_MODE,
+    ATTR_SWING_MODE: ClimateEntityFeature.SWING_MODE,
+    ATTR_PRESET_MODE: ClimateEntityFeature.PRESET_MODE,
 }
 
 DEFAULT_CONF_CERT_FILE = "ac14k_m.pem"
@@ -90,8 +87,8 @@ REQUIREMENTS = ["requests>=2.21.0", "xmljson>=0.2.0"]
 
 CLIMATE_IP_DATA = "climate_ip_data"
 ENTITIES = "entities"
-DEFAULT_CLIMATE_IP_TEMP_MIN = 16
-DEFAULT_CLIMATE_IP_TEMP_MAX = 32
+DEFAULT_CLIMATE_IP_TEMP_MIN = 8
+DEFAULT_CLIMATE_IP_TEMP_MAX = 30
 DEFAULT_UPDATE_DELAY = 1.5
 SERVICE_SET_CUSTOM_OPERATION = "climate_ip_set_property"
 _LOGGER = logging.getLogger(__name__)
@@ -111,6 +108,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(
             CONFIG_DEVICE_UPDATE_DELAY, default=DEFAULT_UPDATE_DELAY
         ): cv.string,
+        vol.Optional(CONF_DEVICE_ID, default='032000000'): cv.string,
     }
 )
 
@@ -124,8 +122,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         device_controller = create_controller(
             config.get(CONF_CONTROLLER), config, _LOGGER
         )
-    except:
+    except Exception as e:
         _LOGGER.error("climate_ip: error while creating controller!")
+        import traceback
+        _LOGGER.error(traceback.format_exc())
+        _LOGGER.error(e)
         raise
 
     if device_controller is None:
@@ -186,6 +187,7 @@ class ClimateIP(ClimateEntity):
         self.rac = rac_controller
         self._name = config.get(CONFIG_DEVICE_NAME, None)
         self._poll = None
+        self._unique_id = None
         str_poll = config.get(CONFIG_DEVICE_POLL, "")
         if str_poll:
             str_poll = str_poll.lower()
@@ -236,6 +238,15 @@ class ClimateIP(ClimateEntity):
             res = self.rac.poll
         _LOGGER.info("Should poll: {}".format(res))
         return res
+
+    @property
+    def unique_id(self):
+        if self._unique_id is None and self.rac.unique_id is not None:
+            _LOGGER.info("About to set unique id {}".format(self.rac.unique_id))
+            self._unique_id = "climate_ip_" + self.rac.unique_id
+        
+        _LOGGER.info("Returning unique id of {}".format(self._unique_id))
+        return self._unique_id
 
     @property
     def name(self):

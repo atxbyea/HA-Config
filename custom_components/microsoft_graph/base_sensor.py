@@ -2,6 +2,7 @@
 from typing import Optional
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.device_registry import DeviceEntryType
 
 from . import GraphUpdateCoordinator
 from .const import DOMAIN
@@ -47,5 +48,5 @@ class GraphBaseSensorEntity(CoordinatorEntity):
             "name": "Microsoft Graph",
             "manufacturer": "Microsoft",
             "model": "Microsoft Graph",
-            "entry_type": "service",
+            "entry_type": DeviceEntryType.SERVICE,
         }

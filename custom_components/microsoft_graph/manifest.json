@@ -1,16 +1,18 @@
 {
   "domain": "microsoft_graph",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "name": "Microsoft Graph",
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/microsoft_graph",
+  "documentation": "https://github.com/geoffreylagaisse/Hass-Microsoft-Graph",
+  "issue_tracker": "https://github.com/geoffreylagaisse/Hass-Microsoft-Graph/issues",
   "requirements": [
-    "ha-graphapi==0.0.17"
+    "ha-graphapi==0.0.20"
   ],
   "dependencies": [
-    "http"
+    "http", "auth"
   ],
   "codeowners": [
-    "@jlweston"
-  ]
+    "@jlweston", "@geoffreylagaisse"
+  ],
+  "iot_class": "cloud_polling"
 }

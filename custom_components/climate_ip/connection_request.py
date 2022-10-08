@@ -1,9 +1,12 @@
+import concurrent.futures
 import json
 import logging
 import os
 import time
 import traceback
+import ssl
 
+from requests.adapters import HTTPAdapter
 from homeassistant.const import CONF_IP_ADDRESS, CONF_MAC, CONF_PORT, CONF_TOKEN
 
 from .connection import Connection, register_connection
@@ -17,6 +20,15 @@ from .yaml_const import (
 CONNECTION_TYPE_REQUEST = "request"
 CONNECTION_TYPE_REQUEST_PRINT = "request_print"
 
+class SamsungHTTPAdapter(HTTPAdapter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def init_poolmanager(self, *args, **kwargs):
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        ssl_context.set_ciphers("ALL:@SECLEVEL=0")
+        kwargs["ssl_context"] = ssl_context
+        return super().init_poolmanager(*args, **kwargs)
 
 class ConnectionRequestBase(Connection):
     def __init__(self, hass_config, logger):
@@ -26,6 +38,10 @@ class ConnectionRequestBase(Connection):
         logging.getLogger("urllib3.connectionpool").setLevel(logging.ERROR)
         self.update_configuration_from_hass(hass_config)
         self._condition_template = None
+        self._thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    
+    def __del__(self):
+        self._thread_pool.shutdown(wait=False)
 
     @property
     def embedded_command(self):
@@ -100,19 +116,29 @@ class ConnectionRequestBase(Connection):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=InsecureRequestWarning)
             with requests.sessions.Session() as session:
+                self.logger.info("Setting up HTTP Adapter and ssl context")
+                session.mount('https://', SamsungHTTPAdapter())
                 self.logger.info(self._params)
+
                 try:
-                    resp = session.request(**self._params)
-                    self.logger.info(
-                        "Command executed with code: {}, text: {}".format(
-                            resp.status_code, resp.text
-                        )
-                    )
+                    future = self._thread_pool.submit(session.request, **self._params)
                 except:
                     # something goes wrong, print callstack and return None
                     self.logger.error("Request execution failed. Stack trace:")
                     traceback.print_exc()
                     return (None, False, 0)
+
+                try:
+                    resp = future.result()
+                except:
+                    self.logger.error("Request result exception: {}".format(future.exception()))
+                    return (None, False, 0)
+
+                self.logger.info(
+                    "Command executed with code: {}, text: {}".format(
+                        resp.status_code, resp.text
+                    )
+                )
 
         if resp and resp.ok:
             if resp.status_code == 200:

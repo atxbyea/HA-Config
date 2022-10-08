@@ -1,0 +1,24 @@
+{
+    "config": {
+        "abort": {
+            "authorize_url_timeout": "Tempo limite gerando URL de autorização.",
+            "missing_configuration": "O componente não está configurado. Por favor, siga a documentação.",
+            "no_url_available": "Nenhuma URL disponível. Para obter informações sobre este erro, [verifique a seção de ajuda]({docs_url})"
+        },
+        "create_entry": {
+            "default": "Autenticado com sucesso"
+        },
+        "step": {
+            "pick_implementation": {
+                "title": "Escolha o método de autenticação"
+            },
+            "user": {
+                "data": {
+                    "client_id": "ID do Cliente",
+                    "client_secret": "Secret do Cliente"
+                },
+                "description": "Deseja iniciar a configuração?"
+            }
+        }
+    }
+}

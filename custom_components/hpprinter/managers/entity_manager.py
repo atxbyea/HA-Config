@@ -63,7 +63,7 @@ class EntityManager:
 
         return result
 
-    def get_all_entities(self) -> List[EntityData]:
+    def get_all_entities(self) -> list[EntityData]:
         entities = []
         for domain in self.entities:
             for name in self.entities[domain]:
@@ -77,7 +77,7 @@ class EntityManager:
         if domain not in self.entities:
             self.entities[domain] = {}
 
-    def get_entities(self, domain) -> Dict[str, EntityData]:
+    def get_entities(self, domain) -> dict[str, EntityData]:
         self.check_domain(domain)
 
         return self.entities[domain]
@@ -134,11 +134,6 @@ class EntityManager:
     async def _async_update(self):
         step = "Mark as ignore"
         try:
-            entities_to_delete = []
-
-            for entity in self.get_all_entities():
-                entities_to_delete.append(entity.unique_id)
-
             step = "Create components"
 
             await self.create_components()
@@ -166,9 +161,6 @@ class EntityManager:
 
                     if entity.status == ENTITY_STATUS_CREATED:
                         entity_item = self.entity_registry.async_get(entity_id)
-
-                        if entity.unique_id in entities_to_delete:
-                            entities_to_delete.remove(entity.unique_id)
 
                         step = f"Mark as created - {domain} -> {entity_key}"
 
@@ -207,17 +199,6 @@ class EntityManager:
                 if len(entities_to_add) > 0:
                     async_add_entities(entities_to_add, True)
 
-            if len(entities_to_delete) > 0:
-                _LOGGER.info(f"Following items will be deleted: {entities_to_delete}")
-
-                for domain in SIGNALS:
-                    entities = dict(self.get_entities(domain))
-
-                    for entity_key in entities:
-                        entity = entities[entity_key]
-                        if entity.unique_id in entities_to_delete:
-                            await self.ha.delete_entity(domain, entity.name)
-
         except Exception as ex:
             self.log_exception(ex, f"Failed to update, step: {step}")
 
@@ -232,7 +213,7 @@ class EntityManager:
 
         icon = self.get_printer_icon()
 
-        attributes = {"friendly_name": entity_name, "device_class": "connectivity"}
+        attributes = {"friendly_name": entity_name}
 
         entity = EntityData()
 
@@ -241,6 +222,7 @@ class EntityManager:
         entity.attributes = attributes
         entity.icon = icon
         entity.device_name = device_name
+        entity.binary_sensor_device_class = BinarySensorDeviceClass.CONNECTIVITY
         entity.state = status
 
         self.set_entity(DOMAIN_SENSOR, entity_name, entity)
@@ -271,7 +253,7 @@ class EntityManager:
         device_name = DEFAULT_NAME
         icon = self.get_printer_icon()
 
-        attributes = {"friendly_name": entity_name, "device_class": "connectivity"}
+        attributes = {"friendly_name": entity_name}
 
         entity = EntityData()
 
@@ -281,6 +263,7 @@ class EntityManager:
         entity.icon = icon
         entity.device_name = device_name
         entity.state = is_online
+        entity.binary_sensor_device_class = BinarySensorDeviceClass.CONNECTIVITY
 
         self.set_entity(DOMAIN_BINARY_SENSOR, entity_name, entity)
 
@@ -309,6 +292,7 @@ class EntityManager:
             entity.icon = PAGES_ICON
             entity.device_name = device_name
             entity.state = state
+            entity.sensor_state_class = SensorStateClass.TOTAL_INCREASING
 
             self.set_entity(DOMAIN_SENSOR, entity_name, entity)
 
@@ -337,6 +321,7 @@ class EntityManager:
             entity.icon = SCANNER_ICON
             entity.device_name = device_name
             entity.state = state
+            entity.sensor_state_class = SensorStateClass.TOTAL_INCREASING
 
             self.set_entity(DOMAIN_SENSOR, entity_name, entity)
 
@@ -362,6 +347,7 @@ class EntityManager:
         entity.icon = INK_ICON
         entity.device_name = device_name
         entity.state = state
+        entity.sensor_state_class = SensorStateClass.MEASUREMENT
 
         self.set_entity(DOMAIN_SENSOR, entity_name, entity)
 

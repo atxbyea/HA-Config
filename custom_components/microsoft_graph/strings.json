@@ -1,9 +1,15 @@
 {
-  "title": "Microsoft Graph",
   "config": {
     "step": {
       "pick_implementation": {
         "title": "[%key:common::config_flow::title::oauth2_pick_implementation%]"
+      },
+      "user": {
+        "description": "[%key:common::config_flow:step::user::description%]",
+        "data": {
+          "client_id": "[%key:common::config_flow::step::user::data::client_id%]",
+          "client_secret": "[%key:common::config_flow::step::user::data::client_secret%]"
+        }
       }
     },
     "abort": {

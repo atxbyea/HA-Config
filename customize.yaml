@@ -28,3 +28,6 @@ binary_sensor.sensor_kontor:
 
 binary_sensor.boddor_contact:
   device_class: door
+
+sensor.accumulated_consumption_damlivegen_4:
+  state_class: total_increasing

@@ -11,8 +11,14 @@
         "step": {
             "pick_implementation": {
                 "title": "Pick Authentication Method"
+            },
+            "user": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Do you want to start set up?"
             }
         }
-    },
-    "title": "Microsoft Graph"
+    }
 }

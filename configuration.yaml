@@ -1,19 +1,13 @@
 homeassistant:
-  # Name of the location where Home Assistant is running
   name: Home
-  # Location required to calculate the time the sun rises and sets
   latitude: 60.108695
   longitude: 11.368363
-  # Impacts weather/sunrise data (altitude above sea level in meters)
   elevation: 220
-  # metric for Metric, imperial for Imperial
   unit_system: metric
-  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Oslo
-  # Customization file
+  currency: NOK
   allowlist_external_dirs:
     - /tmp
-#  customize: !include customize.yaml
   packages: !include_dir_named packages
 
 ##Define External\Internal URI##
@@ -29,6 +23,12 @@ homeassistant:
 
 system_health:
 
+
+energy:
+
+#6## Enable blueprints ###
+blueprint:
+
 # Enables the frontend
 frontend:
   themes: !include themes.yaml
@@ -41,8 +41,6 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 192.168.1.11 
-#updater:
-#  include_used_components: true
 
 python_script:
 
@@ -68,6 +66,19 @@ input_boolean:
     name: "Dummy Bak Input Boolean"
     icon: mdi:sticker-emoji
     initial: on
+
+
+### Input Text ###
+
+input_text:
+  symfonisk_eirik_kontor:
+    name: bahhumbug
+    initial: text
+
+  kjokken_lyd:
+    name: kjokkenlyd
+    initial: text
+
 
 
 ### Input Selects ####
@@ -121,13 +132,13 @@ tts:
     service_name: google_say
     cache: true
     cache_dir: /tmp/tts
-    base_url: !secret baseurl_ga
     language: 'no'
 
 ### Includes
 
 group: !include groups.yaml
 automation: !include automations.yaml
+automation mine: !include_dir_merge_list automation/
 script: !include scripts.yaml
 sensor: !include sensors.yaml
 
@@ -144,92 +155,60 @@ tellduslive:
   host: !secret telldusip
 
 ### Lights ###
-
-light:
-
-### Wiz Lights ###
-  - platform: wiz_light
-    name: Eirik Soverom
-    host: 192.168.1.159
+mqtt: 
+  light:
 
 ### Zigbee2mqtt groups ###
 
-  - platform: mqtt
-    schema: json
-    name: StueGruppe
-    command_topic: "zigbee2mqtt/stuegruppe/set"
-    state_topic: "zigbee2mqtt/stuegruppe"
 
-    color_temp: true
-    brightness: true
-    rgb: false
+    - schema: json
+      name: KjellerGruppe
+      command_topic: "zigbee2mqtt/kjellergruppe/set"
+      state_topic: "zigbee2mqtt/kjellergruppe"
 
-  - platform: mqtt
-    schema: json
-    name: KjøkkenGruppe
-    command_topic: "zigbee2mqtt/kjokkengruppe/set"
-    state_topic: "zigbee2mqtt/kjokkengruppe"
+      color_temp: false
+      brightness: true
+      rgb: false
 
-    color_temp: true
-    brightness: true
-    rgb: false
+    - schema: json
+      name: soveromgruppe
+      command_topic: "zigbee2mqtt/soveromgruppe/set"
+      state_topic: "zigbee2mqtt/soveromgruppe"
 
+      color_temp: true
+      brightness: true
+      rgb: false
 
-  - platform: mqtt
-    schema: json
-    name: KjellerGruppe
-    command_topic: "zigbee2mqtt/kjellergruppe/set"
-    state_topic: "zigbee2mqtt/kjellergruppe"
+    - schema: json
+      name: utegruppe
+      command_topic: "zigbee2mqtt/utegruppe/set"
+      state_topic: "zigbee2mqtt/utegruppe"
 
-    color_temp: false
-    brightness: true
-    rgb: false
+      color_temp: true
+      brightness: true
+      rgb: false
 
+    - schema: json
+      name: Kveldsgruppe
+      command_topic: "zigbee2mqtt/kvelds_gruppe/set"
+      state_topic: "zigbee2mqtt/kvelds_gruppe"
 
-  - platform: mqtt
-    schema: json
-    name: eirikgruppe
-    command_topic: "zigbee2mqtt/eirikgruppe/set"
-    state_topic: "zigbee2mqtt/eirikgruppe"
+      color_temp: true
+      brightness: true
+      rgb: false
 
-    color_temp: false
-    brightness: true
-    rgb: false
-
-  - platform: mqtt
-    schema: json
-    name: soveromgruppe
-    command_topic: "zigbee2mqtt/soveromgruppe/set"
-    state_topic: "zigbee2mqtt/soveromgruppe"
-
-    color_temp: true
-    brightness: true
-    rgb: false
-
-  - platform: mqtt
-    schema: json
-    name: utegruppe
-    command_topic: "zigbee2mqtt/utegruppe/set"
-    state_topic: "zigbee2mqtt/utegruppe"
-
-    color_temp: true
-    brightness: true
-    rgb: false
 
 
 ### Light Switches ###
+light: 
 
   - platform: switch
     name: Stue Gangbord
     entity_id: switch.lys_gangbord
 
   - platform: switch
-    name: dim
-    entity_id: switch.dim
-
-  - platform: switch
-    name: Stue Stålampe
-    entity_id: switch.stalampe
+    name: Kjokken Stor Pære
+    entity_id: switch.kjokken_stor_paere
 
 ### Light Groups ###
 
@@ -244,9 +223,8 @@ light:
     name: Soverom_lys
     entities:
       - light.soverom_hodegavel
-      - light.soverom_lampe_w_light
-      - light.soverom_w_light
       - light.eirik_soverom
+      - light.soverom_lampe_w
   
   - platform: group
     name: W_kontor_lys_gruppe
@@ -256,38 +234,11 @@ light:
       - light.w_kontor_tak
       - light.w_kontor_spiss
 
-
   - platform: group
-    name: Stue_lys
+    name: Primær_lys
     entities:
-      - light.stue_stuebord_light
-      - light.stue_ganglys_light
-      - light.stue_vinduslampe1_light
-      - light.stue_vinduslampe2_light
-      - light.stue_gulvlampe1_light
-      - light.stue_gulvlampe2_light
-      - light.stue_gulvlampe3_light
-      - light.stue_bikkjelampe_light
-      - light.stue_lys_bak_tv
-      - light.stue_stort_vitrineskap_light
-      - light.stue_lite_vitrineskap
-      - light.stue_lyst_vitrineskap
-      - light.stue_peislys
-      - light.stue_mellomgang_light
-      - light.stue_yttergang_tak_light
-      - light.stue_yttergang_tak_2_light
-
-  - platform: group
-    name: Kjokken_lys
-    entities:
-      - light.kjokken_benkelys_light
-      - light.kjokken_vinduslampe_light
-      - light.kjokken_bordlampe_light
-      - light.kjokken_benke_underlys_light
-      - light.kjokken_taklampe_light
-      - light.kjokken_ventilator_light
-      - light.kjokken_benkelys_under
-
+      - light.stue_stuebord
+      - light.stue_gul_gulvlampe
 
   - platform: group
     name: Kjeller_lys
@@ -311,24 +262,15 @@ light:
       - light.loft_trappelys
 
   - platform: group
-    name: Kontor_eirik_lys
-    entities:
-      - light.eirik_kontor1_light
-      - light.eirik_kontor2_light
-      - light.eirik_kontor3_light
-
-
-  - platform: group
     name: Do_lys
     entities:
       - light.do_hyllelampe
       - light.do_taklys
 
   - platform: group
-    name: halloween
+    name: garasjegruppe
     entities:
-      - light.grin
-      - light.smile
+      - light.garasjelys1
 
 ### Yeelight ###
 
@@ -370,113 +312,12 @@ switch:
           {% endif %}
 
 
-### Circadian Lighting ###
-
-#  - platform: circadian_lighting
-#    name: stue
-#    lights_brightness:
-#      - light.stue_lys
-#    max_brightness: 75
-#    min_brightness: 1
-
-#    lights_ct:
-#      - light.stue_lys
-
-#  - platform: circadian_lighting
-#    name: peis
-#    lights_brightness:
-#      - light.stue_peislys
-#    max_brightness: 75
-#    min_brightness: 12
-
-#    lights_ct:
-#      - light.stue_peislys 
-
-#  - platform: circadian_lighting
-#    name: do
-#    lights_brightness:
-#      - light.do_taklys_light
-#      - light.do_hyllelampe_light
-#    max_brightness: 75
-#    min_brightness: 15
-
-#    lights_ct:
-#      - light.do_taklys_light
-#      - light.do_hyllelampe_light
-
-
-
-#  - platform: circadian_lighting
-#    name: kjeller
-#    lights_brightness:
-#      - light.kjeller_ganglys_light
-#      - light.kjeller_vaskerom1_light
-#      - light.kjeller_vaskerom2_light
-#      - light.kjeller_vaskerom3_light
-#      - light.kjeller_trappelys_light
-#      - light.kjeller_fryserom_light
-#      - light.kjeller_bod_light
-#      - light.kjellergruppe
-#    max_brightness: 75
-#    min_brightness: 1
-
-#  - platform: circadian_lighting
-#    name: loft
-#    lights_brightness:
-#      - light.loft
-#    max_brightness: 75
-#    min_brightness: 1
-
-#    lights_ct:
-#      - light.loft_taklys_1
-#      - light.loft_taklys_2
-
-#  - platform: circadian_lighting
-#    name: kjokken   
-#    lights_brightness:
-#      - light.kjokken_lys
-#    max_brightness: 75
-#    min_brightness: 1
-
-
-#  - platform: circadian_lighting
-#    name: kontor
-#    lights_brightness:
-#      - light.kontor_eirik_lys
-#    max_brightness: 75
-#    min_brightness: 1
-
-
 zone: !include zones.yaml 
 
 scene: !include scenes.yaml
 
-### Spotify ###
-
-spotify:
-  client_id: !secret spotify_clientid
-  client_secret: !secret spotify_clientsecret
-
-### WebosTV ###
-
-webostv:
-  host: 192.168.1.32
-  name: StueTV
-  turn_on_action:
-    service: wake_on_lan.send_magic_packet
-    data:
-      mac: "14-C9-13-15-1F-BD"
-      broadcast_address: 192.168.1.255
-      broadcast_port: 9
-### Media Player Platform ###
 
 media_player:
-
-### Onkyo ###
-
-  - platform: onkyo
-    host: !secret onkyoip
-    name: Stueforsterker
 
 ### Broadlink devices ###
   - platform: smartir
@@ -496,25 +337,6 @@ media_player:
 
 wake_on_lan:
 
-### Roborock ###
-
-#vacuum:
-#  - platform: xiaomi_miio
-#    host: !secret roborockip
-#    token: !secret vacuum
-
-### Google Calendar ###
-
-#google:
-#  client_id: !secret google_clientid
-#  client_secret: !secret google_clientsecret
-
-### Circadian Lighting ###
-
-#circadian_lighting:
-#  interval: 600
-#  transition: 60
-#  min_colortemp: 2200
 
 ### YAML mode for Lovelace ###
 
@@ -547,65 +369,18 @@ lovelace:
       type: module
     - url: /hacsfiles/lovelace-card-tools/card-tools.js
       type: module
-    - url: /hacsfiles/zigbee2mqtt-networkmap/zigbee2mqtt-networkmap.js
-      type: module 
     - url: /hacsfiles/upcoming-media-card/upcoming-media-card.js
       type: js
     - url: /hacsfiles/lovelace-card-templater/lovelace-card-templater.js
       type: js
     - type: js
       url: /hacsfiles/lovelace-valetudo-map-card/valetudo-map-card.js
-
     - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
       type: module
-    - url: /local/zigbee2mqtt-networkmap.js?v=0.6.0
-      type: module
-
 
 ### Binary sensors ###
 
 binary_sensor:
-  - platform: ping
-    host: 192.168.1.40
-    name: Kakuzu
-    count: 3
-    scan_interval: 30
-
-  - platform: ping
-    host: www.google.com
-    name: googleping
-    count: 3
-    scan_interval: 60
-
-  - platform: mqtt
-    name: "fremme"
-    state_topic: "cameras/fremme/motion"
-
-  - platform: mqtt
-    name: "bak"
-    state_topic: "cameras/bak/motion"
-
-#  - platform: template
-#    sensors:
-#      torketrommel_kjorer:
-#        friendly_name: "Tørketrommel Kjører"
-#        delay_on:
-#          minutes: 10
-#        delay_off:
-#          minutes: 3
-#        value_template: >-
-#          {{ states('sensor.torketrommel_energy_power')|float > 10 }}
-
-#  - platform: template
-#    sensors:
-#      lys_timer:
-#        friendly_name: "Det har gått 30 minutter fra vekking av hus"
-#        value_template: >-
-#          {{ as_timestamp(now()) - as_timestamp(states.automation.vekk_huset.attributes.last_triggered) | int > 1800 }}        
-        
-            
-
-
 
 ### Template for both basement doors open \ close will trigger lights in basement ###
 
@@ -617,6 +392,15 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.kjeller_trappedor_contact', 'on') or
              is_state('binary_sensor.kjeller_garasjedor_contact', 'on') }}
+
+  - platform: template
+    sensors:
+      garasje_apen:
+        friendly_name: "Garasjen er entret"
+        device_class: door
+        value_template: >-
+          {{ is_state('binary_sensor.kjeller_garasjedor_contact', 'on') or
+             is_state('binary_sensor.garasjeport_sensor', 'on') }}
 
   - platform: template
     sensors:
@@ -659,6 +443,7 @@ notify:
 
 recorder:
   db_url: !secret mariadb
+
 ### Persons ###
 
 person:
@@ -684,310 +469,21 @@ climate:
     poll: True
 
   - platform: smartir
-    name: 'Varmepumpe Loft'
-    unique_id: loftpumpe
-    device_code: 1260
-    controller_data: remote.broadlink_loft_remote
-    temperature_sensor: sensor.loft_temperatur_temperature
-    humidity_sensor: sensor.loft_fuktighet_humidity
+    name: 'Varmepumpe Soverom'
+    unique_id: soverompumpe
+    device_code: 1501
+    controller_data: remote.broadlink_soverom_remote
+    temperature_sensor: sensor.soverom_temperatur_temperature
+    humidity_sensor: sensor.soverom_temperatur_humidity
 
 
-### InfluxDB ###
-
-influxdb:
-  api_version: 2
-  host: kakuzu.eirikzlab.local
-  port: 8086
-#  username: !secret influxdbuser
-#  password: !secret influxdbpass
-  organization: !secret influxorg
-  token: !secret influxtoken
-  bucket: !secret influxbucket
-  ssl: false
-  verify_ssl: false
-
-
-### Image Processing ###
-
-image_processing:
-#  - platform: doods
-#    scan_interval: 10000
-#    url: "http://kakuzu.eirikzlab.local:8011"
-#    detector: tensorflow
-#    source:
-#      - entity_id: camera.fremme
-#    file_out:
-#      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
-#      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
-#    confidence: 40
-#    labels:
-#      - person
-#      - car
-#      - cat
-#      - dog
-#      - bottle
-#      - cup
-#      - bowl
-#      - chair
-#      - couch
-
-#  - platform: doods
-#    scan_interval: 10000
-#    url: "http://kakuzu.eirikzlab.local:8011"
-#    detector: default
-#    source:
-#      - entity_id: camera.bak
-#    file_out:
-#      - "/tmp/{{ camera_entity.split('.')[1] }}_latest.jpg"
-#      - "/tmp/{{ camera_entity.split('.')[1] }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
-#    confidence: 20
-
-#  - platform: openalpr_local
-#    region: eu
-#    source:
-#    - entity_id: camera.fremme
-
-### ffmpeg ###
-
-ffmpeg:
-
-### Stream ###
-
-stream:
-
-### LIFE360 ###
-
-life360:
-  accounts:
-    - username: !secret LIFE360_USERNAME
-      password: !secret LIFE360_PASSWORD
-  driving_speed: 15
-  interval_seconds: 10
-  max_gps_accuracy: 200
-  max_update_wait:
-    minutes: 45
-  show_as_state:
-    - driving
-    - moving
-  warning_threshold: 2
-  error_threshold: 3
-
-
-### MQTT ###
-
-mqtt:
-  birth_message:
-    topic: 'hass/status'
-    payload: 'online'
-  will_message:
-    topic: 'hass/status'
-    payload: 'offline'
-
-
-### Zigbee2mqtt network map ###
+### Webhooks ###
 
 webhook:
- 
-zigbee2mqtt_networkmap:
-
-
-### Sonos ####
-
-sonos:
-  media_player:
-    hosts:
-      - !secret sonoskontorip
-
-### Google Cast ###
-
-#cast:
-
-### MJPEG camera from Motion ###
-
-camera:
-#  - platform: generic
-#    name: Fremme
-#    stream_source: !secret fremmekamerastream
-#    still_image_url: !secret fremmekamerastill
-
-
-#  - platform: generic
-#    name: Bak
-#    stream_source: !secret bakkamerastream
-#    still_image_url: !secret bakkamerastill
-
-#  - platform: mjpeg
-#    name: Print
-#    mjpeg_url: !secret printkamerastill
-#    still_image_url: !secret printkamerastill
-
-
-### Siemens HomeConnect ###
-
-home_connect:
-  client_id: !secret HC_clientID
-  client_secret: !secret HC_clientS
 
 ### SmartIR ###
 
 smartir:
-
-### Mobile App ###
-
-mobile_app:
-
-### Tibber power company ###
-#tibber:
-#  access_token: !secret tibberat
-
-
-### Octoprint ###
-
-octoprint:
-  host: kakuzu.eirikzlab.local
-  port: 5000
-  api_key: !secret octoapi
-  bed: true
-  number_of_tools: 1
-
-
-### Google Assistant Integration because Nabu Casa sucks###
-
-google_assistant:
-  project_id: !secret projectidga
-  service_account: !include service.json
-  report_state: true
-  expose_by_default: true
-  exposed_domains:
-    - switch
-    - light
-    - fan
-    - cover
-    - media_player
-    - climate
-    - vacuum
-    - sensor
-  entity_config:
-    light.alva:
-      expose: false
-    light.do_lys:
-      expose: false
-    light.eirikgruppe:
-      expose: false
-    light.ezkontor:
-      expose: false
-    light.kjeller_lys:
-      expose: false
-    light.kjellergruppe:
-      expose: false
-    light.kjokkengruppe:
-      expose: false
-    light.kjokken_lys:
-      expose: false
-    light.kjokken:
-      expose: false
-    light.loft:
-      expose: false
-    light.loft_lys:
-      expose: false
-    light.soverom_lys:
-      expose: false
-    light.soveromgruppe:
-      expose: false
-    light.stue:
-      expose: false
-    light.stue_lys:
-      expose: false
-    light.ute:
-      expose: false
-    light.utegruppe:
-      expose: false
-    switch.circadian_lighting_do:
-      expose: false
-    switch.circadian_lighting_kjeller:
-      expose: false
-    switch.circadian_lighting_kjokken:
-      expose: false
-    switch.circadian_lighting_kontor: 
-      expose: false
-    switch.circadian_lighting_loft:
-      expose: false
-    switch.circadian_lighting_peis:
-      expose: false
-    switch.circadian_lighting_stue:
-      expose: false
-    switch.vaskemaskin_program_auto30:
-      expose: false
-    switch.vaskemaskin_program_auto40:
-      expose: false
-    switch.vaskemaskin_program_auto60:
-      expose: false
-    switch.vaskemaskin_program_chiffon:
-      expose: false
-    switch.vaskemaskin_program_cotton:
-      expose: false
-    switch.vaskemaskin_program_cottoneco:
-      expose: false
-    switch.vaskemaskin_program_curtains:
-      expose: false
-    switch.vaskemaskin_program_darkwash:
-      expose: false
-    switch.vaskemaskin_program_delicatessilk:
-      expose: false
-    switch.vaskemaskin_program_dessous:
-      expose: false
-    switch.vaskemaskin_program_easycare:
-      expose: false
-    switch.vaskemaskin_program_mix:
-      expose: false
-    switch.vaskemaskin_program_monsoon:
-      expose: false
-    switch.vaskemaskin_program_outdoor:
-      expose: false
-    switch.vaskemaskin_program_plushtoy:
-      expose: false
-    switch.vaskemaskin_program_sensitive:
-      expose: false
-    switch.vaskemaskin_program_shirtsblouses:
-      expose: false
-    switch.vaskemaskin_program_sportfitness:
-      expose: false
-    switch.vaskemaskin_program_towels:
-      expose: false
-    switch.vaskemaskin_program_waterproof:
-      expose: false
-    switch.vaskemaskin_program_wool:
-      expose: false
-
-### Garbage Collection Custom Component ###
-
-garbage_collection:
-  sensors:
-  - name: "Restavfall"
-    frequency: "odd-weeks"
-    collection_days:
-    - mon
-    expire_after: '12:00'
-
-  - name: "Plast og papir" 
-    frequency: "annual"
-    date: '01/01'
-    include_dates:
-    - '2020-11-27'
-    - '2020-12-28'
-
-
-### TPLink Smart plug
-tplink:
-  discovery: false
-  switch:
-    - host: !secret tplinkvvb 
-
-### Speedtest ###
-#speedtestdotnet:
-#  server_id: 12919
-#  scan_interval:
-#    hours: 12
 
 
 ### Microsoft Graph ###
@@ -997,15 +493,16 @@ microsoft_graph:
 
 
 adaptive_lighting:
-- name: "stue"
+- name: "primaergruppe"
   lights:
-    - light.stuegruppe
+    - light.primaer_lys
+
   prefer_rgb_color: false
   transition: 45
   initial_transition: 1
   interval: 90
   min_brightness: 1
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
@@ -1014,13 +511,13 @@ adaptive_lighting:
 
 - name: "peis"
   lights:
-    - light.stue_peislys
+    - light.peislys
   prefer_rgb_color: false
   transition: 45
   initial_transition: 1
   interval: 90
   min_brightness: 20
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
@@ -1036,7 +533,7 @@ adaptive_lighting:
   initial_transition: 1
   interval: 90
   min_brightness: 15
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
@@ -1052,7 +549,7 @@ adaptive_lighting:
   initial_transition: 1
   interval: 90
   min_brightness: 1
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
@@ -1067,25 +564,27 @@ adaptive_lighting:
   initial_transition: 1
   interval: 90
   min_brightness: 1
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
   sleep_color_temp: 1000
   take_over_control: true
 
-- name: "kjokken"
+- name: "kveldsgruppe"
   lights:
-    - light.kjokkengruppe
-#    - light.kjokken_benkelys_under
+    - light.kveldsgruppe
+#    - light.kjokken_bordlampe
   prefer_rgb_color: false
   transition: 45
+#  only_once: true
   initial_transition: 1
   interval: 90
   min_brightness: 1
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
+  detect_non_ha_changes: true
   sleep_brightness: 1
   sleep_color_temp: 1000
   take_over_control: true
@@ -1093,18 +592,19 @@ adaptive_lighting:
 
 - name: "kjokkenbenkelys"
   lights:
-    - light.kjokken_benkelys_under
+    - light.kjokkenbenk_under
   prefer_rgb_color: false
   transition: 45
   initial_transition: 1
   interval: 90
   min_brightness: 20
-  max_brightness: 90
+  max_brightness: 70
   min_color_temp: 4000
   max_color_temp: 6000
   sleep_brightness: 1
   sleep_color_temp: 1000
   take_over_control: true
+  detect_non_ha_changes: true
 
 - name: "eirikkontor"
   lights:
@@ -1114,35 +614,21 @@ adaptive_lighting:
   initial_transition: 1
   interval: 90
   min_brightness: 1
-  max_brightness: 75
+  max_brightness: 50
   min_color_temp: 2000
   max_color_temp: 5500
   sleep_brightness: 1
   sleep_color_temp: 1000
   take_over_control: true
 
-
-
 utility_meter:
-#  varmepumpe_stue_manedlig:
-#    source: sensor.varmepumpe_stue_energy_current
-#    cycle: monthly
 
-#  vvb_manedlig:
-#    source: sensor.vvb_navarende_forbruk
-#    cycle: monthly
+### Volvo XC90 ###
 
-#  varmepumpe_loft_manedlig:
-#    source: sensor.varmepumpe_loft_energy_current
-#    cycle: monthly
+volvooncall:
+  username: !secret volvouser
+  password: !secret volvopass
+  mutable: true
 
-#  mirai_manedlig:
-#    source: sensor.mirai_realtime_power
-#    cycle: monthly
 
-### Nextcloud Integration ###
-
-nextcloud:
-  url: !secret nextcloudurl
-  username: !secret nextclouduser
-  password: !secret nextcloudpass
+powercalc:
