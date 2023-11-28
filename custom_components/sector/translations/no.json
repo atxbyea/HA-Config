@@ -1,0 +1,39 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Kontoen er allerede konfigurert"
+        },
+        "error": {
+            "auth_error": "Brukernavn og / eller passord er feil",
+            "connection_error": "Tilkobling mislyktes"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "username": "Epostadresse",
+                    "password": "Passord",
+                    "code": "Kode for å aktivere / deaktivere alarm eller åpne / lukke dørlås",
+                    "code_format": "Kodelengde for alarm og låser",
+                    "temp": "Aktiver Temp-sensorer"
+                }
+            },
+            "reauth_confirm": {
+                "data": {
+                    "username": "Epostadresse",
+                    "password": "Passord"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "timesync": "Oppdater frekvensen. Ikke sett for lavt!",
+                    "code": "Kode for å aktivere / deaktivere alarm eller åpne / lukke dørlås",
+                    "code_format": "Kodelengde for alarm og låser"
+                }
+            }
+        }
+    }
+}

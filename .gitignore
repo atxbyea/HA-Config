@@ -23,3 +23,5 @@ known_devices.yaml
 tellduslive.conf
 plex.conf
 service.json
+SERVICE_ACCOUNT.json
+xiaomi_map.jpg

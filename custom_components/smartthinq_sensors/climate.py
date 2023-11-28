@@ -3,15 +3,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import logging
-from typing import Any, Awaitable, Callable, List, Tuple
+from typing import Any, Awaitable, Callable
 
-from .wideq import (
-    FEAT_HUMIDITY,
-    FEAT_OUT_WATER_TEMP,
-    UNIT_TEMP_FAHRENHEIT,
-    DeviceType,
-)
-from .wideq.ac import AirConditionerDevice, ACMode
+import voluptuous as vol
 
 from homeassistant.components.climate import ClimateEntity, ClimateEntityDescription
 from homeassistant.components.climate.const import (
@@ -24,23 +18,24 @@ from homeassistant.components.climate.const import (
     HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback, current_platform
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import LGEDevice
 from .const import DOMAIN, LGE_DEVICES, LGE_DISCOVERY_NEW
-from .device_helpers import (
-    TEMP_UNIT_LOOKUP,
-    LGERefrigeratorDevice,
-    get_entity_name,
-)
+from .device_helpers import TEMP_UNIT_LOOKUP, LGERefrigeratorDevice
+from .wideq import AirConditionerFeatures, DeviceType, TemperatureUnit
+from .wideq.devices.ac import AWHP_MAX_TEMP, AWHP_MIN_TEMP, ACMode, AirConditionerDevice
 
 # general ac attributes
 ATTR_FRIDGE = "fridge"
 ATTR_FREEZER = "freezer"
+
+# service definitions
+SERVICE_SET_SLEEP_TIME = "set_sleep_time"
 
 HVAC_MODE_LOOKUP: dict[str, HVACMode] = {
     ACMode.AI.name: HVACMode.AUTO,
@@ -66,7 +61,8 @@ _LOGGER = logging.getLogger(__name__)
 @dataclass
 class ThinQRefClimateRequiredKeysMixin:
     """Mixin for required keys."""
-    range_temp_fn: Callable[[Any], List[float]]
+
+    range_temp_fn: Callable[[Any], list[float]]
     set_temp_fn: Callable[[Any, float], Awaitable[None]]
     temp_fn: Callable[[Any], float | str]
 
@@ -78,7 +74,7 @@ class ThinQRefClimateEntityDescription(
     """A class that describes ThinQ climate entities."""
 
 
-REFRIGERATOR_CLIMATE: Tuple[ThinQRefClimateEntityDescription, ...] = (
+REFRIGERATOR_CLIMATE: tuple[ThinQRefClimateEntityDescription, ...] = (
     ThinQRefClimateEntityDescription(
         key=ATTR_FRIDGE,
         name="Fridge",
@@ -101,7 +97,7 @@ REFRIGERATOR_CLIMATE: Tuple[ThinQRefClimateEntityDescription, ...] = (
 def remove_prefix(text: str, prefix: str) -> str:
     """Remove a prefix from a string."""
     if text.startswith(prefix):
-        return text[len(prefix):]
+        return text[len(prefix) :]
     return text
 
 
@@ -121,15 +117,11 @@ async def async_setup_entry(
         if not lge_devices:
             return
 
-        lge_climates = []
-
         # AC devices
-        lge_climates.extend(
-            [
-                LGEACClimate(lge_device)
-                for lge_device in lge_devices.get(DeviceType.AC, [])
-            ]
-        )
+        lge_climates = [
+            LGEACClimate(lge_device)
+            for lge_device in lge_devices.get(DeviceType.AC, [])
+        ]
 
         # Refrigerator devices
         lge_climates.extend(
@@ -148,6 +140,14 @@ async def async_setup_entry(
         async_dispatcher_connect(hass, LGE_DISCOVERY_NEW, _async_discover_device)
     )
 
+    # register services
+    platform = current_platform.get()
+    platform.async_register_entity_service(
+        SERVICE_SET_SLEEP_TIME,
+        {vol.Required("sleep_time"): int},
+        "async_set_sleep_time",
+    )
+
 
 class LGEClimate(CoordinatorEntity, ClimateEntity):
     """Base climate device."""
@@ -163,22 +163,26 @@ class LGEClimate(CoordinatorEntity, ClimateEntity):
         """Return True if entity is available."""
         return self._api.available
 
+    async def async_set_sleep_time(self, sleep_time: int) -> None:
+        """Call the set sleep time command for AC devices."""
+        raise NotImplementedError()
+
 
 class LGEACClimate(LGEClimate):
     """Air-to-Air climate device."""
+
+    _attr_has_entity_name = True
+    _attr_name = None
 
     def __init__(self, api: LGEDevice) -> None:
         """Initialize the climate."""
         super().__init__(api)
         self._device: AirConditionerDevice = api.device
-        self._attr_name = api.name
         self._attr_unique_id = f"{api.unique_id}-AC"
         self._attr_fan_modes = self._device.fan_speeds
         self._attr_swing_modes = [
             f"{SWING_PREFIX[0]}{mode}" for mode in self._device.vertical_step_modes
-        ] + [
-            f"{SWING_PREFIX[1]}{mode}" for mode in self._device.horizontal_step_modes
-        ]
+        ] + [f"{SWING_PREFIX[1]}{mode}" for mode in self._device.horizontal_step_modes]
         self._attr_preset_mode = None
 
         self._hvac_mode_lookup: dict[str, HVACMode] | None = None
@@ -256,9 +260,9 @@ class LGEACClimate(LGEClimate):
     @property
     def temperature_unit(self) -> str:
         """Return the unit of measurement used by the platform."""
-        if self._device.temperature_unit == UNIT_TEMP_FAHRENHEIT:
-            return TEMP_FAHRENHEIT
-        return TEMP_CELSIUS
+        if self._device.temperature_unit == TemperatureUnit.FAHRENHEIT:
+            return UnitOfTemperature.FAHRENHEIT
+        return UnitOfTemperature.CELSIUS
 
     @property
     def hvac_mode(self) -> HVACMode:
@@ -334,14 +338,18 @@ class LGEACClimate(LGEClimate):
         """Return the current temperature."""
         curr_temp = None
         if self._device.is_air_to_water:
-            curr_temp = self._api.state.device_features.get(FEAT_OUT_WATER_TEMP)
+            curr_temp = self._api.state.device_features.get(
+                AirConditionerFeatures.WATER_OUT_TEMP
+            )
         if curr_temp is None:
-            curr_temp = self._api.state.current_temp
+            curr_temp = self._api.state.device_features.get(
+                AirConditionerFeatures.ROOM_TEMP
+            )
         return curr_temp
 
     @property
     def current_humidity(self) -> int | None:
-        return self._api.state.device_features.get(FEAT_HUMIDITY)
+        return self._api.state.device_features.get(AirConditionerFeatures.HUMIDITY)
 
     @property
     def target_temperature(self) -> float:
@@ -350,7 +358,7 @@ class LGEACClimate(LGEClimate):
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
-        if new_temp := kwargs.get(ATTR_TEMPERATURE):
+        if (new_temp := kwargs.get(ATTR_TEMPERATURE)) is not None:
             await self._device.set_target_temp(new_temp)
         if hvac_mode := kwargs.get(ATTR_HVAC_MODE):
             await self.async_set_hvac_mode(HVACMode(hvac_mode))
@@ -381,9 +389,7 @@ class LGEACClimate(LGEClimate):
         avl_mode = False
         curr_mode = None
         set_hor_swing = swing_mode.startswith(SWING_PREFIX[1])
-        dev_mode = remove_prefix(
-            swing_mode, SWING_PREFIX[1 if set_hor_swing else 0]
-        )
+        dev_mode = remove_prefix(swing_mode, SWING_PREFIX[1 if set_hor_swing else 0])
         if set_hor_swing:
             if dev_mode in self._device.horizontal_step_modes:
                 avl_mode = True
@@ -419,31 +425,39 @@ class LGEACClimate(LGEClimate):
         """Return the minimum temperature."""
         if (min_value := self._device.target_temperature_min) is not None:
             return min_value
-        return self._device.conv_temp_unit(DEFAULT_MIN_TEMP)
+        return self._device.conv_temp_unit(
+            AWHP_MIN_TEMP if self._device.is_air_to_water else DEFAULT_MIN_TEMP
+        )
 
     @property
     def max_temp(self) -> float:
         """Return the maximum temperature."""
         if (max_value := self._device.target_temperature_max) is not None:
             return max_value
-        return self._device.conv_temp_unit(DEFAULT_MAX_TEMP)
+        return self._device.conv_temp_unit(
+            AWHP_MAX_TEMP if self._device.is_air_to_water else DEFAULT_MAX_TEMP
+        )
+
+    async def async_set_sleep_time(self, sleep_time: int) -> None:
+        """Call the set sleep time command for AC devices."""
+        await self._device.set_reservation_sleep_time(sleep_time)
 
 
 class LGERefrigeratorClimate(LGEClimate):
     """Refrigerator climate device."""
 
-    entity_description = ThinQRefClimateEntityDescription
+    entity_description: ThinQRefClimateEntityDescription
+    _attr_has_entity_name = True
 
     def __init__(
-            self,
-            api: LGEDevice,
-            description: ThinQRefClimateEntityDescription,
+        self,
+        api: LGEDevice,
+        description: ThinQRefClimateEntityDescription,
     ) -> None:
         """Initialize the climate."""
         super().__init__(api)
         self._wrap_device = LGERefrigeratorDevice(api)
         self.entity_description = description
-        self._attr_name = get_entity_name(api, description.key, description.name)
         self._attr_unique_id = f"{api.unique_id}-{description.key}-AC"
         self._attr_hvac_modes = [HVACMode.AUTO]
         self._attr_hvac_mode = HVACMode.AUTO
@@ -465,8 +479,8 @@ class LGERefrigeratorClimate(LGEClimate):
         """Return the unit of measurement used by the platform."""
         if self._api.state:
             unit = self._api.state.temp_unit
-            return TEMP_UNIT_LOOKUP.get(unit, TEMP_CELSIUS)
-        return TEMP_CELSIUS
+            return TEMP_UNIT_LOOKUP.get(unit, UnitOfTemperature.CELSIUS)
+        return UnitOfTemperature.CELSIUS
 
     @property
     def current_temperature(self) -> float | None:
@@ -486,7 +500,7 @@ class LGERefrigeratorClimate(LGEClimate):
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
-        if new_temp := kwargs.get(ATTR_TEMPERATURE):
+        if (new_temp := kwargs.get(ATTR_TEMPERATURE)) is not None:
             await self.entity_description.set_temp_fn(self._wrap_device, new_temp)
             self._api.async_set_updated()
 
@@ -497,4 +511,5 @@ class LGERefrigeratorClimate(LGEClimate):
 
     @property
     def max_temp(self) -> float:
+        """Return the maximum temperature."""
         return self.entity_description.range_temp_fn(self._wrap_device)[1]

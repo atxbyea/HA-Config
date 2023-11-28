@@ -85,11 +85,12 @@
     device_id: 79beca0e8bc377f4e885a339a2ea0262
     entity_id: binary_sensor.alva_dorsensor_contact
     domain: binary_sensor
+    alias: Tuva dørsensor
   condition: []
   action:
   - service: notify.eirikz_telegram
     data:
-      message: alva dør åpnet
+      message: Tuva dør åpnet
   mode: single
 - id: '1661072919141'
   alias: Skru på varmepumpe soverom
@@ -119,4 +120,268 @@
       hvac_mode: 'off'
     target:
       entity_id: climate.varmepumpe_soverom
+  mode: single
+- id: '1681044638472'
+  alias: Alva Rullegardin Lukk
+  description: ''
+  trigger:
+  - platform: device
+    domain: mqtt
+    device_id: a46479bad9847cf1857d535ead89854c
+    type: action
+    subtype: open
+    discovery_id: 0x000d6ffffe9aaa1c action_open
+  condition: []
+  action:
+  - device_id: 289eff8181326c499792d479e4034f2e
+    domain: cover
+    entity_id: cover.alva_rullegardin
+    type: set_position
+    position: 100
+  mode: single
+- id: '1681044682453'
+  alias: Alva Rullegardin åpne
+  description: ''
+  trigger:
+  - platform: device
+    domain: mqtt
+    device_id: a46479bad9847cf1857d535ead89854c
+    type: action
+    subtype: close
+    discovery_id: 0x000d6ffffe9aaa1c action_close
+  condition: []
+  action:
+  - device_id: 289eff8181326c499792d479e4034f2e
+    domain: cover
+    entity_id: cover.alva_rullegardin
+    type: set_position
+    position: 0
+  mode: single
+- id: '1681045497866'
+  alias: 'Alva Nanoleaf '
+  description: ''
+  use_blueprint:
+    path: homeassistant/symfonisk_rotary.yaml
+    input:
+      integration: Zigbee2MQTT
+      controller_device: 3a238d67a23394484b34796d73361804
+      controller_entity: sensor.alva_taklysbryter_action
+      helper_last_controller_event: input_text.alvananoleafhelper
+      action_click_short:
+      - type: toggle
+        device_id: 3c02724733afb869bec746d4cd0987d3
+        entity_id: light.alva_nanoleaf
+        domain: light
+      - type: toggle
+        device_id: b2562aaca2ae4d749168251af2f4f914
+        entity_id: light.alva_skylampe
+        domain: light
+      action_click_double: []
+      action_rotate_left:
+      - device_id: 3c02724733afb869bec746d4cd0987d3
+        domain: light
+        entity_id: light.alva_nanoleaf
+        type: brightness_decrease
+      - device_id: b2562aaca2ae4d749168251af2f4f914
+        domain: light
+        entity_id: light.alva_skylampe
+        type: brightness_decrease
+      action_rotate_right:
+      - device_id: 3c02724733afb869bec746d4cd0987d3
+        domain: light
+        entity_id: light.alva_nanoleaf
+        type: brightness_increase
+      - device_id: b2562aaca2ae4d749168251af2f4f914
+        domain: light
+        entity_id: light.alva_skylampe
+        type: brightness_increase
+      rotate_left_loop: false
+      rotate_right_loop: false
+      rotate_left_max_loop_repeats: 500
+      rotate_right_max_loop_repeats: 503
+- id: '1682272444700'
+  alias: Speil av til lys av
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.badspeil
+    from: 'on'
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 4d2087ba6a894677ae5ba09d975a3369
+    entity_id: light.badlys
+    domain: light
+  mode: single
+- id: '1682272535529'
+  alias: Speil på lys på
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - light.badspeil
+    to: 'on'
+  condition:
+  - condition: time
+    after: 07:00:00
+    before: '20:00:00'
+  action:
+  - type: turn_on
+    device_id: 4d2087ba6a894677ae5ba09d975a3369
+    entity_id: light.badlys
+    domain: light
+  mode: single
+- id: '1684620338876'
+  alias: Ezalarm
+  description: ''
+  trigger:
+  - platform: device
+    device_id: 992fcfa3601f8f2ae440181c53e43f9d
+    domain: device_tracker
+    entity_id: device_tracker.pain
+    type: leaves
+    zone: zone.home
+  condition:
+  - condition: device
+    device_id: 6cff2891e0ddeaa92d57ead8a26b7f40
+    domain: alarm_control_panel
+    entity_id: alarm_control_panel.sector_alarmpanel_01274618
+    type: is_disarmed
+  action:
+  - service: notify.eirikz_telegram
+    data:
+      message: Husket du å slå på alarmen?
+  mode: single
+- id: '1690618663862'
+  alias: Toill
+  description: ''
+  trigger: []
+  condition: []
+  action:
+  - service: media_player.play_media
+    target:
+      entity_id: media_player.kjokken_2
+    data:
+      media_content_id: media-source://tts/google_translate?message=Alva+og+Tuva%2C+slutt+%C3%A5+hoppe+p%C3%A5+puta&language=en
+      media_content_type: provider
+    metadata:
+      title: Alva og Tuva, slutt å hoppe på puta
+      thumbnail: https://brands.home-assistant.io/_/google_translate/logo.png
+      media_class: app
+      children_media_class:
+      navigateIds:
+      - {}
+      - media_content_type: app
+        media_content_id: media-source://tts
+      - media_content_type: provider
+        media_content_id: media-source://tts/google_translate?message=Alva+og+Tuva%2C+slutt+%C3%A5+hoppe+p%C3%A5+puta&language=en
+  mode: single
+- id: '1691430795226'
+  alias: Alva dør åpnet
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: def3fd0a5a5be5c1f59e1788ac449c79
+    entity_id: 83855d3dae390dd2c55e875aed41e05e
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: notify.eirikz_telegram
+    data:
+      message: Alva dør åpnet
+  mode: single
+- id: '1691585243392'
+  alias: garasjelys
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: fa51697b65324644bb737e3780bcb3e3
+    entity_id: 98b805d5f7fd112addb7fea75f212057
+    domain: binary_sensor
+  condition: []
+  action:
+  - type: turn_on
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: d1c51422c56d8f421b4211a276a3eb92
+    domain: light
+  - type: turn_on
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: 82267547e065e76e46aa80a19063fa51
+    domain: light
+  mode: single
+- id: '1691585272261'
+  alias: garasjelys2
+  description: ''
+  trigger:
+  - type: not_opened
+    platform: device
+    device_id: fa51697b65324644bb737e3780bcb3e3
+    entity_id: 98b805d5f7fd112addb7fea75f212057
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: d1c51422c56d8f421b4211a276a3eb92
+    domain: light
+  - type: turn_off
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: 82267547e065e76e46aa80a19063fa51
+    domain: light
+  mode: single
+- id: '1691827824172'
+  alias: 'W medisin Automasjon '
+  description: ''
+  use_blueprint:
+    path: Aohzan/medication_reminder_android.yaml
+    input:
+      reminder_time: '10:30:00'
+      notify_device: 0a7cb4cab8ad2d8ee28383b288ac088a
+      input_boolean: input_boolean.w_medisin
+      ask_later_wait_time: 10
+- id: '1692358393754'
+  alias: webhookkjeller
+  description: ''
+  trigger:
+  - platform: webhook
+    allowed_methods:
+    - POST
+    - PUT
+    local_only: false
+    webhook_id: holdyourhorsesthereponyboy
+  condition: []
+  action:
+  - type: toggle
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: d1c51422c56d8f421b4211a276a3eb92
+    domain: light
+  - type: toggle
+    device_id: e27f31af9b9b1d5d843689cea8b74c23
+    entity_id: 82267547e065e76e46aa80a19063fa51
+    domain: light
+  mode: single
+- id: '1693164089317'
+  alias: 'Alva tv notification '
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: def3fd0a5a5be5c1f59e1788ac449c79
+    entity_id: 83855d3dae390dd2c55e875aed41e05e
+    domain: binary_sensor
+  condition:
+  - condition: time
+    after: '19:00:00'
+    before: '23:00:00'
+  action:
+  - service: notify.lg_webos_tv_oled77b26la
+    data:
+      message: Alva har åpnet døren
   mode: single

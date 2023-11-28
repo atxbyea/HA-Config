@@ -11,3 +11,14 @@
     latitude: 59.912457
     longitude: 10.748624
     radius: 2000
+
+  - name: Årnes
+    latitude: 60.122034 
+    longitude: 11.465391
+    radius: 500
+  
+  - name: Skøyen
+    latitude: 60.050819 
+    longitude: 10.701537
+    radius: 500
+

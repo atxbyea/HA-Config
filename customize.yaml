@@ -31,3 +31,18 @@ binary_sensor.boddor_contact:
 
 sensor.accumulated_consumption_damlivegen_4:
   state_class: total_increasing
+
+sensor.rackriemann:
+  state_class: total_increasing
+  unit_of_measurement: Wh
+
+sensor.strum:
+  device_class: energy
+  unit_of_measurement: kWh
+  state_class: total
+
+
+sensor.sensor_powerelwiz_integral:
+  state_class: total_increasing
+  device_class: energy
+

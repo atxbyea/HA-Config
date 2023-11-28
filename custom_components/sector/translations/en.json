@@ -1,0 +1,39 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Account is already configured"
+        },
+        "error": {
+            "auth_error": "Username and/or password is incorrect",
+            "connection_error": "Failed to connect"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "username": "E-mail address",
+                    "password": "Password",
+                    "code": "Code to arm/disarm alarm or open/close doorlock",
+                    "code_format": "Code length for alarm and locks",
+                    "temp": "Enable Temp sensors"
+                }
+            },
+            "reauth_confirm": {
+                "data": {
+                    "username": "E-mail address",
+                    "password": "Password"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "timesync": "Update frequency. Don't set too low!",
+                    "code": "Code to arm/disarm alarm or open/close doorlock",
+                    "code_format": "Code length for alarm and locks"
+                }
+            }
+        }
+    }
+}

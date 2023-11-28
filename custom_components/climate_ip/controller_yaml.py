@@ -1,5 +1,8 @@
 import logging
 import os
+import time
+from datetime import datetime
+import json
 
 import homeassistant.helpers.config_validation as cv
 import homeassistant.helpers.entity_component
@@ -92,7 +95,7 @@ class YamlController(ClimateController):
         self._retries_count = 0
         self._last_device_state = None
         self._poll = None
-        self._unique_id = None
+        self._unique_id = self._device_id
         self._uniqe_id_prop = None
 
     @property
@@ -190,6 +193,8 @@ class YamlController(ClimateController):
             ops = {}
             device_state = self._state_getter.value
             for op in self._operations.values():
+                self._logger.info("Removing invalid operation '{}'".format(op.id))
+                
                 if op.is_valid(device_state):
                     ops[op.id] = op
                 else:
@@ -199,6 +204,19 @@ class YamlController(ClimateController):
 
         self._operations_list = [v for v in self._operations.keys()]
         self._properties_list = [v for v in self._properties.keys()]
+        self._properties_list.append("last_sync")
+        self._properties_list.append("AC_FUN_ENABLE")
+        self._properties_list.append("AC_FUN_COMODE")
+        self._properties_list.append("AC_FUN_ERROR")
+        self._properties_list.append("AC_SG_WIFI")
+        self._properties_list.append("AC_SG_INTERNET")
+        self._properties_list.append("AC_ADD2_USEDWATT")
+        self._properties_list.append("AC_ADD2_VERSION")
+        self._properties_list.append("AC_ADD2_PANEL_VERSION")
+        self._properties_list.append("AC_ADD2_OUT_VERSION")
+        self._properties_list.append("AC_ADD2_OPTIONCODE")
+        self._properties_list.append("AC_ADD2_USEDTIME")
+        self._properties_list.append("AC_ADD2_FILTER_USE_TIME")
 
         return (len(self._operations) + len(self._properties)) > 0
 
@@ -220,10 +238,11 @@ class YamlController(ClimateController):
         self._logger.info("Updating state...")
         if self._state_getter is not None:
             self._attributes = {ATTR_NAME: self.name}
-            self._logger.info("Updating getter...")
+            self._logger.info("Updating getter...")            
             self._state_getter.update_state(self._state_getter.value, debug)
             device_state = self._state_getter.value
             self._logger.info("Getter updated with value: {}".format(device_state))
+            
             if device_state is None and self._retries_count > 0:
                 --self._retries_count
                 device_state = self._last_device_state
@@ -233,8 +252,35 @@ class YamlController(ClimateController):
             else:
                 self._retries_count = CONST_MAX_GET_STATUS_RETRIES
                 self._last_device_state = device_state
-            if debug:
-                self._attributes.update(self._state_getter.state_attributes)
+            
+            #[lucadjc]: preferred to have always the attributed evaluated, removed condition on debug
+            #if debug:
+            self._attributes.update(self._state_getter.state_attributes)
+            
+            #[lucadjc]: added last sync date to send some alerts from hassio in case of connection error
+            self._attributes['last_sync'] = ''
+
+            toJSON = json.dumps(self._state_getter.state_attributes['device_state'])
+            try:
+                json_data = json.loads(json.loads(toJSON))
+                self._attributes['AC_FUN_ENABLE'] = json_data['AC_FUN_ENABLE']
+                self._attributes['AC_FUN_COMODE'] = json_data['AC_FUN_ENABLE']
+                self._attributes['AC_FUN_ERROR'] = json_data['AC_FUN_ERROR']
+                self._attributes['AC_SG_WIFI'] = json_data['AC_SG_WIFI']
+                self._attributes['AC_SG_INTERNET'] = json_data['AC_SG_INTERNET']
+                self._attributes['AC_ADD2_USEDWATT'] = json_data['AC_ADD2_USEDWATT']
+                self._attributes['AC_ADD2_VERSION'] = json_data['AC_ADD2_VERSION']
+                self._attributes['AC_ADD2_PANEL_VERSION'] = json_data['AC_ADD2_PANEL_VERSION']
+                self._attributes['AC_ADD2_OUT_VERSION'] = json_data['AC_ADD2_OUT_VERSION']
+                self._attributes['AC_ADD2_OPTIONCODE'] = json_data['AC_ADD2_OPTIONCODE']
+                self._attributes['AC_ADD2_USEDTIME'] = json_data['AC_ADD2_USEDTIME']
+                self._attributes['AC_ADD2_FILTER_USE_TIME'] = json_data['AC_ADD2_FILTER_USE_TIME']
+                
+                if(len(json_data['AC_ADD2_OUT_VERSION']) != 0):
+                    self._attributes['last_sync'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            except:
+                self._logger.info("Error: update_state")
+                
             self._logger.info("Updating operations...")
             for op in self._operations.values():
                 op.update_state(device_state, debug)
@@ -243,21 +289,23 @@ class YamlController(ClimateController):
             for prop in self._properties.values():
                 prop.update_state(device_state, debug)
                 self._attributes.update(prop.state_attributes)
+                for p in prop.state_attributes:
+                    self._logger.info(p)
             if self._unique_id is None and self._uniqe_id_prop is not None:
                 self._unique_id = self._uniqe_id_prop.update_state(device_state, debug)
 
     def set_property(self, property_name, new_value):
-        print("SETTING UP property {} to {}".format(property_name, new_value))
+        self._logger.info("SETTING UP property {} to {}".format(property_name, new_value))
         op = self._operations.get(property_name, None)
         if op is not None:
             result = op.set_value(new_value)
-            print(
+            self._logger.info(
                 "SETTING UP property {} to {} -> FINISHED with result {}".format(
                     property_name, new_value, result
                 )
             )
             return result
-        print(
+        self._logger.info(
             "SETTING UP property {} to {} -> FAILED - wrong property".format(
                 property_name, new_value
             )

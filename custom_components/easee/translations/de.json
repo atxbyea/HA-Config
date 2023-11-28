@@ -1,0 +1,295 @@
+{
+  "config": {
+    "abort": {
+      "already_setup": "Sie können nur eine einzige Easee-Verbindung konfigurieren.",
+      "reauth_successful": "Erneute Anmeldung erfolgreich."
+    },
+    "error": {
+      "auth_failure": "Verbindung zu Easee nicht möglich. Prüfen Sie Username und Passwort.",
+      "connection_failure": "Verbindung zu Easee nicht möglich. Versuchen Sie es später erneut.",
+      "no_sites": "Keine Standorte ausgewählt.",
+      "no_sites_in_account": "No sites found in this account.",
+      "refused_failure": "Verbindung zu Easee abgelehnt. Versuchen Sie es später erneut."
+    },
+    "step": {
+      "reauth_confirm": {
+        "data": {
+          "password": "Passwort"
+        },
+        "description": "Die Easee Integration muss sich erneut mit dem Account {username} anmelden.",
+        "title": "Erneut bei Easee anmelden"
+      },
+      "sites": {
+        "data": {
+          "monitored_sites": "Standorte"
+        },
+        "description": "Wählen Sie zu überwachende Standorte aus",
+        "title": "Easee EV Charger"
+      },
+      "user": {
+        "data": {
+          "password": "Passwort",
+          "username": "Username"
+        },
+        "description": "Bitte geben Sie Username und Passwort für Ihren Easee-Account an",
+        "title": "Mit Easee verbinden"
+      }
+    }
+  },
+  "device_automation": {
+    "action_type": {
+      "override_schedule": "Zeitplan überschreiben",
+      "pause": "Ladevorgang pausieren",
+      "reboot": "Charger neu starten",
+      "resume": "Ladevorgang fortsetzen",
+      "start": "Ladevorgang starten",
+      "stop": "Ladevorgang stoppen"
+    },
+    "condition_type": {
+      "searching_for_master": "{entity_name} ist Nach Master suchen",
+      "start_charging": "{entity_name} ist Ladevorgang starten",
+      "stop_charging": "{entity_name} ist Ladevorgang stoppen"
+    },
+    "trigger_type": {
+      "authenticating": "{entity_name} Authentifiziert",
+      "awaiting_authentication": "{entity_name} Wartet auf Authentifizierung",
+      "awaiting_authorization": "{entity_name} Wartet auf Autorisierung",
+      "awaiting_load_balancing": "{entity_name} Wartet auf Lastausgleich",
+      "awaiting_scheduled_start": "{entity_name} Wartet auf geplanten Start",
+      "awaiting_smart_start": "{entity_name} Wartet auf smarten Start",
+      "awaiting_start": "{entity_name} Wartet auf Start",
+      "charging": "{entity_name} Lädt",
+      "completed": "{entity_name} Abgeschlossen",
+      "de_authorizing": "{entity_name} Beendet Autorisierung",
+      "disconnected": "{entity_name} Kein Fahrzeug verbunden",
+      "erratic_ev": "{entity_name} Fehlerhaftes Fahrzeug",
+      "error": "{entity_name} Fehler",
+      "error_dead_powerboard": "{entity_name} Fehler defektes Powerboard",
+      "error_overcurrent": "{entity_name} Fehler Überspannung",
+      "error_pen_fault": "Fehler PEN-Versagen",
+      "error_temperature_too_high": "{entity_name} Fehler Temperatur zu hoch",
+      "offline": "{entity_name} Offline",
+      "paused_due_to_equalizer": "{entity_name} Wegen Equalizer pausiert",
+      "ready_to_charge": "{entity_name} Bereit zum Laden",
+      "searching_for_master": "{entity_name} Suche Master",
+      "start_charging": "{entity_name} Ladevorgang starten",
+      "stop_charging": "{entity_name} Ladevorgang stoppen"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "basic_schedule": {
+        "name": "Zeitplan"
+      },
+      "cable_locked": {
+        "name": "Kabel verriegelt"
+      },
+      "online": {
+        "name": "Online"
+      },
+      "update_available": {
+        "name": "Aktualisierung verfügbar"
+      },
+      "weekly_schedule": {
+        "name": "Wöchentlicher Zeitplan"
+      }
+    },
+    "sensor": {
+      "circuit_current": {
+        "name": "Strom Schaltkreis"
+      },
+      "cost_day": {
+        "name": "Kosten Tag"
+      },
+      "cost_month": {
+        "name": "Kosten Monat"
+      },
+      "cost_per_kwh": {
+        "name": "Kosten pro kWh"
+      },
+      "cost_year": {
+        "name": "Kosten Jahr"
+      },
+      "current": {
+        "name": "Strom"
+      },
+      "dynamic_charger_limit": {
+        "name": "Dynamisches Ladelimit"
+      },
+      "dynamic_circuit_limit": {
+        "name": "Dynamisches Stromkreislimit"
+      },
+      "easee_reason_no_current": {
+        "name": "Grund für keinen Strom",
+        "state": {
+          "car_not_charging": "Fahrzeug lädt nicht",
+          "charger_disabled": "Charger deaktiviert",
+          "charger_in_error_state": "Charger in Fehlerzustand",
+          "circuit_fuse_too_low": "Absicherung zu niedrig",
+          "eq_too_low_current": "Equalizerstrom zu niedrig",
+          "ev_behaving_erratic": "Fahrzeug verhält sich fehlerhaft",
+          "illegal_grid_type": "Ungültiger Stromnetztyp",
+          "limited_by_cable_rating": "Durch Kabeleinstufung limitiert",
+          "limited_by_car": "Durch Fahrzeug limitiert",
+          "limited_by_charger_dynamic_limit": "Durch Charger dynamisch limitiert",
+          "limited_by_charger_max_limit": "Durch Chargermaximum limitiert",
+          "limited_by_circuit_dynamic_limit": "Durch Schaltkreis dynamisch limitiert",
+          "limited_by_circuit_fuse": "Durch Schaltkreissicherung limitiert",
+          "limited_by_circuit_max_limit": "Durch Schaltkreismaximum limitiert",
+          "limited_by_equalizer": "Durch Equalizer limitiert",
+          "limited_by_load_balancing": "Durch Lastverteilung limitiert",
+          "limited_by_local_adjustment": "Durch lokale Einstellung limitiert",
+          "limited_by_offline_setting": "Durch Offline-Einstellung limitiert",
+          "limited_by_schedule": "Durch Zeitplan limitiert",
+          "max_charger_current_too_low": "Maximaler Ladestrom zu niedrig",
+          "max_circuit_current_too_low": "Maximaler Schaltkreisstrom zu niedrig",
+          "max_dynamic_charger_current_too_low": "Maximaler dynamischer Ladestrom zu niedrig",
+          "max_dynamic_circuit_current_too_low": "Maximaler dynamischer Schaltkreisstrom zu niedrig",
+          "max_dynamic_offline_fallback_circuit_current_too_low": "Maximaler dynamischer Offline-Schaltkreisstrom zu niedrig",
+          "no_current_request": "Kein Strom angefordert",
+          "none": "Keiner",
+          "not_connected_to_master": "Nicht mit dem Master verbunden",
+          "not_requesting_current": "Kein Strom angefordert",
+          "ok": "OK",
+          "pending_authorization": "Wartet auf Autorisierung",
+          "pending_schedule": "Wartet auf Zeitplan",
+          "phase_not_connected": "Phase nicht verbunden",
+          "undefined": "Unbestimmt",
+          "waiting_in_fully": "Wartet",
+          "waiting_in_queue": "In Warteschlange"
+        }
+      },
+      "easee_status": {
+        "name": "Status",
+        "state": {
+          "authenticating": "Authentifiziert",
+          "awaiting_authentication": "Wartet auf Authentifizierung",
+          "awaiting_authorization": "Wartet auf Autorisierung",
+          "awaiting_load_balancing": "Wartet auf Lastausgleich",
+          "awaiting_scheduled_start": "Wartet auf zeitgesteuerten Start",
+          "awaiting_smart_start": "Wartet auf smarten Start",
+          "awaiting_start": "Wartet auf Start",
+          "charging": "Lädt",
+          "completed": "Abgeschlossen",
+          "de_authorizing": "Beendet Autorisierung",
+          "disconnected": "Kein Fahrzeug verbunden",
+          "erratic_ev": "Fahrzeug fehlerhaft",
+          "error": "Fehler",
+          "error_dead_powerboard": "Defektes Powerboard",
+          "error_overcurrent": "Überspannung",
+          "error_pen_fault": "PEN Fehler",
+          "error_temperature_too_high": "Temperatur zu hoch",
+          "offline": "Offline",
+          "paused_due_to_equalizer": "Wegen Equalizer pausiert",
+          "ready_to_charge": "Bereit zum Laden",
+          "searching_for_master": "Sucht Master",
+          "start_charging": "Startet Ladung",
+          "stop_charging": "Stoppt Ladung"
+        }
+      },
+      "energy_per_hour": {
+        "name": "Energie pro Stunde"
+      },
+      "equalizer_limit": {
+        "name": "Equalizerlimit"
+      },
+      "export_energy": {
+        "name": "Exportierte Energie"
+      },
+      "export_power": {
+        "name": "Exportierte Leistung"
+      },
+      "export_reactive_energy": {
+        "name": "Exportierte reaktive Energie"
+      },
+      "export_reactive_power": {
+        "name": "Exportierte reaktive Leistung"
+      },
+      "import_energy": {
+        "name": "Importierte Energie"
+      },
+      "import_power": {
+        "name": "Importierte Leistung"
+      },
+      "import_reactive_energy": {
+        "name": "Importierte reaktive Energie"
+      },
+      "import_reactive_power": {
+        "name": "Importierte reaktive Leistung"
+      },
+      "internal_temperature": {
+        "name": "Interne Temperatur"
+      },
+      "lifetime_energy": {
+        "name": "Gesamtenergie"
+      },
+      "max_charger_limit": {
+        "name": "Max Chargerlimit"
+      },
+      "max_circuit_limit": {
+        "name": "Max Schaltkreislimit"
+      },
+      "offline_circuit_limit": {
+        "name": "Offline Schaltkreislimit"
+      },
+      "output_limit": {
+        "name": "Ausgabelimit"
+      },
+      "power": {
+        "name": "Leistung"
+      },
+      "session_energy": {
+        "name": "Sitzungsenergie"
+      },
+      "voltage": {
+        "name": "Spannung"
+      }
+    },
+    "switch": {
+      "cable_locked_permanently": {
+        "name": "Kabel dauerhaft verriegelt"
+      },
+      "idle_current": {
+        "name": "Ruhestrom"
+      },
+      "is_enabled": {
+        "name": "Charger aktiviert"
+      },
+      "smart_charging": {
+        "name": "Smart Charging"
+      }
+    }
+  },
+  "issues": {
+    "deprecated_service": {
+      "description": "Der verwendete Dienst **{deprecation}** ist veraltet und wird in Zukunft entfernt werden.\n\nBitte passen Sie Ihre Automatisierungen und Skripte zur Verwendung von **{recommend}** so bald wie möglich an.",
+      "title": "Verwendung eines veralteten Dienstes: {deprecation}"
+    }
+  },
+  "options": {
+    "error": {
+      "no_sites": "Keine Standorte ausgewählt"
+    },
+    "step": {
+      "init": {
+        "data": {
+          "custom_units": "Einheiten",
+          "measured_consumption_days": "Verbrauchsanzeige Tage",
+          "monitored_conditions": "Charger Sensoren",
+          "monitored_eq_conditions": "Equalizer Sensoren",
+          "monitored_sites": "Standorte"
+        },
+        "description": "Optionen wählen",
+        "title": "Easee EV Charger"
+      }
+    }
+  },
+  "system_health": {
+    "info": {
+      "component_version": "Version",
+      "connected2stream": "Mit Signalr verbunden",
+      "reach_easee_cloud": "Easee Cloud erreichbar"
+    }
+  },
+  "title": "Easee EV Charger"
+}

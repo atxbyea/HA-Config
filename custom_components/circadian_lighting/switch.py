@@ -14,7 +14,6 @@ from homeassistant.components.light import (
     ATTR_COLOR_TEMP,
     ATTR_RGB_COLOR,
     ATTR_TRANSITION,
-    ATTR_WHITE_VALUE,
     ATTR_XY_COLOR,
 )
 from homeassistant.components.light import DOMAIN as LIGHT_DOMAIN
@@ -364,16 +363,16 @@ class CircadianSwitch(SwitchEntity, RestoreEntity):
                 service_data[ATTR_RGB_COLOR] = (int(r), int(g), int(b))
             elif light_type == "xy":
                 service_data[ATTR_XY_COLOR] = self._calc_xy()
-                if service_data.get(ATTR_BRIGHTNESS, False):
-                    service_data[ATTR_WHITE_VALUE] = service_data[ATTR_BRIGHTNESS]
 
             _LOGGER.debug(
                 "Scheduling 'light.turn_on' with the following 'service_data': %s",
                 service_data,
             )
             tasks.append(
-                self.hass.services.async_call(
-                    LIGHT_DOMAIN, SERVICE_TURN_ON, service_data
+                self.hass.async_create_task(
+                    self.hass.services.async_call(
+                        LIGHT_DOMAIN, SERVICE_TURN_ON, service_data
+                    )
                 )
             )
         if tasks:

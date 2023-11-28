@@ -9,11 +9,14 @@ homeassistant:
   allowlist_external_dirs:
     - /tmp
   packages: !include_dir_named packages
+#  auth_providers:
+#    - type: trusted_networks
+#      trusted_networks:
+#        - 192.168.1.60/32
 
 ##Define External\Internal URI##
   external_url: !secret baseurl
   internal_url: !secret baseurl
-
 
 ##Eirikz added MFA###
   auth_mfa_modules:
@@ -21,41 +24,121 @@ homeassistant:
 
   customize: !include customize.yaml
 
+### Enable system health ###
 system_health:
 
+### Enable mobile app (yuck) ###
+mobile_app:
 
+### Enable energy dashboards ###
 energy:
 
-#6## Enable blueprints ###
+### Enable blueprints ###
 blueprint:
 
-# Enables the frontend
-frontend:
-  themes: !include themes.yaml
+### Enable bluetooth ###
+bluetooth:
 
-# Enables configuration UI
+### Enables the frontend ###
+frontend:
+
+### Enables configuration UI ###
 config:
 
-# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+### Enables zeroconf ###
+zeroconf:
+
+### Enable weather ###
+weather:
+
+### Enable python scripts ###
+python_script:
+
+### Enable conversation ###
+conversation:
+
+### Enable history ###
+history:
+
+### Enable logbook ###
+logbook:
+
+### Enable the map ###
+map:
+
+### Enable sun integration ###
+sun:
+
+### WoL ###
+wake_on_lan:
+
+### Persons ###
+person:
+
+### Webhooks ###
+webhook:
+
+### SmartIR ###
+smartir:
+
+
+### MariaDB instead of SQLite (yuck) ###
+recorder:
+  db_url: !secret mariadb
+
+
+### Enable influxdb for longterm storage of data ###
+
+#influxdb:
+#  api_version: 2
+#  ssl: false
+#  host: mirai.eirikzlab.local
+#  port: 8086
+#  token: !secret influxtoken
+#  organization: !secret influxorg
+#  bucket: eirikz
+
+
+
+### Enable utility meter ###
+utility_meter:
+
+### Enable powercalc ###
+powercalc:
+
+
+### Includes ###
+
+group: !include groups.yaml
+automation: !include automations.yaml
+automation mine: !include_dir_merge_list automation/
+script: !include scripts.yaml
+sensor: !include sensors.yaml
+homekit: !include homekit.yaml
+zone: !include zones.yaml 
+scene: !include scenes.yaml
+template: !include template.yaml
+
+
+
+### Configure http server ###
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 192.168.1.11 
+    - 172.19.0.0/16
+    - 172.18.0.0/16
+    - 172.20.0.0/16
 
-python_script:
 
-conversation:
+### Enable logger ###
 
-history:
+logger:
+  default: warn
+  logs:
+   homeassistant.components.google_assistant.http: critical
 
-logbook:
-
-map:
-
-sun:
 
 ### Input booleans ###
-
 input_boolean: 
   dummy_fremme:
     name: "Dummy Fremme Input Boolean"
@@ -67,9 +150,21 @@ input_boolean:
     icon: mdi:sticker-emoji
     initial: on
 
+  torketrommel:
+
+  vaskemaskin:
+
+
+### Input datetime ### 
+input_datetime:
+  torketrommel_start:
+    has_date: true
+    has_time: true
+  vaskemaskin_start:
+    has_date: true
+    has_time: true    
 
 ### Input Text ###
-
 input_text:
   symfonisk_eirik_kontor:
     name: bahhumbug
@@ -80,9 +175,7 @@ input_text:
     initial: text
 
 
-
 ### Input Selects ####
-
 input_select:
    loftlys:
      name: Loftlys
@@ -121,11 +214,24 @@ input_select:
        - w_kontor_5
      initial: w_kontor_1
 
-### Weather ###
+   vaskemaskin_status:
+     name: Vaskemaskin Status
+     options:
+      - "Av"
+      - "Vasker"
+     initial: "Av"
+     icon: mdi:washing-machine
+    
+   torketrommel_status:
+     name: Tørketrommel Status
+     options:
+      - "Av"
+      - "Tørker"
+     initial: "Av"
+     icon: mdi:washing-machine
 
-weather:
 
-### TTS ###
+### Enable TTS ###
 
 tts:
   - platform: google_translate
@@ -133,20 +239,6 @@ tts:
     cache: true
     cache_dir: /tmp/tts
     language: 'no'
-
-### Includes
-
-group: !include groups.yaml
-automation: !include automations.yaml
-automation mine: !include_dir_merge_list automation/
-script: !include scripts.yaml
-sensor: !include sensors.yaml
-
-
-logger:
-  default: warn
-  logs:
-   homeassistant.components.google_assistant.http: critical
 
  
 ### Telldus Live ###
@@ -159,7 +251,6 @@ mqtt:
   light:
 
 ### Zigbee2mqtt groups ###
-
 
     - schema: json
       name: KjellerGruppe
@@ -197,6 +288,46 @@ mqtt:
       brightness: true
       rgb: false
 
+
+  sensor:
+    - name: "PowerElwiz"
+      state_topic: "elwiz/sensor/data/state"
+      unit_of_measurement: "kW"
+      value_template: "{{ value_json.power }}"
+
+    - name: leaf_battery_level
+      state_topic: "leaf/battery/percentage"
+      device_class: battery
+
+    - name: leaf_cabintemp
+      state_topic: "leaf/climate/cabinTemperatureC"
+      device_class: temperature
+    
+    - name: leaf_climaterunning
+      state_topic: "leaf/climate/runningStatus"
+
+    - name: leaf_position_lat
+      state_topic: "leaf/location/latitude"
+
+    - name: leaf_position_lon
+      state_topic: "leaf/location/longitude"
+
+
+  button:
+    - unique_id: climate_start_leaf
+      name: "Leaf start varme"
+      command_topic: "leaf/SJNFAAZE1U0111923/command/climate"
+      payload_press: "start"
+
+    - unique_id: climate_stop_leaf
+      name: "Leaf stopp varme"
+      command_topic: "leaf/SJNFAAZE1U0111923/command/climate"
+      payload_press: "stop"
+
+    - unique_id: climate_get_leaf       
+      name: "Leaf hent varme"
+      command_topic: "leaf/SJNFAAZE1U0111923/command/climate"
+      payload_press: "update"
 
 
 ### Light Switches ###
@@ -272,6 +403,18 @@ light:
     entities:
       - light.garasjelys1
 
+
+
+  - platform: group
+    name: kjokkengrp
+    entities:
+      - light.kjokken_benkelys
+      - light.kjokken_hengelampe
+      - light.kjokken_taklampe
+      - light.kjokken_ventilator
+      - light.kjokken_vinduslampe
+      - light.kjokkenbenk_under
+
 ### Yeelight ###
 
 yeelight:
@@ -312,10 +455,6 @@ switch:
           {% endif %}
 
 
-zone: !include zones.yaml 
-
-scene: !include scenes.yaml
-
 
 media_player:
 
@@ -333,9 +472,7 @@ media_player:
     controller_data: remote.broadlink_loft_remote
 
 
-### WoL ###
 
-wake_on_lan:
 
 
 ### YAML mode for Lovelace ###
@@ -377,6 +514,21 @@ lovelace:
       url: /hacsfiles/lovelace-valetudo-map-card/valetudo-map-card.js
     - url: https://cdn.jsdelivr.net/gh/bramkragten/weather-card/dist/weather-card.min.js
       type: module
+    - url: /hacsfiles/frigate-hass-card/frigate-hass-card.js
+      type: module
+    - url: /hacsfiles/atomic-calendar-revive/atomic-calendar-revive.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /hacsfiles/clock-weather-card/clock-weather-card.js
+      type: module
+    - url: /hacsfiles/vertical-stack-in-card/vertical-stack-in-card.js
+      type: module
+    - url: /hacsfiles/bignumber-card/bignumber-card.js
+      type: module
+    - url: /hacsfiles/bignumber-card/bignumber-card.js
+      type: module
+
 
 ### Binary sensors ###
 
@@ -393,6 +545,8 @@ binary_sensor:
           {{ is_state('binary_sensor.kjeller_trappedor_contact', 'on') or
              is_state('binary_sensor.kjeller_garasjedor_contact', 'on') }}
 
+### Template for if any of the garage doors are open \ triggering lights ###
+
   - platform: template
     sensors:
       garasje_apen:
@@ -402,6 +556,7 @@ binary_sensor:
           {{ is_state('binary_sensor.kjeller_garasjedor_contact', 'on') or
              is_state('binary_sensor.garasjeport_sensor', 'on') }}
 
+### Template to see if there is any activity around the attic sensors ###
   - platform: template
     sensors:
       loft_aktivitet:
@@ -410,15 +565,6 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.loft_bevegelse_occupancy', 'on') or
              is_state('binary_sensor.loft_trappesensor_occupancy', 'on') }}
-
-  - platform: template
-    sensors:
-      e_og_w_lys:
-        friendly_name: "Kontorlys oppe"
-        device_class: motion
-        value_template: >-
-          {{ is_state('light.eirik_kontor_lys', 'on') or
-             is_state('light.w_kontor_lys_gruppe', 'on') }}
 
 
 ### Notify ###
@@ -439,14 +585,8 @@ notify:
       - service: w_telegram 
 
 
-### MariaDB instead of SQLite ###
 
-recorder:
-  db_url: !secret mariadb
 
-### Persons ###
-
-person:
 
 ### Telegram Bot ###
 
@@ -477,21 +617,7 @@ climate:
     humidity_sensor: sensor.soverom_temperatur_humidity
 
 
-### Webhooks ###
-
-webhook:
-
-### SmartIR ###
-
-smartir:
-
-
-### Microsoft Graph ###
-microsoft_graph:
-  client_id: !secret mgclientid 
-  client_secret: !secret mgclientsecret 
-
-
+### Adaptive lighting config ### 
 adaptive_lighting:
 - name: "primaergruppe"
   lights:
@@ -621,14 +747,62 @@ adaptive_lighting:
   sleep_color_temp: 1000
   take_over_control: true
 
-utility_meter:
+- name: "kjokken"
+  lights:
+   - light.kjokkengrp
+  prefer_rgb_color: false
+  transition: 45
+  initial_transition: 1
+  interval: 90
+  min_brightness: 1
+  max_brightness: 50
+  min_color_temp: 2000
+  max_color_temp: 5500
+  sleep_brightness: 1
+  sleep_color_temp: 1000
+  take_over_control: true
 
-### Volvo XC90 ###
 
-volvooncall:
-  username: !secret volvouser
-  password: !secret volvopass
-  mutable: true
+### Pull home calendar into HA ###
+
+calendar:
+  - platform: caldav
+    username: !secret caldavuser
+    password: !secret caldavpass
+    url: !secret caldavurl
+
+### Importing Wrok Calendar ###
+
+ics_calendar:
+  calendars:
+    - name: "EzCal"
+      url: !secret ezhpecal
+
+### Home connect alternative integration ###
+
+home_connect_alt:
+  client_id: !secret homeconnectaltclientid
+  client_secret: !secret homeconnectaltclientsecret
+
+### Manual Google Assitant integration becuase I have intention of using Nabu Casa ###
+
+google_assistant:
+  project_id: home-assistant-6f0bd
+  service_account: !include SERVICE_ACCOUNT.json
+  report_state: true
+  expose_by_default: false
+  exposed_domains:
+    - switch
+    - light
+  entity_config:
+    light.kjokkengrp:
+      room: KJØKKEN
+      aliases: kjøkkenlys
+      name: kjøkkenlys
+
+    light.utegruppe:
+      room: UTE
+      aliases: Utelys
+      name: Utelys
 
 
-powercalc:

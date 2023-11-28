@@ -1,17 +1,10 @@
-  - platform: qbittorrent
-    url: !secret qbittorrenthost
-    username: !secret qbittorrentuser
-    password: !secret qbittorrentpassword
-
-  - platform: seventeentrack
-    username: !secret seventeenuser
-    password: !secret seventeenpass
-
-  - platform: template
-    sensors:
-      stuetv_source:
-        friendly_name: "Stuetv source"
-        value_template: "{{ state_attr('media_player.stuetv', 'source') }}"
+  - platform: nordpool
+    VAT: true
+    currency: "NOK"
+    price_in_cents: false
+    region: "Oslo"
+    precision: 3
+    price_type: kWh
 
   - platform: systemmonitor
     resources:
@@ -23,8 +16,176 @@
       - type: processor_use
       - type: processor_temperature
 
-  - platform: mqtt
-    state_topic: "idracpower"
-    name: "Mirai Power"
-    unit_of_measurement: "W"
 
+  - platform: entur_public_transport
+    name: TogArnes
+    stop_ids:
+      - 'NSR:StopPlace:58868'
+    line_whitelist:
+      - 'NSB:Line:L14'
+    number_of_departures: 6
+
+
+  - platform: template
+    sensors:
+      dryer_on_time:
+        value_template: >
+          {{ (as_timestamp(now())
+              - state_attr('input_datetime.torketrommel_start', 'timestamp'))
+             |timestamp_custom('%H:%M:%S', false) }}
+
+      dryer_on_time_complete:
+        friendly_name: Dryer on Timer
+        value_template: >
+            {% if is_state('input_select.torketrommel_status', 'Tørker') %}
+              {{ states('sensor.dryer_on_time') }}
+            {% else %}
+              ---
+            {% endif %}
+
+
+  - platform: template
+    sensors:
+      dryer_on:
+        value_template: "{{ states('sensor.torketrommel_power') | int > 5 }}"
+
+  - platform: template
+    sensors:
+      torketrommel:
+        friendly_name: "torketrommelkjorer"
+        value_template: >-
+          {% if is_state("sensor.dryer_on", "true") %}
+            Av
+          {% elif is_state("sensor.dryer_on", "false") %}
+            Torker
+          {% endif %}
+        icon_template: >-
+          {% if is_state("sensor.dryer_on", "true") %}
+            mdi:washing-machine
+          {% elif is_state("sensor.dryer_on", "false") %}
+            mdi:washing-machine-off
+          {% endif %}
+
+
+
+  - platform: hp_ilo
+    host: 192.168.1.12
+    name: mirai
+    username: Administrator
+    password: Password123!
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power
+        sensor_type: server_power_readings
+
+  - platform: hp_ilo
+    host: vcflabilo.eirikzlab.local
+    username: Administrator
+    password: password
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power 
+        sensor_type: server_power_readings
+
+  - platform: hp_ilo
+    host: 192.168.250.34
+    name: Overste_lab
+    username: admin
+    password: Password123!
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power 
+        sensor_type: server_power_readings
+
+  - platform: hp_ilo
+    host: 192.168.250.31
+    name: Nederste_lab
+    username: admin
+    password: Password123!
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power 
+        sensor_type: server_power_readings
+
+  - platform: hp_ilo
+    host: 192.168.250.32
+    name: Nest_nederste_lab
+    username: admin
+    password: Password123!
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power 
+        sensor_type: server_power_readings
+
+  - platform: hp_ilo
+    host: 192.168.250.33
+    name: Nest_overste_lab
+    username: admin
+    password: Password123!
+    monitored_variables:
+      - name: Inlet temperature
+        sensor_type: server_health
+        unit_of_measurement: "°C"
+        value_template: '{{ ilo_data.temperature["01-Inlet Ambient"].currentreading[0] }}'
+      - name: Server Health
+        sensor_type: server_health
+        value_template: '{{ ilo_data.health_at_a_glance }}'
+      - name: Server Power 
+        sensor_type: server_power_readings
+
+
+
+
+  - platform: integration
+    source: sensor.powerelwiz
+    unit_time: h
+    method: left
+    unique_id: tequieroputa
+
+
+  - platform: google_keep
+    username: !secret google_keep.username
+    password: !secret google_keep.password
+    labels:
+      - 'Middag'
+    pinned: true
+
+
+  - platform: snmp
+    host: 192.168.1.5
+    baseoid: 1.3.6.1.4.1.232.165.7.2.1.1.5.0
+    device_class: power
+    name: Rackstrøm
+    state_class: measurement
+    unit_of_measurement: W
+    version: "1"

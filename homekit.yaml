@@ -1,0 +1,13 @@
+- name: Dørklokke
+  port: 60002
+#  name: Dørklokke
+  filter:
+    include_entities:
+      - camera.front_person
+#  port: 60002
+#  name: Dørklokke
+  entity_config:
+    camera.front_person:
+      name: Front
+      support_audio: false
+      linked_doorbell_sensor: binary_sensor.ringeklokkesensor

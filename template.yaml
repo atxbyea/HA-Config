@@ -1,0 +1,8 @@
+  - trigger:
+      - platform: mqtt
+        topic: 'zigbee2mqtt/Ringeklokk'
+
+    binary_sensor:
+      - name: Ringeklokkesensor
+        auto_off: 5
+        state: "true"
